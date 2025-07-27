@@ -1,0 +1,151 @@
+import { getTvShowDetails } from "@/lib/tmdb";
+import Image from "next/image";
+
+export default async function TvShowDetailPage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const tvId = parseInt(params.id, 10);
+  const data = await getTvShowDetails(tvId);
+
+  if (!data) {
+    return (
+      <div className="text-center p-8 min-h-screen bg-white dark:bg-gray-900">
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+          TV Show not found.
+        </h1>
+      </div>
+    );
+  }
+
+  const { details, providers, credits } = data;
+  const IN_providers = providers.IN || {};
+
+  return (
+    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+      {/* Backdrop Image */}
+      {details.backdrop_path && (
+        <div className="relative h-64 md:h-96 w-full">
+          <Image
+            src={`https://image.tmdb.org/t/p/original${details.backdrop_path}`}
+            alt={`${details.name} backdrop`}
+            fill
+            className="object-cover object-top"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent dark:from-gray-900 dark:via-transparent" />
+        </div>
+      )}
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-32 relative z-10">
+        <div className="md:flex md:space-x-8">
+          {/* Poster */}
+          <div className="w-48 md:w-64 flex-shrink-0 mx-auto md:mx-0">
+            {details.poster_path && (
+              <Image
+                src={`https://image.tmdb.org/t/p/w500${details.poster_path}`}
+                alt={`${details.name} poster`}
+                width={500}
+                height={750}
+                className="rounded-lg shadow-xl"
+              />
+            )}
+          </div>
+
+          {/* Details */}
+          <div className="mt-6 md:mt-0 text-center md:text-left">
+            <h1 className="text-4xl font-bold">
+              {details.name}{" "}
+              <span className="font-light text-gray-500">
+                ({new Date(details.first_air_date).getFullYear()})
+              </span>
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">
+              {details.genres.map((g: any) => g.name).join(", ")} •{" "}
+              {details.number_of_seasons} seasons
+            </p>
+            <p className="mt-6 text-lg">{details.overview}</p>
+          </div>
+        </div>
+
+        {/* Streaming Providers */}
+        <section className="mt-12">
+          <h2 className="text-2xl font-semibold mb-4">
+            Where to Watch in India
+          </h2>
+          <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg">
+            {IN_providers.flatrate || IN_providers.buy || IN_providers.rent ? (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {IN_providers.flatrate?.map((p: any) => (
+                  <div
+                    key={p.provider_id}
+                    className="flex flex-col items-center"
+                  >
+                    <Image
+                      src={`https://image.tmdb.org/t/p/w92${p.logo_path}`}
+                      alt={p.provider_name}
+                      width={50}
+                      height={50}
+                      className="rounded-md mb-2"
+                    />
+                    <span className="text-sm">Stream</span>
+                  </div>
+                ))}
+                {IN_providers.buy?.map((p: any) => (
+                  <div
+                    key={p.provider_id}
+                    className="flex flex-col items-center"
+                  >
+                    <Image
+                      src={`https://image.tmdb.org/t/p/w92${p.logo_path}`}
+                      alt={p.provider_name}
+                      width={50}
+                      height={50}
+                      className="rounded-md mb-2"
+                    />
+                    <span className="text-sm">Buy</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>Not currently available for streaming in India.</p>
+            )}
+          </div>
+        </section>
+
+        {/* Cast */}
+        <section className="mt-12">
+          <h2 className="text-2xl font-semibold mb-4">Cast</h2>
+          <div className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
+            {credits.cast.slice(0, 15).map((person: any) => (
+              // CORRECTED: Added the key prop here
+              <div
+                key={person.cast_id}
+                className="text-center flex-shrink-0 w-32"
+              >
+                <div className="relative w-24 h-24 mx-auto rounded-full overflow-hidden mb-2">
+                  {person.profile_path ? (
+                    <Image
+                      src={`https://image.tmdb.org/t/p/w185${person.profile_path}`}
+                      alt={person.name}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="bg-gray-300 dark:bg-gray-700 h-full flex items-center justify-center text-xs">
+                      No Image
+                    </div>
+                  )}
+                </div>
+                <p className="font-semibold text-sm">{person.name}</p>
+                <p className="text-xs text-gray-500">{person.character}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}

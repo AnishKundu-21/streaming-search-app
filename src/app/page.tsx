@@ -1,94 +1,54 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import { getContentList } from "@/lib/tmdb";
+import ContentRow from "@/components/ContentRow";
 
-export default function Home() {
+export default async function Home() {
+  // Fetch multiple content lists concurrently on the server
+  const [popularMovies, topRatedMovies, popularTv, topRatedTv] =
+    await Promise.all([
+      getContentList("popular", "movie"),
+      getContentList("top_rated", "movie"),
+      getContentList("popular", "tv"),
+      getContentList("top_rated", "tv"),
+    ]);
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+      {/* The Navbar is now in layout.tsx, so the header is removed from here */}
+      <section className="text-center py-16 md:py-24 bg-gray-100 dark:bg-gray-800">
+        <div className="max-w-3xl mx-auto px-4">
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
+            Your Streaming Guide
+          </h1>
+          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8">
+            Search for movies & TV shows and find where to watch them.
+          </p>
+          <form action="/search" method="GET" className="max-w-xl mx-auto">
+            <input
+              name="q"
+              type="search"
+              placeholder="Search for a movie or TV show..."
+              className="w-full p-4 text-lg rounded-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
             />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+          </form>
         </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      </section>
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <ContentRow title="Popular Movies" items={popularMovies} type="movie" />
+        <ContentRow
+          title="Top Rated Movies"
+          items={topRatedMovies}
+          type="movie"
+        />
+        <ContentRow title="Popular TV Shows" items={popularTv} type="tv" />
+        <ContentRow title="Top Rated TV Shows" items={topRatedTv} type="tv" />
+      </div>
+
+      <footer className="text-center py-6 border-t border-gray-200 dark:border-gray-700">
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Built for personal use. Data provided by TMDB.
+        </p>
       </footer>
     </div>
   );
