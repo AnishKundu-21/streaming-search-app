@@ -6,7 +6,9 @@ export default async function MovieDetailPage({
 }: {
   params: { id: string };
 }) {
-  const movieId = parseInt(params.id, 10);
+  // CORRECTED: Await params before accessing its properties
+  const awaitedParams = await params;
+  const movieId = parseInt(awaitedParams.id, 10);
   const data = await getMovieDetails(movieId);
 
   if (!data) {
@@ -120,7 +122,6 @@ export default async function MovieDetailPage({
           <h2 className="text-2xl font-semibold mb-4">Cast</h2>
           <div className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
             {credits.cast.slice(0, 15).map((person: any) => (
-              // CORRECTED: Added the key prop here
               <div
                 key={person.cast_id}
                 className="text-center flex-shrink-0 w-32"

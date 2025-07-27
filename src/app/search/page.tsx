@@ -7,7 +7,10 @@ export default async function SearchPage({
 }: {
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
-  const query = typeof searchParams?.q === "string" ? searchParams.q : "";
+  // CORRECTED: Await searchParams before accessing its properties
+  const awaitedSearchParams = await searchParams;
+  const query =
+    typeof awaitedSearchParams?.q === "string" ? awaitedSearchParams.q : "";
 
   if (!query) {
     return (
@@ -31,7 +34,6 @@ export default async function SearchPage({
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-      {/* The Navbar is now in layout.tsx, so the header is removed from here */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-bold mb-8">
           Search results for:{" "}
