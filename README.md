@@ -111,4 +111,4 @@ We welcome contributions! Please follow the code style and add tests for new fea
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-Built with ❤️ by [Your Name] in 2025. For questions, open an issue on GitHub.
+Built with ❤️ by Anish in 2025. For questions, open an issue on GitHub.
