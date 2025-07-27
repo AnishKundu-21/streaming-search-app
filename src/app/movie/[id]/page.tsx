@@ -1,13 +1,14 @@
 import { getMovieDetails } from "@/lib/tmdb";
 import Image from "next/image";
 import WatchlistButton from "@/components/WatchlistButton";
+import WatchedButton from "@/components/WatchedButton";
 
 export default async function MovieDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>; // Updated type annotation
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = await params; // Await params before accessing properties
+  const { id } = await params; // await params per Next.js 15
   const movieId = Number(id);
   const data = await getMovieDetails(movieId);
 
@@ -57,7 +58,7 @@ export default async function MovieDetailPage({
           </div>
 
           {/* Details */}
-          <div className="mt-6 md:mt-0 text-center md:text-left">
+          <div className="mt-6 md:mt-0 text-center md:text-left flex-1">
             <h1 className="text-4xl font-bold flex items-center justify-center md:justify-start flex-wrap gap-4">
               {details.title}
               <span className="font-light text-gray-500">
@@ -65,9 +66,15 @@ export default async function MovieDetailPage({
               </span>
             </h1>
 
-            {/* Watchlist button */}
-            <div className="mt-4 flex justify-center md:justify-start">
+            {/* Action buttons */}
+            <div className="mt-4 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <WatchlistButton
+                contentId={movieId}
+                mediaType="movie"
+                title={details.title}
+                posterPath={details.poster_path}
+              />
+              <WatchedButton
                 contentId={movieId}
                 mediaType="movie"
                 title={details.title}

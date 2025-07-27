@@ -51,7 +51,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   watchlist     WatchlistItem[]
-  watched       WatchedItem[]     // ← NEW: relation to watched items
+  watched       WatchedItem[]     // ← Make sure this line exists
 
   @@map("users")
 }
@@ -82,7 +82,7 @@ model WatchlistItem {
   @@map("watchlist")
 }
 
-// ← NEW: Already watched items model
+// ← Make sure this entire model exists
 model WatchedItem {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   userId     String   @db.ObjectId

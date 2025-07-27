@@ -1,15 +1,16 @@
-import { getTvShowDetails } from "@/lib/tmdb";
+import { getTVDetails } from "@/lib/tmdb";
 import Image from "next/image";
 import WatchlistButton from "@/components/WatchlistButton";
+import WatchedButton from "@/components/WatchedButton";
 
 export default async function TVDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>; // ­­↰ updated type
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = await params; // ­­↰ await params
+  const { id } = await params; // await params per Next.js 15
   const tvId = Number(id);
-  const data = await getTvShowDetails(tvId);
+  const data = await getTVDetails(tvId);
 
   if (!data) {
     return (
@@ -57,7 +58,7 @@ export default async function TVDetailPage({
           </div>
 
           {/* Details */}
-          <div className="mt-6 md:mt-0 text-center md:text-left">
+          <div className="mt-6 md:mt-0 text-center md:text-left flex-1">
             <h1 className="text-4xl font-bold flex items-center justify-center md:justify-start flex-wrap gap-4">
               {details.name}
               <span className="font-light text-gray-500">
@@ -65,9 +66,15 @@ export default async function TVDetailPage({
               </span>
             </h1>
 
-            {/* Watchlist button */}
-            <div className="mt-4 flex justify-center md:justify-start">
+            {/* Action buttons */}
+            <div className="mt-4 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <WatchlistButton
+                contentId={tvId}
+                mediaType="tv"
+                title={details.name}
+                posterPath={details.poster_path}
+              />
+              <WatchedButton
                 contentId={tvId}
                 mediaType="tv"
                 title={details.name}

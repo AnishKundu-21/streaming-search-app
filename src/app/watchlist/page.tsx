@@ -1,15 +1,28 @@
 "use client";
 
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useWatchlist } from "@/hooks/useWatchlist";
+import { useWatched } from "@/hooks/useWatched";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function WatchlistPage() {
   const { data: session } = useSession();
-  const { watchlist, isLoading, isError } = useWatchlist();
+  const {
+    watchlist,
+    isLoading: watchlistLoading,
+    isError: watchlistError,
+  } = useWatchlist();
+  const {
+    watched,
+    isLoading: watchedLoading,
+    isError: watchedError,
+  } = useWatched();
+  const [activeTab, setActiveTab] = useState<"watchlist" | "watched">(
+    "watchlist"
+  );
 
-  /* ── If user is not signed in ── */
   if (!session) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
@@ -18,7 +31,8 @@ export default function WatchlistPage() {
             Sign in to view your watchlist
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mb-8">
-            Keep track of movies and TV shows you want to watch.
+            Keep track of movies and TV shows you want to watch and have already
+            watched.
           </p>
           <Link
             href="/auth/signin"
@@ -31,12 +45,24 @@ export default function WatchlistPage() {
     );
   }
 
-  /* ── Loading state ── */
+  const isLoading = watchlistLoading || watchedLoading;
+  const hasError = watchlistError || watchedError;
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
         <div className="container mx-auto px-4 py-16">
-          <h1 className="text-3xl font-bold mb-8">My Watchlist</h1>
+          <h1 className="text-3xl font-bold mb-8">My Lists</h1>
+
+          <div className="flex space-x-1 mb-8">
+            {[...Array(2)].map((_, i) => (
+              <div
+                key={i}
+                className="h-10 w-32 bg-gray-300 dark:bg-gray-700 rounded animate-pulse"
+              />
+            ))}
+          </div>
+
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="animate-pulse">
@@ -51,87 +77,124 @@ export default function WatchlistPage() {
     );
   }
 
-  /* ── Error state ── */
-  if (isError) {
+  if (hasError) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
         <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-3xl font-bold mb-4">Unable to load watchlist</h1>
+          <h1 className="text-3xl font-bold mb-4">Unable to load your lists</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            There was an error loading your watchlist. Please try again.
+            There was an error loading your watchlist and watched items. Please
+            try again.
           </p>
         </div>
       </div>
     );
   }
 
-  /* ── Empty watchlist ── */
-  if (watchlist.length === 0) {
-    return (
-      <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-        <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-3xl font-bold mb-4">Your watchlist is empty</h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-8">
-            Start adding movies and TV shows to keep track of what you want to
-            watch.
-          </p>
-          <Link
-            href="/"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold"
-          >
-            Browse Content
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  const currentItems = activeTab === "watchlist" ? watchlist : watched;
+  const isEmpty = currentItems.length === 0;
 
-  /* ── Watchlist with items ── */
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
       <div className="container mx-auto px-4 py-16">
-        <h1 className="text-3xl font-bold mb-8">
-          My Watchlist ({watchlist.length} item
-          {watchlist.length !== 1 ? "s" : ""})
-        </h1>
+        <h1 className="text-3xl font-bold mb-8">My Lists</h1>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {watchlist.map((item) => (
-            <div key={item.id} className="group">
-              <Link href={`/${item.mediaType}/${item.contentId}`}>
-                <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-2 bg-gray-200 dark:bg-gray-800">
-                  {item.posterPath ? (
-                    <Image
-                      src={`https://image.tmdb.org/t/p/w342${item.posterPath}`}
-                      alt={item.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-200"
-                    />
-                  ) : (
-                    <div className="flex items-center justify-center h-full text-gray-500">
-                      No Image
-                    </div>
-                  )}
-
-                  {/* Media type indicator */}
-                  <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                    {item.mediaType === "movie" ? "Movie" : "TV"}
-                  </div>
-                </div>
-              </Link>
-
-              <h3 className="font-semibold text-sm mb-1 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                <Link href={`/${item.mediaType}/${item.contentId}`}>
-                  {item.title}
-                </Link>
-              </h3>
-
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Added {new Date(item.addedAt).toLocaleDateString()}
-              </p>
-            </div>
-          ))}
+        <div className="flex space-x-1 mb-8">
+          <button
+            onClick={() => setActiveTab("watchlist")}
+            className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+              activeTab === "watchlist"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+            }`}
+          >
+            To Watch ({watchlist.length})
+          </button>
+          <button
+            onClick={() => setActiveTab("watched")}
+            className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+              activeTab === "watched"
+                ? "bg-green-600 text-white"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+            }`}
+          >
+            Already Watched ({watched.length})
+          </button>
         </div>
+
+        {isEmpty ? (
+          <div className="text-center p-8">
+            <h2 className="text-2xl font-bold mb-4">
+              {activeTab === "watchlist"
+                ? "Your watchlist is empty"
+                : "No watched items yet"}
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-8">
+              {activeTab === "watchlist"
+                ? "Start adding movies and TV shows to keep track of what you want to watch."
+                : 'Mark some movies and TV shows as "Already Watched" to see them here.'}
+            </p>
+            <Link
+              href="/"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold"
+            >
+              Browse Content
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {currentItems.map((item) => (
+              <div key={item.id} className="group">
+                <Link href={`/${item.mediaType}/${item.contentId}`}>
+                  <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-2 bg-gray-200 dark:bg-gray-800">
+                    {item.posterPath ? (
+                      <Image
+                        src={`https://image.tmdb.org/t/p/w342${item.posterPath}`}
+                        alt={item.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-200"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-gray-500">
+                        No Image
+                      </div>
+                    )}
+
+                    <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                      {item.mediaType === "movie" ? "Movie" : "TV"}
+                    </div>
+
+                    <div
+                      className={`absolute top-2 left-2 text-white text-xs px-2 py-1 rounded ${
+                        activeTab === "watchlist"
+                          ? "bg-blue-600/80"
+                          : "bg-green-600/80"
+                      }`}
+                    >
+                      {activeTab === "watchlist" ? "To Watch" : "Watched"}
+                    </div>
+                  </div>
+                </Link>
+
+                <h3 className="font-semibold text-sm mb-1 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                  <Link href={`/${item.mediaType}/${item.contentId}`}>
+                    {item.title}
+                  </Link>
+                </h3>
+
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {activeTab === "watchlist"
+                    ? `Added ${new Date(
+                        (item as any).addedAt
+                      ).toLocaleDateString()}`
+                    : `Watched ${new Date(
+                        (item as any).watchedAt
+                      ).toLocaleDateString()}`}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,127 +1,103 @@
-import axios from "axios";
+/**
+ * Tiny wrapper around the TMDB REST API
+ * – Includes one-hour response caching via Next.js fetch
+ * – Exposes helpers used across the app (search, details, trending, etc.)
+ */
 
-const TMDB_BASE_URL = "https://api.themoviedb.org/3";
-const API_KEY = process.env.TMDB_API_KEY;
+const API_KEY = process.env.TMDB_API_KEY!;
+const BASE = "https://api.themoviedb.org/3";
 
-if (!API_KEY) {
-  throw new Error("TMDB_API_KEY is not defined in environment variables");
+/* ----------------------------------------------------------
+   Shared fetch helper
+   ---------------------------------------------------------- */
+const defaultFetchOpts = { next: { revalidate: 60 * 60 } }; // 1-hour ISR cache
+
+function tmdb<T = any>(
+  path: string,
+  qs: Record<string, string | number> = {}
+): Promise<T> {
+  const params = new URLSearchParams({
+    api_key: API_KEY,
+    language: "en-US",
+    ...Object.fromEntries(Object.entries(qs).map(([k, v]) => [k, String(v)])),
+  });
+
+  return fetch(`${BASE}${path}?${params}`, defaultFetchOpts).then((res) => {
+    if (!res.ok) throw new Error(`TMDB error for ${path}`);
+    return res.json() as Promise<T>;
+  });
 }
 
-interface ContentResult {
-  id: number;
-  title?: string;
-  name?: string;
-  poster_path?: string;
-  overview?: string;
+/* ----------------------------------------------------------
+   Generic search (movies + TV)
+   ---------------------------------------------------------- */
+export async function searchMoviesAndTV(query: string) {
+  const data = await tmdb<{ results: any[] }>("/search/multi", {
+    query,
+    page: 1,
+  });
+  return data.results.filter(
+    (i) => i.media_type === "movie" || i.media_type === "tv"
+  );
 }
 
-export async function getContentList(
-  listType: "popular" | "top_rated" | "upcoming" | "now_playing",
-  contentType: "movie" | "tv"
-): Promise<ContentResult[]> {
-  try {
-    const response = await axios.get(
-      `${TMDB_BASE_URL}/${contentType}/${listType}?api_key=${API_KEY}&language=en-US&page=1`
-    );
-    return response.data.results || [];
-  } catch (error) {
-    console.error(`TMDB fetch ${listType} ${contentType} error:`, error);
-    throw new Error(`Failed to fetch ${listType} content`);
-  }
-}
-
-export async function searchContent(
-  query: string,
-  type: "movie" | "tv" = "movie",
-  genre?: string,
-  minRating?: string
-): Promise<ContentResult[]> {
-  try {
-    let url = `${TMDB_BASE_URL}/search/${type}?api_key=${API_KEY}&query=${encodeURIComponent(
-      query
-    )}`;
-    if (genre) {
-      url += `&with_genres=${genre}`;
-    }
-    if (minRating) {
-      url += `&vote_average.gte=${minRating}`;
-    }
-    const response = await axios.get(url);
-    const results = response.data.results;
-    if (!results || results.length === 0) {
-      return [];
-    }
-    return results;
-  } catch (error) {
-    console.error("TMDB search error:", error);
-    throw new Error("Failed to search content");
-  }
-}
-
-export async function getWatchProviders(
-  id: number,
-  type: "movie" | "tv" = "movie"
-) {
-  try {
-    const response = await axios.get(
-      `${TMDB_BASE_URL}/${type}/${id}/watch/providers?api_key=${API_KEY}`
-    );
-    return response.data.results;
-  } catch (error) {
-    console.error("TMDB providers error:", error);
-    throw new Error("Failed to fetch watch providers");
-  }
-}
-
+/* ----------------------------------------------------------
+   Individual details helpers
+   ---------------------------------------------------------- */
 export async function getMovieDetails(id: number) {
   try {
-    const [detailsResponse, providersResponse, creditsResponse] =
-      await Promise.all([
-        axios.get(
-          `${TMDB_BASE_URL}/movie/${id}?api_key=${API_KEY}&language=en-US`
-        ),
-        axios.get(
-          `${TMDB_BASE_URL}/movie/${id}/watch/providers?api_key=${API_KEY}`
-        ),
-        axios.get(
-          `${TMDB_BASE_URL}/movie/${id}/credits?api_key=${API_KEY}&language=en-US`
-        ),
-      ]);
+    const [details, providers, credits] = await Promise.all([
+      tmdb(`/movie/${id}`),
+      tmdb(`/movie/${id}/watch/providers`),
+      tmdb(`/movie/${id}/credits`),
+    ]);
 
-    return {
-      details: detailsResponse.data,
-      providers: providersResponse.data.results,
-      credits: creditsResponse.data,
-    };
-  } catch (error) {
-    console.error(`TMDB fetch movie details for ID ${id} error:`, error);
+    return { details, providers: providers.results ?? {}, credits };
+  } catch (err) {
+    console.error("getMovieDetails error:", err);
     return null;
   }
 }
 
-// NEW: Function to get all details for a specific TV show
-export async function getTvShowDetails(id: number) {
+export async function getTVDetails(id: number) {
   try {
-    const [detailsResponse, providersResponse, creditsResponse] =
-      await Promise.all([
-        axios.get(
-          `${TMDB_BASE_URL}/tv/${id}?api_key=${API_KEY}&language=en-US`
-        ),
-        axios.get(
-          `${TMDB_BASE_URL}/tv/${id}/watch/providers?api_key=${API_KEY}`
-        ),
-        axios.get(
-          `${TMDB_BASE_URL}/tv/${id}/credits?api_key=${API_KEY}&language=en-US`
-        ),
-      ]);
+    const [details, providers, credits] = await Promise.all([
+      tmdb(`/tv/${id}`),
+      tmdb(`/tv/${id}/watch/providers`),
+      tmdb(`/tv/${id}/credits`),
+    ]);
 
-    return {
-      details: detailsResponse.data,
-      providers: providersResponse.data.results,
-      credits: creditsResponse.data,
-    };
-  } catch (error) {
-    console.error(`TMDB fetch TV show details for ID ${id} error:`, error);
+    return { details, providers: providers.results ?? {}, credits };
+  } catch (err) {
+    console.error("getTVDetails error:", err);
     return null;
   }
+}
+
+/* ----------------------------------------------------------
+   Browsing helpers used on the Home page
+   ---------------------------------------------------------- */
+export async function getTrending(
+  media: "movie" | "tv" | "all" = "all",
+  timeWindow: "day" | "week" = "week"
+) {
+  const data = await tmdb<{ results: any[] }>(
+    `/trending/${media}/${timeWindow}`
+  );
+  return data.results;
+}
+
+export async function getTopRated(media: "movie" | "tv") {
+  const data = await tmdb<{ results: any[] }>(`/${media}/top_rated`);
+  return data.results;
+}
+
+export async function getUpcoming() {
+  const data = await tmdb<{ results: any[] }>("/movie/upcoming");
+  return data.results;
+}
+
+export async function getNowPlaying() {
+  const data = await tmdb<{ results: any[] }>("/movie/now_playing");
+  return data.results;
 }

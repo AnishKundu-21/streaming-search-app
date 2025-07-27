@@ -1,55 +1,166 @@
-import { getContentList } from "@/lib/tmdb";
-import ContentRow from "@/components/ContentRow";
+import Image from "next/image";
+import Link from "next/link";
+import RecommendedSection from "@/components/RecommendedSection";
+import ScrollableSection from "@/components/ScrollableSection";
+import { searchMoviesAndTV } from "@/lib/tmdb";
 
-export default async function Home() {
-  // Fetch multiple content lists concurrently on the server
-  const [popularMovies, topRatedMovies, popularTv, topRatedTv] =
-    await Promise.all([
-      getContentList("popular", "movie"),
-      getContentList("top_rated", "movie"),
-      getContentList("popular", "tv"),
-      getContentList("top_rated", "tv"),
+/* ---------- simple fetch helpers (home-page only) ---------- */
+const TMDB = (path: string) =>
+  fetch(
+    `https://api.themoviedb.org/3${path}?api_key=${process.env.TMDB_API_KEY}&language=en-US&page=1`,
+    { next: { revalidate: 60 * 60 } } // 1-h cache
+  )
+    .then((r) => r.json())
+    .then((d) => d.results?.slice(0, 20) ?? []); // Increased to 20 items
+
+const getTrending = (media: "all" | "movie" | "tv") =>
+  TMDB(`/trending/${media}/week`);
+const getTopRated = (media: "movie" | "tv") => TMDB(`/${media}/top_rated`);
+const getUpcoming = () => TMDB("/movie/upcoming");
+const getNowPlaying = () => TMDB("/movie/now_playing");
+/* ----------------------------------------------------------- */
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const { q } = await searchParams;
+  const query = q?.trim() ?? "";
+
+  /* ––––– data fetches ––––– */
+  let searchResults: any[] = [];
+  let trendingMovies: any[] = [];
+  let trendingTV: any[] = [];
+  let trendingAll: any[] = [];
+  let topRatedMovies: any[] = [];
+  let topRatedTV: any[] = [];
+  let upcomingMovies: any[] = [];
+  let nowPlaying: any[] = [];
+
+  if (query) {
+    /* user is searching */
+    searchResults = await searchMoviesAndTV(query);
+  } else {
+    /* user is browsing */
+    [
+      trendingMovies,
+      trendingTV,
+      trendingAll,
+      topRatedMovies,
+      topRatedTV,
+      upcomingMovies,
+      nowPlaying,
+    ] = await Promise.all([
+      getTrending("movie"),
+      getTrending("tv"),
+      getTrending("all"),
+      getTopRated("movie"),
+      getTopRated("tv"),
+      getUpcoming(),
+      getNowPlaying(),
     ]);
+  }
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-      {/* The Navbar is now in layout.tsx, so the header is removed from here */}
-      <section className="text-center py-16 md:py-24 bg-gray-100 dark:bg-gray-800">
-        <div className="max-w-3xl mx-auto px-4">
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
-            Your Streaming Guide
+      <div className="container mx-auto px-4 py-8">
+        {/* ── hero / search –– */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4">
+            Find Your Next{" "}
+            <span className="text-blue-600 dark:text-blue-400">Stream</span>
           </h1>
-          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8">
-            Search for movies & TV shows and find where to watch them.
+          <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
+            Discover movies and TV shows with streaming availability in India
           </p>
-          <form action="/search" method="GET" className="max-w-xl mx-auto">
+          <form method="GET" className="max-w-2xl mx-auto flex gap-2 mb-8">
             <input
+              type="text"
               name="q"
-              type="search"
-              placeholder="Search for a movie or TV show..."
-              className="w-full p-4 text-lg rounded-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
+              defaultValue={query}
+              placeholder="Search for movies or TV shows..."
+              className="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            <button
+              type="submit"
+              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
+            >
+              Search
+            </button>
           </form>
         </div>
-      </section>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <ContentRow title="Popular Movies" items={popularMovies} type="movie" />
-        <ContentRow
-          title="Top Rated Movies"
-          items={topRatedMovies}
-          type="movie"
-        />
-        <ContentRow title="Popular TV Shows" items={popularTv} type="tv" />
-        <ContentRow title="Top Rated TV Shows" items={topRatedTv} type="tv" />
+        {/* ── search-results vs browse –– */}
+        {query ? (
+          <>
+            <h2 className="text-2xl font-bold mb-6">
+              Search Results for &quot;{query}&quot;
+            </h2>
+            {searchResults.length ? (
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {searchResults.map((item) => (
+                  <div
+                    key={`${item.media_type ?? "movie"}-${item.id}`}
+                    className="group"
+                  >
+                    <Link href={`/${item.media_type ?? "movie"}/${item.id}`}>
+                      <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-2 bg-gray-200 dark:bg-gray-800">
+                        {item.poster_path ? (
+                          <Image
+                            src={`https://image.tmdb.org/t/p/w342${item.poster_path}`}
+                            alt={item.title || item.name}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-200"
+                          />
+                        ) : (
+                          <div className="flex items-center justify-center h-full text-gray-500">
+                            No Image
+                          </div>
+                        )}
+                        <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                          {item.media_type === "tv" || item.first_air_date
+                            ? "TV"
+                            : "Movie"}
+                        </div>
+                      </div>
+                    </Link>
+                    <h3 className="font-semibold text-sm mb-1 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                      <Link href={`/${item.media_type ?? "movie"}/${item.id}`}>
+                        {item.title || item.name}
+                      </Link>
+                    </h3>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-center text-gray-500 dark:text-gray-400">
+                No results found – try another term.
+              </p>
+            )}
+          </>
+        ) : (
+          <>
+            {/* personalised section */}
+            <RecommendedSection />
+
+            {/* All sections now use horizontal scrolling */}
+            <ScrollableSection title="Trending This Week" items={trendingAll} />
+            <ScrollableSection
+              title="Top-Rated Movies"
+              items={topRatedMovies}
+            />
+            <ScrollableSection title="Top-Rated TV Shows" items={topRatedTV} />
+            <ScrollableSection title="Upcoming Movies" items={upcomingMovies} />
+            <ScrollableSection
+              title="Now Playing in Theatres"
+              items={nowPlaying}
+            />
+            <ScrollableSection title="Trending Movies" items={trendingMovies} />
+            <ScrollableSection title="Trending TV Shows" items={trendingTV} />
+          </>
+        )}
       </div>
-
-      <footer className="text-center py-6 border-t border-gray-200 dark:border-gray-700">
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          Built for personal use. Data provided by TMDB.
-        </p>
-      </footer>
     </div>
   );
 }
