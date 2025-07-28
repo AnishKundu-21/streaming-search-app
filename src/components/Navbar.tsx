@@ -6,7 +6,7 @@ import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
 import BackButton from "./BackButton";
 import ThemeToggle from "./ThemeToggle";
-import MobileMenu from "./MobileMenu"; // Import the new component
+import MobileMenu from "./MobileMenu";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -137,10 +137,16 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Menu */}
-      <MobileMenu
-        className={`${textColor} ${iconButtonClass}`}
-        style={textShadow}
-      />
+      <div className="sm:hidden flex items-center space-x-2">
+        <ThemeToggle
+          className={`${textColor} ${iconButtonClass}`}
+          style={textShadow}
+        />
+        <MobileMenu
+          className={`${textColor} ${iconButtonClass}`}
+          style={textShadow}
+        />
+      </div>
     </header>
   );
 }
