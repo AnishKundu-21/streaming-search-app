@@ -1,9 +1,8 @@
 import { getTVDetails } from "@/lib/tmdb";
 import Image from "next/image";
 import Link from "next/link";
-import WatchlistButton from "@/components/WatchlistButton";
-import WatchedButton from "@/components/WatchedButton";
 import ProviderSection from "@/components/ProviderSection";
+import SeasonTracker from "@/components/SeasonTracker";
 
 export default async function TVDetailPage({
   params,
@@ -69,22 +68,6 @@ export default async function TVDetailPage({
               )}
             </h1>
 
-            {/* Action buttons */}
-            <div className="mt-4 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <WatchlistButton
-                contentId={tvId}
-                mediaType="tv"
-                title={details.name ?? ""}
-                posterPath={details.poster_path}
-              />
-              <WatchedButton
-                contentId={tvId}
-                mediaType="tv"
-                title={details.name ?? ""}
-                posterPath={details.poster_path}
-              />
-            </div>
-
             <p className="text-gray-600 dark:text-gray-400 mt-2">
               {details.genres.map((g: any) => g.name).join(", ")} •{" "}
               {details.number_of_seasons} Season
@@ -129,6 +112,13 @@ export default async function TVDetailPage({
             <p className="mt-6 text-lg">{details.overview}</p>
           </div>
         </div>
+
+        {/* Season Tracker */}
+        <SeasonTracker
+          tvId={tvId}
+          tvTitle={details.name ?? "TV Show"}
+          seasons={details.seasons}
+        />
 
         {/* Streaming providers */}
         <ProviderSection providers={providers} />

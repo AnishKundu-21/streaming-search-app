@@ -2,13 +2,21 @@
 
 import { useRouter } from "next/navigation";
 
-export default function BackButton() {
+interface BackButtonProps {
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+export default function BackButton({ className, style }: BackButtonProps) {
   const router = useRouter();
 
   return (
     <button
       onClick={() => router.back()}
-      className="p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      className={`p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+        className || ""
+      }`}
+      style={style}
       aria-label="Go back"
     >
       {/* Back arrow icon */}

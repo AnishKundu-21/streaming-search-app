@@ -76,12 +76,14 @@ export default async function MovieDetailPage({
                 mediaType="movie"
                 title={details.title ?? ""}
                 posterPath={details.poster_path}
+                seasonNumber={0} // Specify 0 for movies
               />
               <WatchedButton
                 contentId={movieId}
                 mediaType="movie"
                 title={details.title ?? ""}
                 posterPath={details.poster_path}
+                seasonNumber={0} // Specify 0 for movies
               />
             </div>
 

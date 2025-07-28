@@ -25,17 +25,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { contentId, mediaType, title, posterPath } = await request.json();
+  const { contentId, mediaType, title, posterPath, seasonNumber } =
+    await request.json();
   if (!contentId || !mediaType) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 });
   }
 
+  const season = seasonNumber ? Number(seasonNumber) : 0;
+
   await prisma.watchlistItem.upsert({
     where: {
-      userId_contentId_mediaType: {
+      userId_contentId_mediaType_seasonNumber: {
         userId: session.user.id,
         contentId: Number(contentId),
         mediaType,
+        seasonNumber: season,
       },
     },
     update: { title, posterPath },
@@ -43,6 +47,7 @@ export async function POST(request: Request) {
       userId: session.user.id,
       contentId: Number(contentId),
       mediaType,
+      seasonNumber: season,
       title: title ?? "",
       posterPath,
     },
@@ -57,18 +62,20 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { contentId, mediaType } = await request.json();
+  const { contentId, mediaType, seasonNumber } = await request.json();
   if (!contentId || !mediaType) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 });
   }
 
-  await prisma.watchlistItem.delete({
+  const season = seasonNumber ? Number(seasonNumber) : 0;
+
+  // Use deleteMany to avoid errors if the record doesn't exist
+  await prisma.watchlistItem.deleteMany({
     where: {
-      userId_contentId_mediaType: {
-        userId: session.user.id,
-        contentId: Number(contentId),
-        mediaType,
-      },
+      userId: session.user.id,
+      contentId: Number(contentId),
+      mediaType,
+      seasonNumber: season,
     },
   });
 

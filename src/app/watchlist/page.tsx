@@ -7,6 +7,109 @@ import { useWatched } from "@/hooks/useWatched";
 import Image from "next/image";
 import Link from "next/link";
 
+// Define the type for a single item from the hooks
+type ListItem = {
+  id: string;
+  contentId: number;
+  mediaType: "movie" | "tv";
+  title: string;
+  posterPath?: string | null;
+  seasonNumber?: number | null;
+  addedAt?: string;
+  watchedAt?: string;
+};
+
+// Define the type for an item after grouping seasons
+type GroupedListItem = {
+  id: string; // Unique key for the group
+  contentId: number;
+  mediaType: "movie" | "tv";
+  title: string;
+  posterPath?: string | null;
+  date: string; // watchedAt or addedAt
+  seasonInfo: string | null; // e.g., "Seasons 1-3, 5"
+};
+
+// Helper function to create season range strings (e.g., "1-3, 5")
+const createSeasonRanges = (seasonNumbers: number[]): string => {
+  if (!seasonNumbers.length) return "";
+  const sorted = [...seasonNumbers].sort((a, b) => a - b);
+  const ranges: string[] = [];
+  let start = sorted[0];
+
+  for (let i = 1; i <= sorted.length; i++) {
+    if (i === sorted.length || sorted[i] !== sorted[i - 1] + 1) {
+      const end = sorted[i - 1];
+      ranges.push(start === end ? `${start}` : `${start}-${end}`);
+      if (i < sorted.length) {
+        start = sorted[i];
+      }
+    }
+  }
+  return `Season${ranges.length > 1 ? "s" : ""} ${ranges.join(", ")}`;
+};
+
+// Main helper to process and group the raw list from the hooks
+const groupItems = (items: ListItem[]): GroupedListItem[] => {
+  const grouped = new Map<number, ListItem[]>();
+
+  // Group all items by their main contentId
+  for (const item of items) {
+    if (!grouped.has(item.contentId)) {
+      grouped.set(item.contentId, []);
+    }
+    grouped.get(item.contentId)!.push(item);
+  }
+
+  const result: GroupedListItem[] = [];
+
+  // Process each group
+  for (const group of grouped.values()) {
+    const firstItem = group[0];
+    if (
+      firstItem.mediaType === "movie" ||
+      !group.some((item) => item.seasonNumber)
+    ) {
+      // Handle movies or whole TV shows added without season tracking
+      result.push({
+        ...firstItem,
+        id: firstItem.id,
+        seasonInfo: null,
+        date: firstItem.watchedAt ?? firstItem.addedAt ?? "",
+      });
+    } else {
+      // It's a TV show with seasons, process them
+      const seasonNumbers = group
+        .map((i) => i.seasonNumber)
+        .filter((n): n is number => n !== null && n !== undefined);
+
+      const latestDateItem = group.reduce((latest, current) => {
+        const latestDate = new Date(latest.watchedAt ?? latest.addedAt ?? 0);
+        const currentDate = new Date(current.watchedAt ?? current.addedAt ?? 0);
+        return currentDate > latestDate ? current : latest;
+      });
+
+      const mainShowPoster =
+        group.find((s) => s.seasonNumber === 1)?.posterPath ??
+        firstItem.posterPath;
+
+      result.push({
+        ...firstItem,
+        id: `${firstItem.contentId}-group`,
+        title: firstItem.title.split(" - Season")[0], // Get the base show title
+        posterPath: mainShowPoster,
+        seasonInfo: createSeasonRanges(seasonNumbers),
+        date: latestDateItem.watchedAt ?? latestDateItem.addedAt ?? "",
+      });
+    }
+  }
+
+  // Sort the final list by date
+  return result.sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+};
+
 export default function WatchlistPage() {
   const { data: session } = useSession();
   const {
@@ -49,6 +152,7 @@ export default function WatchlistPage() {
   const hasError = watchlistError || watchedError;
 
   if (isLoading) {
+    // ... loading state remains the same
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
         <div className="container mx-auto px-4 py-16">
@@ -78,6 +182,7 @@ export default function WatchlistPage() {
   }
 
   if (hasError) {
+    // ... error state remains the same
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
         <div className="container mx-auto px-4 py-16 text-center">
@@ -91,7 +196,11 @@ export default function WatchlistPage() {
     );
   }
 
-  const currentItems = activeTab === "watchlist" ? watchlist : watched;
+  const groupedWatchlist = groupItems(watchlist);
+  const groupedWatched = groupItems(watched);
+
+  const currentItems =
+    activeTab === "watchlist" ? groupedWatchlist : groupedWatched;
   const isEmpty = currentItems.length === 0;
 
   return (
@@ -108,7 +217,7 @@ export default function WatchlistPage() {
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
             }`}
           >
-            To Watch ({watchlist.length})
+            To Watch ({groupedWatchlist.length})
           </button>
           <button
             onClick={() => setActiveTab("watched")}
@@ -118,7 +227,7 @@ export default function WatchlistPage() {
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
             }`}
           >
-            Already Watched ({watched.length})
+            Already Watched ({groupedWatched.length})
           </button>
         </div>
 
@@ -159,19 +268,8 @@ export default function WatchlistPage() {
                         No Image
                       </div>
                     )}
-
                     <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
                       {item.mediaType === "movie" ? "Movie" : "TV"}
-                    </div>
-
-                    <div
-                      className={`absolute top-2 left-2 text-white text-xs px-2 py-1 rounded ${
-                        activeTab === "watchlist"
-                          ? "bg-blue-600/80"
-                          : "bg-green-600/80"
-                      }`}
-                    >
-                      {activeTab === "watchlist" ? "To Watch" : "Watched"}
                     </div>
                   </div>
                 </Link>
@@ -182,14 +280,16 @@ export default function WatchlistPage() {
                   </Link>
                 </h3>
 
+                {item.seasonInfo && (
+                  <p className="text-xs font-bold text-blue-500 dark:text-blue-400">
+                    {item.seasonInfo}
+                  </p>
+                )}
+
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   {activeTab === "watchlist"
-                    ? `Added ${new Date(
-                        (item as any).addedAt
-                      ).toLocaleDateString()}`
-                    : `Watched ${new Date(
-                        (item as any).watchedAt
-                      ).toLocaleDateString()}`}
+                    ? `Added ${new Date(item.date).toLocaleDateString()}`
+                    : `Watched ${new Date(item.date).toLocaleDateString()}`}
                 </p>
               </div>
             ))}

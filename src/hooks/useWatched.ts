@@ -13,6 +13,7 @@ type WatchedItem = {
   posterPath?: string | null;
   watchedAt: string;
   rating?: number | null;
+  seasonNumber?: number | null; // Add seasonNumber
 };
 
 const fetcher = (url: string) =>
@@ -24,9 +25,9 @@ const fetcher = (url: string) =>
 /**
  * React hook for a signed-in user’s “already watched” list.
  *
- * addItem({ contentId, mediaType, title, posterPath?, rating? })
- * removeItem(contentId, mediaType)
- * isWatched(contentId, mediaType) → boolean
+ * addItem({ contentId, mediaType, title, posterPath?, rating?, seasonNumber? })
+ * removeItem(contentId, mediaType, seasonNumber?)
+ * isWatched(contentId, mediaType, seasonNumber?) → boolean
  */
 export function useWatched() {
   /* Only fetch when authenticated */
@@ -45,6 +46,7 @@ export function useWatched() {
     title: string;
     posterPath?: string | null;
     rating?: number;
+    seasonNumber?: number | null; // Add seasonNumber
   }) => {
     await fetch("/api/watched", {
       method: "POST",
@@ -54,18 +56,29 @@ export function useWatched() {
     mutate();
   };
 
-  const removeItem = async (contentId: number, mediaType: "movie" | "tv") => {
+  const removeItem = async (
+    contentId: number,
+    mediaType: "movie" | "tv",
+    seasonNumber?: number | null // Add seasonNumber
+  ) => {
     await fetch("/api/watched", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ contentId, mediaType }),
+      body: JSON.stringify({ contentId, mediaType, seasonNumber }),
     });
     mutate();
   };
 
-  const isWatched = (contentId: number, mediaType: "movie" | "tv") =>
+  const isWatched = (
+    contentId: number,
+    mediaType: "movie" | "tv",
+    seasonNumber?: number | null // Add seasonNumber
+  ) =>
     (data ?? []).some(
-      (i) => i.contentId === contentId && i.mediaType === mediaType
+      (i) =>
+        i.contentId === contentId &&
+        i.mediaType === mediaType &&
+        i.seasonNumber === (seasonNumber ?? null)
     );
 
   return {

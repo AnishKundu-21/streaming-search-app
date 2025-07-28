@@ -12,6 +12,7 @@ type WatchlistItem = {
   title: string;
   posterPath?: string | null;
   addedAt: string;
+  seasonNumber?: number | null; // Add seasonNumber
 };
 
 const fetcher = (url: string) =>
@@ -23,9 +24,9 @@ const fetcher = (url: string) =>
 /**
  * React hook that returns the current user’s watch-list plus helpers
  *
- * addItem({ contentId, mediaType, title, posterPath })
- * removeItem(contentId, mediaType)
- * isInWatchlist(contentId, mediaType) → boolean
+ * addItem({ contentId, mediaType, title, posterPath, seasonNumber? })
+ * removeItem(contentId, mediaType, seasonNumber?)
+ * isInWatchlist(contentId, mediaType, seasonNumber?) → boolean
  */
 export function useWatchlist() {
   /* Only fetch when the user is authenticated */
@@ -43,6 +44,7 @@ export function useWatchlist() {
     mediaType: "movie" | "tv";
     title: string;
     posterPath?: string | null;
+    seasonNumber?: number | null; // Add seasonNumber
   }) => {
     await fetch("/api/watchlist", {
       method: "POST",
@@ -52,18 +54,29 @@ export function useWatchlist() {
     mutate(); // re-validate list
   };
 
-  const removeItem = async (contentId: number, mediaType: "movie" | "tv") => {
+  const removeItem = async (
+    contentId: number,
+    mediaType: "movie" | "tv",
+    seasonNumber?: number | null // Add seasonNumber
+  ) => {
     await fetch("/api/watchlist", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ contentId, mediaType }),
+      body: JSON.stringify({ contentId, mediaType, seasonNumber }),
     });
     mutate();
   };
 
-  const isInWatchlist = (contentId: number, mediaType: "movie" | "tv") =>
+  const isInWatchlist = (
+    contentId: number,
+    mediaType: "movie" | "tv",
+    seasonNumber?: number | null // Add seasonNumber
+  ) =>
     (data ?? []).some(
-      (i) => i.contentId === contentId && i.mediaType === mediaType
+      (i) =>
+        i.contentId === contentId &&
+        i.mediaType === mediaType &&
+        i.seasonNumber === (seasonNumber ?? null)
     );
 
   return {

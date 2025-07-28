@@ -24,8 +24,7 @@ model Account {
   scope             String?
   id_token          String? @db.String
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@map("accounts")
@@ -42,16 +41,16 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
-  email         String    @unique
+  email         String          @unique
   emailVerified DateTime?
   image         String?
-  password      String?   // for credentials provider
+  password      String?         // for credentials provider
   accounts      Account[]
   sessions      Session[]
   watchlist     WatchlistItem[]
-  watched       WatchedItem[]     // ← Make sure this line exists
+  watched       WatchedItem[]
 
   @@map("users")
 }
@@ -68,33 +67,32 @@ model VerificationToken {
 
 // Custom models for our streaming app
 model WatchlistItem {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String   @db.ObjectId
-  contentId  Int
-  mediaType  String   // "movie" or "tv"
-  title      String
-  posterPath String?
-  addedAt    DateTime @default(now())
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @db.ObjectId
+  contentId    Int
+  mediaType    String // "movie" or "tv"
+  seasonNumber Int      @default(0) // 0 for movies, >0 for seasons
+  title        String
+  posterPath   String?
+  addedAt      DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, contentId, mediaType])
+  @@unique([userId, contentId, mediaType, seasonNumber])
   @@map("watchlist")
 }
 
-// ← Make sure this entire model exists
 model WatchedItem {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String   @db.ObjectId
-  contentId  Int
-  mediaType  String   // "movie" or "tv"
-  title      String
-  posterPath String?
-  watchedAt  DateTime @default(now())
-  rating     Int?     // optional 1-10 rating
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @db.ObjectId
+  contentId    Int
+  mediaType    String // "movie" or "tv"
+  seasonNumber Int      @default(0) // 0 for movies, >0 for seasons
+  title        String
+  posterPath   String?
+  watchedAt    DateTime @default(now())
+  rating       Int? // optional 1-10 rating
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, contentId, mediaType])
+  @@unique([userId, contentId, mediaType, seasonNumber])
   @@map("watched")
 }

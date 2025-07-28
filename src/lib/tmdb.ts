@@ -35,6 +35,15 @@ interface ExternalIds {
   imdb_id?: string;
 }
 
+// New interface for individual season details
+interface SeasonDetails {
+  id: number;
+  name: string;
+  season_number: number;
+  episode_count: number;
+  poster_path: string | null;
+}
+
 interface MovieDetails extends TMDBItem {
   genres: Genre[];
   runtime: number;
@@ -49,6 +58,7 @@ interface TVDetails extends TMDBItem {
   number_of_episodes: number;
   episode_run_time: number[];
   external_ids: ExternalIds;
+  seasons: SeasonDetails[]; // Add seasons array
 }
 
 interface CastMember {

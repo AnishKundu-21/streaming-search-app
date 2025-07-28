@@ -10,6 +10,7 @@ interface WatchlistButtonProps {
   mediaType: "movie" | "tv";
   title: string;
   posterPath?: string | null;
+  seasonNumber?: number; // Add seasonNumber prop
 }
 
 export default function WatchlistButton({
@@ -17,13 +18,14 @@ export default function WatchlistButton({
   mediaType,
   title,
   posterPath,
+  seasonNumber,
 }: WatchlistButtonProps) {
   const { data: session } = useSession();
   const router = useRouter();
   const { isInWatchlist, addItem, removeItem } = useWatchlist();
   const [isLoading, setIsLoading] = useState(false);
 
-  const inWatchlist = isInWatchlist(contentId, mediaType);
+  const inWatchlist = isInWatchlist(contentId, mediaType, seasonNumber);
 
   const handleClick = async () => {
     if (!session) {
@@ -34,9 +36,15 @@ export default function WatchlistButton({
     setIsLoading(true);
     try {
       if (inWatchlist) {
-        await removeItem(contentId, mediaType);
+        await removeItem(contentId, mediaType, seasonNumber);
       } else {
-        await addItem({ contentId, mediaType, title, posterPath });
+        await addItem({
+          contentId,
+          mediaType,
+          title,
+          posterPath,
+          seasonNumber,
+        });
       }
     } catch (error) {
       console.error("Watchlist action failed:", error);

@@ -10,6 +10,7 @@ interface WatchedButtonProps {
   mediaType: "movie" | "tv";
   title: string;
   posterPath?: string | null;
+  seasonNumber?: number; // Add seasonNumber prop
 }
 
 export default function WatchedButton({
@@ -17,13 +18,14 @@ export default function WatchedButton({
   mediaType,
   title,
   posterPath,
+  seasonNumber,
 }: WatchedButtonProps) {
   const { data: session } = useSession();
   const router = useRouter();
   const { isWatched, addItem, removeItem } = useWatched();
   const [isLoading, setIsLoading] = useState(false);
 
-  const watched = isWatched(contentId, mediaType);
+  const watched = isWatched(contentId, mediaType, seasonNumber);
 
   const handleClick = async () => {
     if (!session) {
@@ -34,9 +36,15 @@ export default function WatchedButton({
     setIsLoading(true);
     try {
       if (watched) {
-        await removeItem(contentId, mediaType);
+        await removeItem(contentId, mediaType, seasonNumber);
       } else {
-        await addItem({ contentId, mediaType, title, posterPath });
+        await addItem({
+          contentId,
+          mediaType,
+          title,
+          posterPath,
+          seasonNumber,
+        });
       }
     } catch (err) {
       console.error("Watched action failed:", err);
