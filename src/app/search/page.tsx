@@ -7,10 +7,7 @@ export default async function SearchPage({
 }: {
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
-  // CORRECTED: Await searchParams before accessing its properties
-  const awaitedSearchParams = await searchParams;
-  const query =
-    typeof awaitedSearchParams?.q === "string" ? awaitedSearchParams.q : "";
+  const query = typeof searchParams?.q === "string" ? searchParams.q : "";
 
   if (!query) {
     return (
@@ -22,15 +19,7 @@ export default async function SearchPage({
     );
   }
 
-  const [movieResults, tvResults] = await Promise.all([
-    searchContent(query, "movie"),
-    searchContent(query, "tv"),
-  ]);
-
-  const allResults = [
-    ...movieResults.map((item) => ({ ...item, media_type: "movie" })),
-    ...tvResults.map((item) => ({ ...item, media_type: "tv" })),
-  ];
+  const allResults = await searchContent(query);
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
