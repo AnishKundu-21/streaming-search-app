@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ProviderSection from "@/components/ProviderSection";
 import SeasonTracker from "@/components/SeasonTracker";
+import TrailerButton from "@/components/TrailerButton";
 
 export default async function TVDetailPage({
   params,
@@ -110,6 +111,11 @@ export default async function TVDetailPage({
             </div>
 
             <p className="mt-6 text-lg">{details.overview}</p>
+
+            {/* Trailer Button */}
+            <div className="mt-6 flex justify-center md:justify-start">
+              <TrailerButton videos={details.videos} />
+            </div>
           </div>
         </div>
 

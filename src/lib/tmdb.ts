@@ -44,12 +44,22 @@ interface SeasonDetails {
   poster_path: string | null;
 }
 
+// New interface for video data
+interface Video {
+  id: string;
+  key: string;
+  name: string;
+  site: string;
+  type: string;
+}
+
 interface MovieDetails extends TMDBItem {
   genres: Genre[];
   runtime: number;
   budget: number;
   revenue: number;
   external_ids: ExternalIds;
+  videos: { results: Video[] };
 }
 
 interface TVDetails extends TMDBItem {
@@ -59,6 +69,7 @@ interface TVDetails extends TMDBItem {
   episode_run_time: number[];
   external_ids: ExternalIds;
   seasons: SeasonDetails[]; // Add seasons array
+  videos: { results: Video[] };
 }
 
 interface CastMember {
@@ -132,7 +143,7 @@ export async function getMovieDetails(id: number) {
   try {
     const [details, providers, credits] = await Promise.all([
       tmdb<MovieDetails>(`/movie/${id}`, {
-        append_to_response: "external_ids",
+        append_to_response: "external_ids,videos",
       }),
       tmdb<{ results: WatchProviders }>(`/movie/${id}/watch/providers`),
       tmdb<Credits>(`/movie/${id}/credits`),
@@ -148,7 +159,9 @@ export async function getMovieDetails(id: number) {
 export async function getTVDetails(id: number) {
   try {
     const [details, providers, credits] = await Promise.all([
-      tmdb<TVDetails>(`/tv/${id}`, { append_to_response: "external_ids" }),
+      tmdb<TVDetails>(`/tv/${id}`, {
+        append_to_response: "external_ids,videos",
+      }),
       tmdb<{ results: WatchProviders }>(`/tv/${id}/watch/providers`),
       tmdb<Credits>(`/tv/${id}/credits`),
     ]);

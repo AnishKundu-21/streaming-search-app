@@ -4,6 +4,7 @@ import Link from "next/link";
 import WatchlistButton from "@/components/WatchlistButton";
 import WatchedButton from "@/components/WatchedButton";
 import ProviderSection from "@/components/ProviderSection";
+import TrailerButton from "@/components/TrailerButton";
 
 export default async function MovieDetailPage({
   params,
@@ -69,24 +70,6 @@ export default async function MovieDetailPage({
               )}
             </h1>
 
-            {/* Action buttons */}
-            <div className="mt-4 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <WatchlistButton
-                contentId={movieId}
-                mediaType="movie"
-                title={details.title ?? ""}
-                posterPath={details.poster_path}
-                seasonNumber={0} // Specify 0 for movies
-              />
-              <WatchedButton
-                contentId={movieId}
-                mediaType="movie"
-                title={details.title ?? ""}
-                posterPath={details.poster_path}
-                seasonNumber={0} // Specify 0 for movies
-              />
-            </div>
-
             <p className="text-gray-600 dark:text-gray-400 mt-2">
               {details.genres.map((g: any) => g.name).join(", ")} •{" "}
               {details.runtime && (
@@ -131,6 +114,25 @@ export default async function MovieDetailPage({
             </div>
 
             <p className="mt-6 text-lg">{details.overview}</p>
+
+            {/* Action buttons */}
+            <div className="mt-6 flex flex-wrap gap-4 justify-center md:justify-start">
+              <TrailerButton videos={details.videos} />
+              <WatchlistButton
+                contentId={movieId}
+                mediaType="movie"
+                title={details.title ?? ""}
+                posterPath={details.poster_path}
+                seasonNumber={0}
+              />
+              <WatchedButton
+                contentId={movieId}
+                mediaType="movie"
+                title={details.title ?? ""}
+                posterPath={details.poster_path}
+                seasonNumber={0}
+              />
+            </div>
           </div>
         </div>
 
