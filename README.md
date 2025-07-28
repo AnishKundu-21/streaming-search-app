@@ -1,114 +1,97 @@
-# StreamFinder
+# StreamFinder: Your Ultimate Streaming Guide
 
-StreamFinder is a modern web application built with Next.js that helps users discover movies and TV shows available for streaming in India. It integrates with the TMDB API to provide search functionality, detailed content information, streaming provider details, and personalized features like watchlists and recommendations. The app includes user authentication, a responsive design, and a clean interface for browsing trending content.
+StreamFinder is a modern, full-stack web application designed to help you discover and track movies and TV shows. Built with Next.js and powered by the TMDB API, it offers a seamless experience for finding where to watch your favorite content, managing your viewing history, and getting personalized recommendations.
 
 ## Features
 
-- **Search Functionality**: Search for movies and TV shows with real-time results, including posters, release years, and media type indicators.
-- **Content Details**: Dedicated pages for movies and TV shows with overviews, cast lists, genres, runtime/episode info, and available streaming providers in India.
-- **User Authentication**: Secure sign-in with Google OAuth or email/password. Custom sign-in and sign-up pages with success messaging.
-- **Watchlist**: Add/remove items to a personal watchlist. View and manage your "To Watch" list.
-- **Already Watched Tracking**: Mark content as watched, with optional ratings. Separate tab for viewed items.
-- **Personalized Recommendations**: Generates suggestions based on your watched history using TMDB's recommendation algorithms.
-- **Homepage Browsing**: Horizontal scrollable sections for Trending, Top-Rated, Upcoming, Now Playing, and more – all with smooth scrolling and navigation buttons.
-- **Responsive Design**: Mobile-friendly layout with dark mode support via Tailwind CSS.
-- **Protected Routes**: API endpoints require authentication for user-specific data.
+  * **Universal Search**: Instantly search for any movie or TV show with real-time results.
+  * **Global Streaming Availability**: Find where to watch titles across the globe with an easy-to-use country selector for streaming, rent, and buy options.
+  * **Per-Season TV Show Tracking**: Mark individual seasons as "watched" or "to watch," giving you granular control over your viewing progress.
+  * **Dedicated Discovery Page**: Explore new content with a dedicated "Discover" page, allowing you to filter by genre for both movies and TV shows.
+  * **Personalized Recommendations**: Get tailored movie and TV show recommendations on your homepage based on your viewing history.
+  * **User Authentication**: Secure sign-in with Google OAuth or email and password.
+  * **Watchlist & Watched History**: Easily manage your "To Watch" and "Already Watched" lists.
+  * **Rich Content Details**: View detailed information for any title, including IMDb ratings, cast and crew, genres, and more.
+  * **Fully Responsive Design**: Enjoy a seamless experience on any device, from mobile phones to desktops, with a clean and modern dark mode.
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 (App Router)
-- **Frontend**: React, Tailwind CSS
-- **Authentication**: NextAuth.js v5 (with Prisma adapter)
-- **Database**: MongoDB with Prisma ORM
-- **API Integrations**: TMDB API for content data
-- **State Management**: React hooks, SWR for data fetching/caching
-- **Other**: bcrypt for password hashing, TypeScript for type safety
+  * **Framework**: Next.js 15 (App Router)
+  * **Frontend**: React 19, Tailwind CSS
+  * **Authentication**: NextAuth.js v5
+  * **Database**: MongoDB with Prisma ORM
+  * **API**: TMDB for all movie and TV show data
+  * **Data Fetching**: SWR for efficient, cached data fetching on the client-side
+  * **Other**: TypeScript, bcrypt
 
 ## Prerequisites
 
-- Node.js 18+ 
-- MongoDB instance (local or cloud like MongoDB Atlas)
-- TMDB API key (free from [themoviedb.org](https://www.themoviedb.org/))
-- Google OAuth credentials (for Google sign-in)
+  * Node.js 18+
+  * A MongoDB instance (local or a free cloud instance from MongoDB Atlas)
+  * TMDB API Key (available for free from [themoviedb.org](https://www.themoviedb.org/))
+  * Google OAuth credentials (for Google sign-in functionality)
 
 ## Installation
 
-1. **Clone the Repository**:
-   ```
-   git clone https://github.com/yourusername/streamfinder.git
-   cd streamfinder
-   ```
+1.  **Clone the Repository**:
 
-2. **Install Dependencies**:
-   ```
-   npm install
-   ```
+    ```bash
+    git clone https://github.com/your-username/streamfinder.git
+    cd streamfinder
+    ```
 
-3. **Set Up Environment Variables**:
-   Create a `.env.local` file in the root directory and add the following:
-   ```
-   # Database
-   DATABASE_URL="mongodb://localhost:27017/streamfinder"  # Or your MongoDB connection string
+2.  **Install Dependencies**:
 
-   # NextAuth
-   NEXTAUTH_URL=http://localhost:3000
-   NEXTAUTH_SECRET=your_super_secret_key  # Generate with `openssl rand -base64 32`
+    ```bash
+    npm install
+    ```
 
-   # Providers
-   GOOGLE_CLIENT_ID=your_google_client_id
-   GOOGLE_CLIENT_SECRET=your_google_client_secret
+3.  **Set Up Environment Variables**:
+    Create a `.env.local` file in the root of your project and add the following variables:
 
-   # TMDB
-   TMDB_API_KEY=your_tmdb_api_key
-   ```
-   - Replace placeholders with your actual values.
+    ```
+    # Database (replace with your MongoDB connection string)
+    DATABASE_URL="mongodb+srv://..."
 
-4. **Initialize Prisma**:
-   ```
-   npx prisma generate
-   npx prisma db push  # Applies schema to your database
-   ```
+    # NextAuth.js
+    NEXTAUTH_URL=http://localhost:3000
+    NEXTAUTH_SECRET= # Generate a secret with: openssl rand -base64 32
+
+    # API Keys
+    GOOGLE_CLIENT_ID= # Your Google Client ID
+    GOOGLE_CLIENT_SECRET= # Your Google Client Secret
+    TMDB_API_KEY= # Your TMDB API Key
+    ```
+
+4.  **Sync the Database Schema**:
+    Run the following command to apply the schema to your database:
+
+    ```bash
+    npx prisma db push
+    ```
 
 ## Running the Project
 
-1. **Development Server**:
-   ```
-   npm run dev
-   ```
-   Open [http://localhost:3000](http://localhost:3000) in your browser.
+1.  **Start the Development Server**:
 
-2. **Build for Production**:
-   ```
-   npm run build
-   npm start
-   ```
+    ```bash
+    npm run dev
+    ```
 
-## Usage
+    Open [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000) in your browser to see the application.
 
-- **Homepage**: Search for content or browse sections like "Trending This Week" or "Top-Rated Movies".
-- **Sign In/Up**: Use `/auth/signin` or `/auth/signup` to create an account.
-- **Watchlist**: Navigate to `/watchlist` to manage your lists (requires sign-in).
-- **Content Pages**: Click on any item to view details at `/movie/[id]` or `/tv/[id]`.
-- **Recommendations**: Appear on the homepage after marking items as "Already Watched".
+2.  **Build for Production**:
 
-## Deployment
-
-- **Vercel**: Recommended for Next.js apps. Set environment variables in Vercel dashboard and deploy from GitHub.
-- **MongoDB**: Use a hosted service like MongoDB Atlas for production.
-- **Notes**: Ensure `NEXTAUTH_URL` is set to your production domain. For Google OAuth, add the domain to authorized redirect URIs in Google Console.
-
-## Contributing
-
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feature/new-feature`).
-3. Commit changes (`git commit -m 'Add new feature'`).
-4. Push to the branch (`git push origin feature/new-feature`).
-5. Open a Pull Request.
-
-We welcome contributions! Please follow the code style and add tests for new features.
+    ```bash
+    npm run build
+    npm start
+    ```
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is protected by a proprietary license.
 
-Built with ❤️ by Anish in 2025. For questions, open an issue on GitHub.
+  * **Personal Use**: You are free to use this software for personal, non-commercial purposes.
+  * **Commercial Use**: Commercial use of this software is strictly prohibited without a separate, written license agreement from the copyright holder, Anish Kundu.
+
+Please see the `LICENSE` file for full details.
