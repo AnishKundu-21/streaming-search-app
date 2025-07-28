@@ -44,7 +44,7 @@ export default async function MovieDetailPage({
       )}
 
       {/* Main content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-32 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-24 md:-mt-32 relative z-10">
         <div className="md:flex md:space-x-8">
           {/* Poster */}
           <div className="w-48 md:w-64 flex-shrink-0 mx-auto md:mx-0">
@@ -61,7 +61,7 @@ export default async function MovieDetailPage({
 
           {/* Details */}
           <div className="mt-6 md:mt-0 text-center md:text-left flex-1">
-            <h1 className="text-4xl font-bold flex items-center justify-center md:justify-start flex-wrap gap-4">
+            <h1 className="text-3xl md:text-4xl font-bold flex items-center justify-center md:justify-start flex-wrap gap-x-4 gap-y-2">
               {details.title}
               {details.release_date && (
                 <span className="font-light text-gray-500">
@@ -70,7 +70,7 @@ export default async function MovieDetailPage({
               )}
             </h1>
 
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
+            <p className="text-gray-600 dark:text-gray-400 mt-2 text-sm md:text-base">
               {details.genres.map((g: any) => g.name).join(", ")} •{" "}
               {details.runtime && (
                 <>

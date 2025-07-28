@@ -114,27 +114,28 @@ export default async function Home({
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero / Search Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4">
+        <div className="text-center my-8 md:my-12">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4">
             Find Your Next{" "}
             <span className="text-blue-600 dark:text-blue-400">Stream</span>
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
-            Discover movies and TV shows with streaming availability in India
+          <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-3xl mx-auto">
+            Discover movies and TV shows with streaming availability across the
+            globe.
           </p>
           <form
             action="/search"
             method="GET"
-            className="max-w-2xl mx-auto flex gap-2 mb-8"
+            className="max-w-2xl mx-auto flex flex-col sm:flex-row gap-2 mb-8 px-4 sm:px-0"
           >
             <input
               type="text"
               name="q"
               defaultValue={query}
               placeholder="Search for movies or TV shows..."
-              className="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button
               type="submit"
@@ -147,29 +148,7 @@ export default async function Home({
 
         {query ? (
           // Search Results
-          <>
-            <h2 className="text-2xl font-bold mb-6">
-              Search Results for &quot;{query}&quot;
-            </h2>
-            {searchResults.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                {searchResults.map((item) => (
-                  <div
-                    key={`${item.media_type ?? "movie"}-${item.id}`}
-                    className="group"
-                  >
-                    <Link href={`/${item.media_type ?? "movie"}/${item.id}`}>
-                      {/* ... Image and Title ... */}
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-center text-gray-500 dark:text-gray-400">
-                No results found – try another term.
-              </p>
-            )}
-          </>
+          <></>
         ) : (
           // Homepage Content
           <>

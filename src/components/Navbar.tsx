@@ -1,15 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
 import BackButton from "./BackButton";
 import ThemeToggle from "./ThemeToggle";
+import MobileMenu from "./MobileMenu"; // Import the new component
 
 export default function Navbar() {
   const pathname = usePathname();
-  const router = useRouter();
   const { data: session, status } = useSession();
 
   const isDetailPage =
@@ -37,9 +37,11 @@ export default function Navbar() {
     : "hover:bg-gray-100 dark:hover:bg-gray-800";
 
   return (
-    <header className={`p-4 flex justify-between items-center ${navClass}`}>
+    <header
+      className={`p-2 sm:p-4 flex justify-between items-center ${navClass}`}
+    >
       {/* Left section */}
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-1 sm:space-x-2">
         {!isHomePage && (
           <BackButton
             className={`${textColor} ${iconButtonClass}`}
@@ -48,15 +50,15 @@ export default function Navbar() {
         )}
         <Link
           href="/"
-          className={`text-2xl font-bold ${logoTextColor}`}
+          className={`text-xl sm:text-2xl font-bold ${logoTextColor}`}
           style={textShadow}
         >
           StreamFinder
         </Link>
       </div>
 
-      {/* Right section */}
-      <div className="flex items-center space-x-4">
+      {/* Right section (Desktop) */}
+      <div className="hidden sm:flex items-center space-x-2 sm:space-x-4">
         <Link
           href="/recommendations"
           className={`text-sm font-semibold ${textColor} hover:text-blue-600 dark:hover:text-blue-400`}
@@ -83,8 +85,7 @@ export default function Navbar() {
         {status === "loading" ? (
           <div className="h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded-md animate-pulse" />
         ) : session ? (
-          /* Logged-in state */
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-3">
             <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
               {session.user?.image ? (
                 <Image
@@ -94,7 +95,6 @@ export default function Navbar() {
                   height={32}
                 />
               ) : (
-                // Generic user icon SVG
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -127,15 +127,20 @@ export default function Navbar() {
             </button>
           </div>
         ) : (
-          /* Logged-out state */
-          <button
-            onClick={() => router.push("/auth/signin")}
+          <Link
+            href="/auth/signin"
             className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
           >
             Sign In
-          </button>
+          </Link>
         )}
       </div>
+
+      {/* Mobile Menu */}
+      <MobileMenu
+        className={`${textColor} ${iconButtonClass}`}
+        style={textShadow}
+      />
     </header>
   );
 }

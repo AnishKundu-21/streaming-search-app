@@ -152,23 +152,22 @@ export default function WatchlistPage() {
   const hasError = watchlistError || watchedError;
 
   if (isLoading) {
-    // ... loading state remains the same
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-        <div className="container mx-auto px-4 py-16">
-          <h1 className="text-3xl font-bold mb-8">My Lists</h1>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16">
+          <div className="h-10 w-48 bg-gray-300 dark:bg-gray-700 rounded animate-pulse mb-8"></div>
 
           <div className="flex space-x-1 mb-8">
             {[...Array(2)].map((_, i) => (
               <div
                 key={i}
-                className="h-10 w-32 bg-gray-300 dark:bg-gray-700 rounded animate-pulse"
+                className="h-12 w-32 bg-gray-300 dark:bg-gray-700 rounded-lg animate-pulse"
               />
             ))}
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {[...Array(6)].map((_, i) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {[...Array(12)].map((_, i) => (
               <div key={i} className="animate-pulse">
                 <div className="bg-gray-300 dark:bg-gray-700 aspect-[2/3] rounded-lg mb-2" />
                 <div className="bg-gray-300 dark:bg-gray-700 h-4 rounded mb-1" />
@@ -182,7 +181,6 @@ export default function WatchlistPage() {
   }
 
   if (hasError) {
-    // ... error state remains the same
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
         <div className="container mx-auto px-4 py-16 text-center">
@@ -205,13 +203,13 @@ export default function WatchlistPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-      <div className="container mx-auto px-4 py-16">
-        <h1 className="text-3xl font-bold mb-8">My Lists</h1>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16">
+        <h1 className="text-3xl md:text-4xl font-bold mb-8">My Lists</h1>
 
         <div className="flex space-x-1 mb-8">
           <button
             onClick={() => setActiveTab("watchlist")}
-            className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+            className={`px-4 sm:px-6 py-3 rounded-lg font-semibold transition-colors text-sm sm:text-base ${
               activeTab === "watchlist"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
@@ -221,7 +219,7 @@ export default function WatchlistPage() {
           </button>
           <button
             onClick={() => setActiveTab("watched")}
-            className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+            className={`px-4 sm:px-6 py-3 rounded-lg font-semibold transition-colors text-sm sm:text-base ${
               activeTab === "watched"
                 ? "bg-green-600 text-white"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
@@ -232,7 +230,7 @@ export default function WatchlistPage() {
         </div>
 
         {isEmpty ? (
-          <div className="text-center p-8">
+          <div className="text-center p-8 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
             <h2 className="text-2xl font-bold mb-4">
               {activeTab === "watchlist"
                 ? "Your watchlist is empty"
@@ -251,7 +249,7 @@ export default function WatchlistPage() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
             {currentItems.map((item) => (
               <div key={item.id} className="group">
                 <Link href={`/${item.mediaType}/${item.contentId}`}>
