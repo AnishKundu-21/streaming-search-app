@@ -50,7 +50,7 @@ export async function GET() {
   });
 
   if (watched.length === 0) {
-    return NextResponse.json([]); // nothing to base on
+    return NextResponse.json({ movies: [], tvShows: [] });
   }
 
   /* ── make TMDB calls in parallel ── */
@@ -92,12 +92,15 @@ export async function GET() {
     }
   }
 
-  /* ── sort by TMDB popularity & limit ── */
-  const final = Array.from(uniqueMap.values())
-    .sort((a, b) => b.popularity - a.popularity)
-    .slice(0, 40);
+  /* ── sort by TMDB popularity & separate by media type ── */
+  const final = Array.from(uniqueMap.values()).sort(
+    (a, b) => b.popularity - a.popularity
+  );
 
-  return NextResponse.json(final);
+  const movies = final.filter((r) => r.mediaType === "movie").slice(0, 20);
+  const tvShows = final.filter((r) => r.mediaType === "tv").slice(0, 20);
+
+  return NextResponse.json({ movies, tvShows });
 }
 
 /* reject other verbs */

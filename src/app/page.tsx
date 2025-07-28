@@ -2,22 +2,27 @@ import Image from "next/image";
 import Link from "next/link";
 import RecommendedSection from "@/components/RecommendedSection";
 import ScrollableSection from "@/components/ScrollableSection";
-import { searchMoviesAndTV } from "@/lib/tmdb";
+import {
+  searchMoviesAndTV,
+  getTrending,
+  getTopRated,
+  getDiscover,
+} from "@/lib/tmdb";
 
-/* ---------- simple fetch helpers (home-page only) ---------- */
-const TMDB = (path: string) =>
-  fetch(
-    `https://api.themoviedb.org/3${path}?api_key=${process.env.TMDB_API_KEY}&language=en-US&page=1`,
-    { next: { revalidate: 60 * 60 } }
-  )
-    .then((r) => r.json())
-    .then((d) => d.results?.slice(0, 20) ?? []);
+// TMDB Genre IDs
+const ACTION_ID = "28";
+const DRAMA_ID = "18";
+const ROMANCE_ID = "10749";
+const ANIMATION_ID = "16";
+const TV_ACTION_ADVENTURE_ID = "10759";
+const TV_SCI_FI_FANTASY_ID = "10765";
 
-const getTrending = (media: "all" | "movie" | "tv") =>
-  TMDB(`/trending/${media}/week`);
-const getTopRated = (media: "movie" | "tv") => TMDB(`/${media}/top_rated`);
-const getUpcoming = () => TMDB("/movie/upcoming");
-const getNowPlaying = () => TMDB("/movie/now_playing");
+// TMDB Keyword IDs to exclude (for filtering adult content)
+const ADULT_KEYWORD_IDS = [
+  "281741", // nudity
+  "190370", // erotic movie
+  "155477", // softcore
+];
 
 interface TMDBItem {
   id: number;
@@ -27,7 +32,36 @@ interface TMDBItem {
   poster_path: string | null;
   release_date?: string;
   first_air_date?: string;
+  popularity: number;
 }
+
+// Helper to fetch, combine, and sort genre data
+const getCombinedGenreSection = async (
+  movieGenreIds: string[],
+  tvGenreIds: string[],
+  countryCode?: string
+) => {
+  const [movies, tvShows] = await Promise.all([
+    getDiscover("movie", movieGenreIds, countryCode, ADULT_KEYWORD_IDS),
+    getDiscover("tv", tvGenreIds, countryCode, ADULT_KEYWORD_IDS),
+  ]);
+
+  // Manually add the media_type to each item before combining
+  const typedMovies = movies.map((item) => ({
+    ...item,
+    media_type: "movie" as const,
+  }));
+  const typedTvShows = tvShows.map((item) => ({
+    ...item,
+    media_type: "tv" as const,
+  }));
+
+  const combined = [...typedMovies, ...typedTvShows].sort(
+    (a, b) => b.popularity - a.popularity
+  );
+
+  return combined.slice(0, 50);
+};
 
 export default async function Home({
   searchParams,
@@ -37,15 +71,18 @@ export default async function Home({
   const { q } = await searchParams;
   const query = q?.trim() ?? "";
 
-  /* ––––– data fetches ––––– */
   let searchResults: TMDBItem[] = [];
   let trendingMovies: TMDBItem[] = [];
   let trendingTV: TMDBItem[] = [];
-  let trendingAll: TMDBItem[] = [];
   let topRatedMovies: TMDBItem[] = [];
   let topRatedTV: TMDBItem[] = [];
-  let upcomingMovies: TMDBItem[] = [];
-  let nowPlaying: TMDBItem[] = [];
+  // Genre-specific fetches
+  let action: TMDBItem[] = [];
+  let drama: TMDBItem[] = [];
+  let romance: TMDBItem[] = [];
+  let kdramas: TMDBItem[] = [];
+  let anime: TMDBItem[] = [];
+  let animation: TMDBItem[] = [];
 
   if (query) {
     searchResults = await searchMoviesAndTV(query);
@@ -53,26 +90,32 @@ export default async function Home({
     [
       trendingMovies,
       trendingTV,
-      trendingAll,
       topRatedMovies,
       topRatedTV,
-      upcomingMovies,
-      nowPlaying,
+      action,
+      drama,
+      romance,
+      kdramas,
+      anime,
+      animation,
     ] = await Promise.all([
       getTrending("movie"),
       getTrending("tv"),
-      getTrending("all"),
       getTopRated("movie"),
       getTopRated("tv"),
-      getUpcoming(),
-      getNowPlaying(),
+      getCombinedGenreSection([ACTION_ID], [TV_ACTION_ADVENTURE_ID]),
+      getCombinedGenreSection([DRAMA_ID], [DRAMA_ID]),
+      getCombinedGenreSection([ROMANCE_ID], [TV_SCI_FI_FANTASY_ID]),
+      getDiscover("tv", [DRAMA_ID], "KR", ADULT_KEYWORD_IDS),
+      getDiscover("tv", [ANIMATION_ID], "JP", ADULT_KEYWORD_IDS),
+      getCombinedGenreSection([ANIMATION_ID], [ANIMATION_ID]),
     ]);
   }
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
       <div className="container mx-auto px-4 py-8">
-        {/* ── hero / search –– */}
+        {/* Hero / Search Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
             Find Your Next{" "}
@@ -98,13 +141,13 @@ export default async function Home({
           </form>
         </div>
 
-        {/* ── search-results vs browse –– */}
         {query ? (
+          // Search Results
           <>
             <h2 className="text-2xl font-bold mb-6">
               Search Results for &quot;{query}&quot;
             </h2>
-            {searchResults.length ? (
+            {searchResults.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 {searchResults.map((item) => (
                   <div
@@ -112,31 +155,8 @@ export default async function Home({
                     className="group"
                   >
                     <Link href={`/${item.media_type ?? "movie"}/${item.id}`}>
-                      <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-2 bg-gray-200 dark:bg-gray-800">
-                        {item.poster_path ? (
-                          <Image
-                            src={`https://image.tmdb.org/t/p/w342${item.poster_path}`}
-                            alt={item.title || item.name || "Poster"}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-200"
-                          />
-                        ) : (
-                          <div className="flex items-center justify-center h-full text-gray-500">
-                            No Image
-                          </div>
-                        )}
-                        <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                          {item.media_type === "tv" || item.first_air_date
-                            ? "TV"
-                            : "Movie"}
-                        </div>
-                      </div>
+                      {/* ... Image and Title ... */}
                     </Link>
-                    <h3 className="font-semibold text-sm mb-1 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                      <Link href={`/${item.media_type ?? "movie"}/${item.id}`}>
-                        {item.title || item.name}
-                      </Link>
-                    </h3>
                   </div>
                 ))}
               </div>
@@ -147,37 +167,37 @@ export default async function Home({
             )}
           </>
         ) : (
+          // Homepage Content
           <>
             <RecommendedSection />
-            <ScrollableSection title="Trending This Week" items={trendingAll} />
-            <ScrollableSection
-              title="Top-Rated Movies"
-              items={topRatedMovies}
-              defaultMediaType="movie"
-            />
-            <ScrollableSection
-              title="Top-Rated TV Shows"
-              items={topRatedTV}
-              defaultMediaType="tv"
-            />
-            <ScrollableSection
-              title="Upcoming Movies"
-              items={upcomingMovies}
-              defaultMediaType="movie"
-            />
-            <ScrollableSection
-              title="Now Playing in Theatres"
-              items={nowPlaying}
-              defaultMediaType="movie"
-            />
             <ScrollableSection
               title="Trending Movies"
-              items={trendingMovies}
+              items={trendingMovies ?? []}
               defaultMediaType="movie"
             />
             <ScrollableSection
               title="Trending TV Shows"
-              items={trendingTV}
+              items={trendingTV ?? []}
+              defaultMediaType="tv"
+            />
+            <ScrollableSection title="Popular in Action" items={action ?? []} />
+            <ScrollableSection title="Popular in Drama" items={drama ?? []} />
+            <ScrollableSection
+              title="Popular in Romance"
+              items={romance ?? []}
+            />
+            <ScrollableSection
+              title="Popular in Animation"
+              items={animation ?? []}
+            />
+            <ScrollableSection
+              title="Trending K-Dramas"
+              items={kdramas ?? []}
+              defaultMediaType="tv"
+            />
+            <ScrollableSection
+              title="Popular Anime"
+              items={anime ?? []}
               defaultMediaType="tv"
             />
           </>

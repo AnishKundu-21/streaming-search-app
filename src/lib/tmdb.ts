@@ -90,9 +90,9 @@ interface WatchProviders {
   [countryCode: string]: ProviderCountry;
 }
 
-function tmdb<T = TMDBResponse<TMDBItem>>(
+function tmdb<T = any>(
   path: string,
-  qs: Record<string, string | number> = {}
+  qs: Record<string, string | number | string[] | boolean> = {} // Allow boolean
 ): Promise<T> {
   const params = new URLSearchParams({
     api_key: API_KEY,
@@ -113,6 +113,7 @@ export async function searchMoviesAndTV(query: string): Promise<TMDBItem[]> {
   const data = await tmdb<TMDBResponse<TMDBItem>>("/search/multi", {
     query,
     page: 1,
+    include_adult: false,
   });
   return data.results.filter(
     (i) => i.media_type === "movie" || i.media_type === "tv"
@@ -193,12 +194,34 @@ export async function getTopRated(media: "movie" | "tv"): Promise<TMDBItem[]> {
   return data.results;
 }
 
-export async function getUpcoming(): Promise<TMDBItem[]> {
-  const data = await tmdb<TMDBResponse<TMDBItem>>("/movie/upcoming");
+// New function to discover content by genre and country
+export async function getDiscover(
+  media: "movie" | "tv",
+  genreIds: string[],
+  countryCode?: string,
+  excludeKeywordIds?: string[]
+): Promise<TMDBItem[]> {
+  const queryParams: Record<string, string | number | string[] | boolean> = {
+    with_genres: genreIds.join(","),
+    sort_by: "popularity.desc",
+    include_adult: false,
+  };
+  if (countryCode) {
+    queryParams.with_origin_country = countryCode;
+  }
+  if (excludeKeywordIds) {
+    queryParams.without_keywords = excludeKeywordIds.join(",");
+  }
+  const data = await tmdb<TMDBResponse<TMDBItem>>(
+    `/discover/${media}`,
+    queryParams
+  );
   return data.results;
 }
 
-export async function getNowPlaying(): Promise<TMDBItem[]> {
-  const data = await tmdb<TMDBResponse<TMDBItem>>("/movie/now_playing");
-  return data.results;
+// New function to get the list of genres
+export async function getGenres(
+  media: "movie" | "tv"
+): Promise<{ genres: Genre[] }> {
+  return tmdb<{ genres: Genre[] }>(`/genre/${media}/list`);
 }

@@ -12,7 +12,13 @@ export type Recommendation = {
   popularity: number;
 };
 
-const fetcher = (url: string) =>
+// Define the shape of the data returned by the API
+type RecommendationsResponse = {
+  movies: Recommendation[];
+  tvShows: Recommendation[];
+};
+
+const fetcher = (url: string): Promise<RecommendationsResponse> =>
   fetch(url).then((r) => {
     if (!r.ok) throw new Error("Network error");
     return r.json();
@@ -23,10 +29,11 @@ const fetcher = (url: string) =>
  * currently-signed-in user.
  *
  * Returns:
- *  - recommendations : Recommendation[]
- *  - isLoading       : boolean
- *  - isError         : Error | undefined
- *  - refresh         : () => void
+ * - recommendedMovies: Recommendation[]
+ * - recommendedTvShows: Recommendation[]
+ * - isLoading: boolean
+ * - isError: Error | undefined
+ * - refresh: () => void
  */
 export function useRecommendations() {
   /* Only fetch when the user is authenticated */
@@ -38,14 +45,15 @@ export function useRecommendations() {
     error,
     isLoading,
     mutate: refresh,
-  } = useSWR<Recommendation[]>(
+  } = useSWR<RecommendationsResponse>(
     enabled ? "/api/recommendations" : null,
     fetcher,
     { keepPreviousData: true }
   );
 
   return {
-    recommendations: data ?? [],
+    recommendedMovies: data?.movies ?? [],
+    recommendedTvShows: data?.tvShows ?? [],
     isLoading: isLoading && enabled,
     isError: error,
     refresh,
