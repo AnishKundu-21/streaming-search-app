@@ -153,15 +153,33 @@ export default async function Home({
             <ScrollableSection
               title="Top-Rated Movies"
               items={topRatedMovies}
+              defaultMediaType="movie"
             />
-            <ScrollableSection title="Top-Rated TV Shows" items={topRatedTV} />
-            <ScrollableSection title="Upcoming Movies" items={upcomingMovies} />
+            <ScrollableSection
+              title="Top-Rated TV Shows"
+              items={topRatedTV}
+              defaultMediaType="tv"
+            />
+            <ScrollableSection
+              title="Upcoming Movies"
+              items={upcomingMovies}
+              defaultMediaType="movie"
+            />
             <ScrollableSection
               title="Now Playing in Theatres"
               items={nowPlaying}
+              defaultMediaType="movie"
             />
-            <ScrollableSection title="Trending Movies" items={trendingMovies} />
-            <ScrollableSection title="Trending TV Shows" items={trendingTV} />
+            <ScrollableSection
+              title="Trending Movies"
+              items={trendingMovies}
+              defaultMediaType="movie"
+            />
+            <ScrollableSection
+              title="Trending TV Shows"
+              items={trendingTV}
+              defaultMediaType="tv"
+            />
           </>
         )}
       </div>

@@ -61,9 +61,11 @@ export default async function MovieDetailPage({
           <div className="mt-6 md:mt-0 text-center md:text-left flex-1">
             <h1 className="text-4xl font-bold flex items-center justify-center md:justify-start flex-wrap gap-4">
               {details.title}
-              <span className="font-light text-gray-500">
-                ({new Date(details.release_date).getFullYear()})
-              </span>
+              {details.release_date && (
+                <span className="font-light text-gray-500">
+                  ({new Date(details.release_date).getFullYear()})
+                </span>
+              )}
             </h1>
 
             {/* Action buttons */}
@@ -71,20 +73,24 @@ export default async function MovieDetailPage({
               <WatchlistButton
                 contentId={movieId}
                 mediaType="movie"
-                title={details.title}
+                title={details.title ?? ""}
                 posterPath={details.poster_path}
               />
               <WatchedButton
                 contentId={movieId}
                 mediaType="movie"
-                title={details.title}
+                title={details.title ?? ""}
                 posterPath={details.poster_path}
               />
             </div>
 
             <p className="text-gray-600 dark:text-gray-400 mt-2">
               {details.genres.map((g: any) => g.name).join(", ")} •{" "}
-              {Math.floor(details.runtime / 60)}h {details.runtime % 60}m
+              {details.runtime && (
+                <>
+                  {Math.floor(details.runtime / 60)}h {details.runtime % 60}m
+                </>
+              )}
             </p>
 
             <p className="mt-6 text-lg">{details.overview}</p>

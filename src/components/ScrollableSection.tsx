@@ -18,15 +18,18 @@ interface Item {
  * Horizontal carousel section with left / right scroll buttons.
  *
  * Props:
- *  - title : section heading
- *  - items : TMDB results array (max ~20 recommended)
+ * - title : section heading
+ * - items : TMDB results array (max ~20 recommended)
+ * - defaultMediaType: The media type to assume if not present on the item
  */
 export default function ScrollableSection({
   title,
   items,
+  defaultMediaType,
 }: {
   title: string;
   items: Item[];
+  defaultMediaType?: "movie" | "tv";
 }) {
   const rowRef = useRef<HTMLDivElement>(null);
 
@@ -89,32 +92,35 @@ export default function ScrollableSection({
         ref={rowRef}
         className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth"
       >
-        {items.map((item) => (
-          <Link
-            key={`${item.media_type ?? "movie"}-${item.id}`}
-            href={`/${item.media_type ?? "movie"}/${item.id}`}
-            className="flex-shrink-0 w-[120px] sm:w-[150px] md:w-[180px] group"
-          >
-            <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-2 bg-gray-200 dark:bg-gray-800">
-              {item.poster_path ? (
-                <Image
-                  src={`https://image.tmdb.org/t/p/w342${item.poster_path}`}
-                  alt={item.title || item.name || "Poster"}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-200"
-                />
-              ) : (
-                <div className="flex items-center justify-center h-full text-xs text-gray-500 dark:text-gray-400">
-                  No Image
-                </div>
-              )}
-            </div>
+        {items.map((item) => {
+          const mediaType = item.media_type ?? defaultMediaType ?? "movie";
+          return (
+            <Link
+              key={`${mediaType}-${item.id}`}
+              href={`/${mediaType}/${item.id}`}
+              className="flex-shrink-0 w-[120px] sm:w-[150px] md:w-[180px] group"
+            >
+              <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-2 bg-gray-200 dark:bg-gray-800">
+                {item.poster_path ? (
+                  <Image
+                    src={`https://image.tmdb.org/t/p/w342${item.poster_path}`}
+                    alt={item.title || item.name || "Poster"}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-200"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full text-xs text-gray-500 dark:text-gray-400">
+                    No Image
+                  </div>
+                )}
+              </div>
 
-            <h3 className="font-semibold text-xs sm:text-sm line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-              {item.title || item.name}
-            </h3>
-          </Link>
-        ))}
+              <h3 className="font-semibold text-xs sm:text-sm line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                {item.title || item.name}
+              </h3>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );

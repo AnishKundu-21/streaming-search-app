@@ -61,9 +61,11 @@ export default async function TVDetailPage({
           <div className="mt-6 md:mt-0 text-center md:text-left flex-1">
             <h1 className="text-4xl font-bold flex items-center justify-center md:justify-start flex-wrap gap-4">
               {details.name}
-              <span className="font-light text-gray-500">
-                ({new Date(details.first_air_date).getFullYear()})
-              </span>
+              {details.first_air_date && (
+                <span className="font-light text-gray-500">
+                  ({new Date(details.first_air_date).getFullYear()})
+                </span>
+              )}
             </h1>
 
             {/* Action buttons */}
@@ -71,13 +73,13 @@ export default async function TVDetailPage({
               <WatchlistButton
                 contentId={tvId}
                 mediaType="tv"
-                title={details.name}
+                title={details.name ?? ""}
                 posterPath={details.poster_path}
               />
               <WatchedButton
                 contentId={tvId}
                 mediaType="tv"
-                title={details.name}
+                title={details.name ?? ""}
                 posterPath={details.poster_path}
               />
             </div>
