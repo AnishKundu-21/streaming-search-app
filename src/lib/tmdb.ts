@@ -63,12 +63,15 @@ interface WatchProvider {
   logo_path: string;
 }
 
+interface ProviderCountry {
+  link?: string; // Make link optional
+  flatrate?: WatchProvider[];
+  buy?: WatchProvider[];
+  rent?: WatchProvider[];
+}
+
 interface WatchProviders {
-  [countryCode: string]: {
-    flatrate?: WatchProvider[];
-    buy?: WatchProvider[];
-    rent?: WatchProvider[];
-  };
+  [countryCode: string]: ProviderCountry;
 }
 
 function tmdb<T = TMDBResponse<TMDBItem>>(
@@ -155,7 +158,7 @@ export async function getWatchProviders(
 }
 
 /* ----------------------------------------------------------
-   Browsing helpers used on the Home page
+   Browse helpers used on the Home page
    ---------------------------------------------------------- */
 export async function getTrending(
   media: "movie" | "tv" | "all" = "all",

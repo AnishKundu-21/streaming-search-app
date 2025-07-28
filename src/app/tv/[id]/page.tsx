@@ -2,6 +2,7 @@ import { getTVDetails } from "@/lib/tmdb";
 import Image from "next/image";
 import WatchlistButton from "@/components/WatchlistButton";
 import WatchedButton from "@/components/WatchedButton";
+import ProviderSection from "@/components/ProviderSection";
 
 export default async function TVDetailPage({
   params,
@@ -23,7 +24,6 @@ export default async function TVDetailPage({
   }
 
   const { details, providers, credits } = data;
-  const IN_providers = providers.IN ?? {};
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
@@ -96,49 +96,7 @@ export default async function TVDetailPage({
         </div>
 
         {/* Streaming providers */}
-        <section className="mt-12">
-          <h2 className="text-2xl font-semibold mb-4">
-            Where to Watch in India
-          </h2>
-          <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg">
-            {IN_providers.flatrate || IN_providers.buy || IN_providers.rent ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {IN_providers.flatrate?.map((p: any) => (
-                  <div
-                    key={p.provider_id}
-                    className="flex flex-col items-center"
-                  >
-                    <Image
-                      src={`https://image.tmdb.org/t/p/w92${p.logo_path}`}
-                      alt={p.provider_name}
-                      width={50}
-                      height={50}
-                      className="rounded-md mb-2"
-                    />
-                    <span className="text-sm">Stream</span>
-                  </div>
-                ))}
-                {IN_providers.buy?.map((p: any) => (
-                  <div
-                    key={p.provider_id}
-                    className="flex flex-col items-center"
-                  >
-                    <Image
-                      src={`https://image.tmdb.org/t/p/w92${p.logo_path}`}
-                      alt={p.provider_name}
-                      width={50}
-                      height={50}
-                      className="rounded-md mb-2"
-                    />
-                    <span className="text-sm">Buy</span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p>Not currently available for streaming in India.</p>
-            )}
-          </div>
-        </section>
+        <ProviderSection providers={providers} />
 
         {/* Cast */}
         <section className="mt-12">
