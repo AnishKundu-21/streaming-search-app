@@ -8,17 +8,26 @@ import { searchMoviesAndTV } from "@/lib/tmdb";
 const TMDB = (path: string) =>
   fetch(
     `https://api.themoviedb.org/3${path}?api_key=${process.env.TMDB_API_KEY}&language=en-US&page=1`,
-    { next: { revalidate: 60 * 60 } } // 1-h cache
+    { next: { revalidate: 60 * 60 } }
   )
     .then((r) => r.json())
-    .then((d) => d.results?.slice(0, 20) ?? []); // Increased to 20 items
+    .then((d) => d.results?.slice(0, 20) ?? []);
 
 const getTrending = (media: "all" | "movie" | "tv") =>
   TMDB(`/trending/${media}/week`);
 const getTopRated = (media: "movie" | "tv") => TMDB(`/${media}/top_rated`);
 const getUpcoming = () => TMDB("/movie/upcoming");
 const getNowPlaying = () => TMDB("/movie/now_playing");
-/* ----------------------------------------------------------- */
+
+interface TMDBItem {
+  id: number;
+  title?: string;
+  name?: string;
+  media_type?: "movie" | "tv";
+  poster_path: string | null;
+  release_date?: string;
+  first_air_date?: string;
+}
 
 export default async function Home({
   searchParams,
@@ -29,20 +38,18 @@ export default async function Home({
   const query = q?.trim() ?? "";
 
   /* ––––– data fetches ––––– */
-  let searchResults: any[] = [];
-  let trendingMovies: any[] = [];
-  let trendingTV: any[] = [];
-  let trendingAll: any[] = [];
-  let topRatedMovies: any[] = [];
-  let topRatedTV: any[] = [];
-  let upcomingMovies: any[] = [];
-  let nowPlaying: any[] = [];
+  let searchResults: TMDBItem[] = [];
+  let trendingMovies: TMDBItem[] = [];
+  let trendingTV: TMDBItem[] = [];
+  let trendingAll: TMDBItem[] = [];
+  let topRatedMovies: TMDBItem[] = [];
+  let topRatedTV: TMDBItem[] = [];
+  let upcomingMovies: TMDBItem[] = [];
+  let nowPlaying: TMDBItem[] = [];
 
   if (query) {
-    /* user is searching */
     searchResults = await searchMoviesAndTV(query);
   } else {
-    /* user is browsing */
     [
       trendingMovies,
       trendingTV,
@@ -109,7 +116,7 @@ export default async function Home({
                         {item.poster_path ? (
                           <Image
                             src={`https://image.tmdb.org/t/p/w342${item.poster_path}`}
-                            alt={item.title || item.name}
+                            alt={item.title || item.name || "Poster"}
                             fill
                             className="object-cover group-hover:scale-105 transition-transform duration-200"
                           />
@@ -141,10 +148,7 @@ export default async function Home({
           </>
         ) : (
           <>
-            {/* personalised section */}
             <RecommendedSection />
-
-            {/* All sections now use horizontal scrolling */}
             <ScrollableSection title="Trending This Week" items={trendingAll} />
             <ScrollableSection
               title="Top-Rated Movies"

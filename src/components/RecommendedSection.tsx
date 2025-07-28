@@ -73,7 +73,7 @@ export default function RecommendedSection() {
             No recommendations yet!
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Mark some movies or TV shows as "Already Watched" to get
+            Mark some movies or TV shows as &quot;Already Watched&quot; to get
             personalized recommendations.
           </p>
         </div>
