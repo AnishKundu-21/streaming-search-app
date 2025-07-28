@@ -124,7 +124,11 @@ export default async function Home({
           <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
             Discover movies and TV shows with streaming availability in India
           </p>
-          <form method="GET" className="max-w-2xl mx-auto flex gap-2 mb-8">
+          <form
+            action="/search"
+            method="GET"
+            className="max-w-2xl mx-auto flex gap-2 mb-8"
+          >
             <input
               type="text"
               name="q"
