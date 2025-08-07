@@ -27,9 +27,9 @@ export default function RecommendedSection() {
               key={i}
               className="flex-shrink-0 w-[120px] sm:w-[150px] md:w-[180px] animate-pulse"
             >
-              <div className="bg-gray-300 dark:bg-gray-700 aspect-[2/3] rounded-lg mb-2" />
-              <div className="bg-gray-300 dark:bg-gray-700 h-4 rounded mb-1" />
-              <div className="bg-gray-300 dark:bg-gray-700 h-3 rounded w-2/3" />
+              <div className="bg-card aspect-[2/3] rounded-lg mb-2" />
+              <div className="bg-muted-foreground h-4 rounded mb-1 opacity-70" />
+              <div className="bg-muted-foreground h-3 rounded w-2/3 opacity-50" />
             </div>
           ))}
         </div>
@@ -42,8 +42,8 @@ export default function RecommendedSection() {
     return (
       <section className="mb-12">
         <h2 className="text-2xl font-bold mb-6">Recommended for You</h2>
-        <div className="text-center p-8 bg-gray-100 dark:bg-gray-800 rounded-lg">
-          <p className="text-gray-600 dark:text-gray-400">
+        <div className="text-center p-8 bg-card rounded-lg">
+          <p className="text-muted-foreground">
             Unable to load recommendations. Please try again later.
           </p>
         </div>
@@ -56,11 +56,11 @@ export default function RecommendedSection() {
     return (
       <section className="mb-12">
         <h2 className="text-2xl font-bold mb-6">Recommended for You</h2>
-        <div className="text-center p-8 bg-gray-100 dark:bg-gray-800 rounded-lg">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
+        <div className="text-center p-8 bg-card rounded-lg">
+          <p className="text-muted-foreground mb-4">
             No recommendations yet!
           </p>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-muted-foreground">
             Mark some movies or TV shows as &quot;Already Watched&quot; to get
             personalized recommendations.
           </p>

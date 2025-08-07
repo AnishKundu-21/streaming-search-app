@@ -13,6 +13,7 @@ interface TMDBResponse<T> {
 }
 
 interface TMDBItem {
+  genre_ids: any;
   id: number;
   title?: string;
   name?: string;
@@ -118,17 +119,251 @@ function tmdb<T = any>(
 }
 
 /* ----------------------------------------------------------
-   Search functions
+   Search functions with typo tolerance
    ---------------------------------------------------------- */
-export async function searchMoviesAndTV(query: string): Promise<TMDBItem[]> {
-  const data = await tmdb<TMDBResponse<TMDBItem>>("/search/multi", {
-    query,
-    page: 1,
-    include_adult: false,
+
+// Helper function to generate search variations for typo tolerance
+function generateSearchVariations(query: string): string[] {
+  const variations = [query.toLowerCase().trim()];
+
+  // Remove extra spaces and normalize
+  const normalized = query.replace(/\s+/g, " ").trim();
+  if (normalized !== query.toLowerCase()) {
+    variations.push(normalized);
+  }
+
+  // Generate typo-tolerant variations
+  const words = normalized.split(" ");
+  const enhancedVariations: string[] = [];
+
+  words.forEach((word) => {
+    if (word.length > 2) {
+      // Add the word itself
+      enhancedVariations.push(word);
+
+      // Handle common typos for longer words
+      if (word.length > 3) {
+        // 1. Remove doubled letters more aggressively (suupermann -> superman)
+        let dedoubled = word;
+        // Keep applying until no more doubles found
+        let previousLength = 0;
+        while (dedoubled.length !== previousLength) {
+          previousLength = dedoubled.length;
+          dedoubled = dedoubled.replace(/(.)\1+/g, "$1");
+        }
+        if (dedoubled !== word && dedoubled.length >= 3) {
+          enhancedVariations.push(dedoubled);
+        }
+
+        // 2. Try variants with different doubled letter combinations
+        for (let i = 0; i < word.length - 1; i++) {
+          if (word[i] === word[i + 1]) {
+            // Remove one of the doubled letters
+            const singleLetter = word.slice(0, i) + word.slice(i + 1);
+            if (singleLetter.length >= 3) {
+              enhancedVariations.push(singleLetter);
+            }
+          }
+        }
+
+        // 3. Handle specific patterns like 'uu' -> 'u', 'mm' -> 'm'
+        const commonDoubles = [
+          "aa",
+          "bb",
+          "cc",
+          "dd",
+          "ee",
+          "ff",
+          "gg",
+          "hh",
+          "ii",
+          "jj",
+          "kk",
+          "ll",
+          "mm",
+          "nn",
+          "oo",
+          "pp",
+          "qq",
+          "rr",
+          "ss",
+          "tt",
+          "uu",
+          "vv",
+          "ww",
+          "xx",
+          "yy",
+          "zz",
+        ];
+        commonDoubles.forEach((double) => {
+          if (word.includes(double)) {
+            const single = word.replace(new RegExp(double, "g"), double[0]);
+            if (single !== word && single.length >= 3) {
+              enhancedVariations.push(single);
+            }
+          }
+        });
+
+        // 4. Try removing one character at different positions (extra letters)
+        for (let i = 0; i < word.length; i++) {
+          const variant = word.slice(0, i) + word.slice(i + 1);
+          if (variant.length >= 3) {
+            enhancedVariations.push(variant);
+          }
+        }
+
+        // 5. Try swapping adjacent characters (common typo)
+        for (let i = 0; i < word.length - 1; i++) {
+          const chars = word.split("");
+          [chars[i], chars[i + 1]] = [chars[i + 1], chars[i]];
+          const swapped = chars.join("");
+          enhancedVariations.push(swapped);
+        }
+
+        // 6. Handle 'nn' -> 'n' specifically for words like "suupermann"
+        if (word.includes("nn")) {
+          const singleN = word.replace(/nn/g, "n");
+          if (singleN !== word) {
+            enhancedVariations.push(singleN);
+          }
+        }
+
+        // 7. Try phonetic replacements
+        const phoneticReplacements = [
+          ["ph", "f"],
+          ["ck", "k"],
+          ["qu", "kw"],
+          ["x", "ks"],
+          ["c", "k"],
+          ["z", "s"],
+          ["j", "g"],
+        ];
+        phoneticReplacements.forEach(([from, to]) => {
+          if (word.includes(from)) {
+            const replaced = word.replace(new RegExp(from, "g"), to);
+            enhancedVariations.push(replaced);
+          }
+        });
+      }
+    }
   });
-  return data.results.filter(
-    (i) => i.media_type === "movie" || i.media_type === "tv"
-  );
+
+  // Add word-based variations
+  if (words.length > 1) {
+    // Try each word individually
+    enhancedVariations.push(...words.filter((w) => w.length > 2));
+
+    // Try combinations of words
+    for (let i = 0; i < words.length - 1; i++) {
+      enhancedVariations.push(words.slice(i, i + 2).join(" "));
+    }
+  }
+
+  // Add all enhanced variations
+  variations.push(...enhancedVariations);
+
+  // Remove duplicates and sort by length (prefer longer, more specific terms)
+  const unique = [...new Set(variations)];
+  return unique.sort((a, b) => b.length - a.length);
+}
+
+// Enhanced search function with typo tolerance
+export async function searchMoviesAndTV(query: string): Promise<TMDBItem[]> {
+  if (!query || query.length < 2) return [];
+
+  // Temporary interface for internal use with relevance scoring
+  interface SearchResult extends TMDBItem {
+    searchRelevance?: number;
+  }
+
+  let allResults: SearchResult[] = [];
+  const seenIds = new Set<string>();
+
+  try {
+    // First, try exact search
+    const exactData = await tmdb<TMDBResponse<TMDBItem>>("/search/multi", {
+      query,
+      page: 1,
+      include_adult: false,
+    });
+
+    const exactResults = exactData.results.filter(
+      (i) => i.media_type === "movie" || i.media_type === "tv"
+    );
+
+    // Add exact results first
+    exactResults.forEach((item) => {
+      const id = `${item.media_type}-${item.id}`;
+      if (!seenIds.has(id)) {
+        seenIds.add(id);
+        allResults.push({ ...item, searchRelevance: 100 }); // Highest relevance for exact matches
+      }
+    });
+
+    // Always try variations for better typo tolerance
+    const searchVariations = generateSearchVariations(query);
+
+    // Debug: log the variations being tried
+    console.log(
+      `Search variations for "${query}":`,
+      searchVariations.slice(0, 10)
+    );
+
+    // Limit variations to prevent too many API calls but increase the limit for better results
+    const limitedVariations = searchVariations.slice(0, 12);
+
+    for (const variation of limitedVariations) {
+      if (variation === query.toLowerCase()) continue; // Skip original query
+      if (variation.length < 3) continue; // Skip very short variations
+
+      try {
+        const variationData = await tmdb<TMDBResponse<TMDBItem>>(
+          "/search/multi",
+          {
+            query: variation,
+            page: 1,
+            include_adult: false,
+          }
+        );
+
+        const variationResults = variationData.results.filter(
+          (i) => i.media_type === "movie" || i.media_type === "tv"
+        );
+
+        // Add new results with lower relevance score
+        const relevanceScore = variation.length === query.length ? 80 : 60; // Prefer same-length variations
+
+        variationResults.forEach((item) => {
+          const id = `${item.media_type}-${item.id}`;
+          if (!seenIds.has(id)) {
+            seenIds.add(id);
+            allResults.push({ ...item, searchRelevance: relevanceScore });
+          }
+        });
+
+        // Continue even if we have results to get more comprehensive results
+        if (allResults.length >= 30) break;
+      } catch (err) {
+        console.warn(`Search variation "${variation}" failed:`, err);
+        continue;
+      }
+    }
+
+    // Sort by relevance first, then by popularity
+    allResults.sort((a, b) => {
+      const relevanceDiff = (b.searchRelevance || 0) - (a.searchRelevance || 0);
+      if (relevanceDiff !== 0) return relevanceDiff;
+      return (b.popularity || 0) - (a.popularity || 0);
+    });
+
+    console.log(`Found ${allResults.length} total results for "${query}"`);
+
+    // Remove the searchRelevance property before returning
+    return allResults.map(({ searchRelevance, ...item }) => item as TMDBItem);
+  } catch (err) {
+    console.error("Search error:", err);
+    return [];
+  }
 }
 
 // Add this missing export

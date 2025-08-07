@@ -17,10 +17,8 @@ export default async function MovieDetailPage({
 
   if (!data) {
     return (
-      <div className="text-center p-8 min-h-screen bg-white dark:bg-gray-900">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
-          Movie not found.
-        </h1>
+      <div className="text-center p-8 min-h-screen bg-main text-foreground">
+        <h1 className="text-2xl font-bold">Movie not found.</h1>
       </div>
     );
   }
@@ -28,7 +26,7 @@ export default async function MovieDetailPage({
   const { details, providers, credits } = data;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+    <div className="min-h-screen bg-main text-foreground">
       {/* Backdrop */}
       {details.backdrop_path && (
         <div className="relative h-64 md:h-96 w-full">
@@ -39,7 +37,7 @@ export default async function MovieDetailPage({
             className="object-cover object-top"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent dark:from-gray-900 dark:via-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-main via-transparent to-transparent" />
         </div>
       )}
 
@@ -64,13 +62,13 @@ export default async function MovieDetailPage({
             <h1 className="text-3xl md:text-4xl font-bold flex items-center justify-center md:justify-start flex-wrap gap-x-4 gap-y-2">
               {details.title}
               {details.release_date && (
-                <span className="font-light text-gray-500">
+                <span className="font-light text-muted-foreground">
                   ({new Date(details.release_date).getFullYear()})
                 </span>
               )}
             </h1>
 
-            <p className="text-gray-600 dark:text-gray-400 mt-2 text-sm md:text-base">
+            <p className="text-muted-foreground mt-2 text-sm md:text-base">
               {details.genres.map((g: any) => g.name).join(", ")} •{" "}
               {details.runtime && (
                 <>
@@ -82,23 +80,21 @@ export default async function MovieDetailPage({
             {/* Ratings */}
             <div className="mt-4 flex items-center justify-center md:justify-start gap-4">
               <div className="flex items-center gap-2">
-                <span className="text-lg font-bold text-yellow-500">TMDB:</span>
+                <span className="text-lg font-bold text-accent">TMDB:</span>
                 <span className="text-lg">
                   {details.vote_average.toFixed(1)} / 10
                 </span>
               </div>
               {details.external_ids?.imdb_id && (
                 <>
-                  <div className="border-l h-6 border-gray-300 dark:border-gray-600"></div>
+                  <div className="border-l h-6 border-border"></div>
                   <Link
                     href={`https://www.imdb.com/title/${details.external_ids.imdb_id}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 hover:opacity-80 transition-opacity"
                   >
-                    <span className="text-lg font-bold text-yellow-500">
-                      IMDb
-                    </span>
+                    <span className="text-lg font-bold text-accent">IMDb</span>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 20 20"
@@ -157,13 +153,15 @@ export default async function MovieDetailPage({
                       className="object-cover"
                     />
                   ) : (
-                    <div className="bg-gray-300 dark:bg-gray-700 h-full flex items-center justify-center text-xs">
+                    <div className="bg-card h-full flex items-center justify-center text-xs text-muted-foreground">
                       No Image
                     </div>
                   )}
                 </div>
                 <p className="font-semibold text-sm">{person.name}</p>
-                <p className="text-xs text-gray-500">{person.character}</p>
+                <p className="text-xs text-muted-foreground">
+                  {person.character}
+                </p>
               </div>
             ))}
           </div>

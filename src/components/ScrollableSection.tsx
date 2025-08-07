@@ -44,16 +44,16 @@ export default function ScrollableSection({
   };
 
   return (
-    <section className="mb-12">
+    <section className="mb-12 bg-card p-6 rounded-lg border border-border">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold">{title}</h2>
+        <h2 className="text-2xl font-bold text-accent">{title}</h2>
 
         {/* scroll buttons – hidden on small screens */}
         <div className="hidden sm:flex gap-2">
           <button
             aria-label="Scroll left"
             onClick={() => scroll("left")}
-            className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
+            className="p-2 rounded-full bg-card hover:bg-card-hover"
           >
             <svg
               className="w-5 h-5 text-gray-700 dark:text-gray-200"
@@ -70,7 +70,7 @@ export default function ScrollableSection({
           <button
             aria-label="Scroll right"
             onClick={() => scroll("right")}
-            className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
+            className="p-2 rounded-full bg-card hover:bg-card-hover"
           >
             <svg
               className="w-5 h-5 text-gray-700 dark:text-gray-200"
@@ -100,7 +100,7 @@ export default function ScrollableSection({
               href={`/${mediaType}/${item.id}`}
               className="flex-shrink-0 w-[120px] sm:w-[150px] md:w-[180px] group"
             >
-              <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-2 bg-gray-200 dark:bg-gray-800">
+              <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-2 bg-card">
                 {item.poster_path ? (
                   <Image
                     src={`https://image.tmdb.org/t/p/w342${item.poster_path}`}
@@ -109,13 +109,13 @@ export default function ScrollableSection({
                     className="object-cover group-hover:scale-105 transition-transform duration-200"
                   />
                 ) : (
-                  <div className="flex items-center justify-center h-full text-xs text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center justify-center h-full text-xs text-muted-foreground">
                     No Image
                   </div>
                 )}
               </div>
 
-              <h3 className="font-semibold text-xs sm:text-sm line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+              <h3 className="font-semibold text-xs sm:text-sm line-clamp-2 group-hover:text-accent">
                 {item.title || item.name}
               </h3>
             </Link>

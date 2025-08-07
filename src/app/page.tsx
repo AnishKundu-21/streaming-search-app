@@ -33,6 +33,8 @@ interface TMDBItem {
   release_date?: string;
   first_air_date?: string;
   popularity: number;
+  genre_ids?: number[];
+  origin_country?: string[];
 }
 
 // Helper to fetch, combine, and sort genre data
@@ -106,22 +108,64 @@ export default async function Home({
       getCombinedGenreSection([ACTION_ID], [TV_ACTION_ADVENTURE_ID]),
       getCombinedGenreSection([DRAMA_ID], [DRAMA_ID]),
       getCombinedGenreSection([ROMANCE_ID], [TV_SCI_FI_FANTASY_ID]),
-      getDiscover("tv", [DRAMA_ID], "KR", ADULT_KEYWORD_IDS),
+      Promise.all([
+        getDiscover("tv", [DRAMA_ID], "KR", ADULT_KEYWORD_IDS),
+        getDiscover("tv", [DRAMA_ID], "CN", ADULT_KEYWORD_IDS),
+        getDiscover("tv", [DRAMA_ID], "JP", ADULT_KEYWORD_IDS),
+      ]).then((results) => {
+        const combined = results.flat();
+        // Filter out anime and animation from East Asian Dramas section
+        const filtered = combined.filter((item) => {
+          // Filter out if it has animation genre (ID 16)
+          if (item.genre_ids?.includes(16)) {
+            return false;
+          }
+
+          // Additional filtering for potential anime content by title keywords
+          const title = (item.name || item.title || "").toLowerCase();
+          const animeKeywords = [
+            "anime",
+            "dragon ball",
+            "naruto",
+            "one piece",
+            "attack on titan",
+            "demon slayer",
+            "my hero academia",
+            "jujutsu kaisen",
+            "bleach",
+            "hunter x hunter",
+            "death note",
+            "fullmetal alchemist",
+            "cowboy bebop",
+            "studio ghibli",
+            "spirited away",
+            "princess mononoke",
+          ];
+
+          const isLikelyAnime = animeKeywords.some((keyword) =>
+            title.includes(keyword)
+          );
+
+          return !isLikelyAnime;
+        });
+        return filtered
+          .sort((a, b) => b.popularity - a.popularity)
+          .slice(0, 50);
+      }),
       getDiscover("tv", [ANIMATION_ID], "JP", ADULT_KEYWORD_IDS),
       getCombinedGenreSection([ANIMATION_ID], [ANIMATION_ID]),
     ]);
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+    <div className="min-h-screen bg-main text-foreground">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero / Search Section */}
         <div className="text-center my-8 md:my-12">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4">
-            Find Your Next{" "}
-            <span className="text-blue-600 dark:text-blue-400">Stream</span>
+            Find Your Next <span className="text-accent">Stream</span>
           </h1>
-          <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
             Discover movies and TV shows with streaming availability across the
             globe.
           </p>
@@ -135,11 +179,11 @@ export default async function Home({
               name="q"
               defaultValue={query}
               placeholder="Search for movies or TV shows..."
-              className="flex-1 w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 w-full px-4 py-3 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
             />
             <button
               type="submit"
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
+              className="px-6 py-3 bg-accent hover:bg-accent-hover text-white rounded-lg font-semibold transition-colors"
             >
               Search
             </button>
@@ -174,7 +218,7 @@ export default async function Home({
               items={animation ?? []}
             />
             <ScrollableSection
-              title="Trending K-Dramas"
+              title="East Asian Dramas"
               items={kdramas ?? []}
               defaultMediaType="tv"
             />

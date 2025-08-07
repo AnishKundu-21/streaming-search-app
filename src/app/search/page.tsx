@@ -5,16 +5,15 @@ import Image from "next/image";
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const query = typeof searchParams?.q === "string" ? searchParams.q : "";
+  const resolvedSearchParams = await searchParams;
+  const query = typeof resolvedSearchParams?.q === "string" ? resolvedSearchParams.q : "";
 
   if (!query) {
     return (
-      <div className="text-center p-8 min-h-screen bg-white dark:bg-gray-900">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
-          Please enter a search term.
-        </h1>
+      <div className="text-center p-8 min-h-screen bg-main text-foreground">
+        <h1 className="text-2xl font-bold">Please enter a search term.</h1>
       </div>
     );
   }
@@ -22,11 +21,10 @@ export default async function SearchPage({
   const allResults = await searchContent(query);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+    <div className="min-h-screen bg-main text-foreground">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-bold mb-8">
-          Search results for:{" "}
-          <span className="text-blue-600 dark:text-blue-400">{query}</span>
+          Search results for: <span className="text-accent">{query}</span>
         </h1>
         {allResults.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-4 gap-y-8">
@@ -46,19 +44,21 @@ export default async function SearchPage({
                       sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
                     />
                   ) : (
-                    <div className="bg-gray-200 dark:bg-gray-700 h-full flex items-center justify-center">
-                      <span className="text-sm text-gray-500">No Image</span>
+                    <div className="bg-card h-full flex items-center justify-center">
+                      <span className="text-sm text-muted-foreground">
+                        No Image
+                      </span>
                     </div>
                   )}
                 </div>
-                <h3 className="mt-2 text-sm font-medium text-center text-gray-700 dark:text-gray-300 truncate group-hover:text-blue-500 dark:group-hover:text-blue-400">
+                <h3 className="mt-2 text-sm font-medium text-center text-muted-foreground truncate group-hover:text-accent">
                   {item.title || item.name}
                 </h3>
               </Link>
             ))}
           </div>
         ) : (
-          <p className="text-lg text-center mt-12">
+          <p className="text-lg text-center mt-12 text-muted-foreground">
             No results found for "{query}".
           </p>
         )}

@@ -15,43 +15,36 @@ export default function Navbar() {
   const isDetailPage =
     pathname.startsWith("/movie/") || pathname.startsWith("/tv/");
   const isHomePage = pathname === "/";
+  const isSearchPage = pathname.startsWith("/search");
 
   const navClass = isDetailPage
-    ? "absolute top-0 left-0 right-0 z-30 bg-gradient-to-b from-black/60 to-transparent"
-    : "bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30";
+    ? "fixed top-0 left-0 right-0 z-30 bg-main border-b border-border"
+    : "bg-main/95 backdrop-blur-lg border-b border-border sticky top-0 z-30";
 
   const textColor = isDetailPage
-    ? "text-white"
-    : "text-gray-700 dark:text-gray-300";
+    ? "text-foreground drop-shadow-sm"
+    : "text-foreground";
 
   const logoTextColor = isDetailPage
-    ? "text-white"
-    : "text-blue-600 dark:text-blue-400";
-
-  const textShadow = isDetailPage
-    ? { textShadow: "1px 1px 3px rgba(0,0,0,0.7)" }
-    : {};
+    ? "text-accent drop-shadow-sm"
+    : "text-accent";
 
   const iconButtonClass = isDetailPage
-    ? "hover:bg-white/10"
-    : "hover:bg-gray-100 dark:hover:bg-gray-800";
+    ? "hover:bg-card/60 transition-colors duration-200"
+    : "hover:bg-card/40 backdrop-blur-sm transition-colors duration-200";
 
   return (
     <header
-      className={`p-2 sm:p-4 flex justify-between items-center ${navClass}`}
+      className={`p-2 sm:p-4 flex justify-between items-center transition-all duration-300 ${navClass}`}
     >
       {/* Left section */}
       <div className="flex items-center space-x-1 sm:space-x-2">
         {!isHomePage && (
-          <BackButton
-            className={`${textColor} ${iconButtonClass}`}
-            style={textShadow}
-          />
+          <BackButton className={`${textColor} ${iconButtonClass}`} />
         )}
         <Link
           href="/"
           className={`text-xl sm:text-2xl font-bold ${logoTextColor}`}
-          style={textShadow}
         >
           StreamFinder
         </Link>
@@ -61,8 +54,7 @@ export default function Navbar() {
       <div className="hidden sm:flex items-center space-x-2 sm:space-x-4">
         <Link
           href="/recommendations"
-          className={`text-sm font-semibold ${textColor} hover:text-blue-600 dark:hover:text-blue-400`}
-          style={textShadow}
+          className={`text-sm font-semibold ${textColor} hover:text-accent transition-colors duration-200`}
         >
           Discover
         </Link>
@@ -70,23 +62,19 @@ export default function Navbar() {
         {session && (
           <Link
             href="/watchlist"
-            className={`text-sm font-semibold ${textColor} hover:text-blue-600 dark:hover:text-blue-400`}
-            style={textShadow}
+            className={`text-sm font-semibold ${textColor} hover:text-accent transition-colors duration-200`}
           >
             My Watchlist
           </Link>
         )}
 
-        <ThemeToggle
-          className={`${textColor} ${iconButtonClass}`}
-          style={textShadow}
-        />
+        <ThemeToggle className={`${textColor} ${iconButtonClass}`} />
 
         {status === "loading" ? (
-          <div className="h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded-md animate-pulse" />
+          <div className={`h-8 w-20 rounded-md animate-pulse ${isDetailPage ? 'bg-card/80' : 'bg-card/60'}`} />
         ) : session ? (
           <div className="flex items-center space-x-2 sm:space-x-3">
-            <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+            <div className={`w-8 h-8 rounded-full overflow-hidden flex items-center justify-center ${isDetailPage ? 'bg-card/80' : 'bg-card/60'}`}>
               {session.user?.image ? (
                 <Image
                   src={session.user.image}
@@ -99,7 +87,7 @@ export default function Navbar() {
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                   fill="currentColor"
-                  className="w-5 h-5 text-gray-500 dark:text-gray-400"
+                  className="w-5 h-5 text-muted-foreground"
                 >
                   <path
                     fillRule="evenodd"
@@ -111,16 +99,14 @@ export default function Navbar() {
             </div>
             <span
               className={`text-sm font-semibold hidden sm:block ${textColor}`}
-              style={textShadow}
             >
               {session.user?.name}
             </span>
             <button
               onClick={() => signOut()}
-              className={`px-3 py-1 text-sm font-semibold rounded-md transition-colors ${
-                isDetailPage
-                  ? "bg-black/20 hover:bg-black/40 text-white border border-white/30"
-                  : "bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+              className={`px-3 py-1 text-sm font-semibold rounded-md transition-all duration-200 text-foreground border ${isDetailPage 
+                ? 'bg-card/60 hover:bg-card/80 border-border' 
+                : 'bg-card/30 hover:bg-card/50 border-border/40 backdrop-blur-sm'
               }`}
             >
               Sign Out
@@ -129,7 +115,7 @@ export default function Navbar() {
         ) : (
           <Link
             href="/auth/signin"
-            className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
+            className={`px-3 py-1 text-sm font-semibold rounded-md transition-all duration-200 bg-accent/90 hover:bg-accent text-white ${isDetailPage ? '' : 'backdrop-blur-sm'}`}
           >
             Sign In
           </Link>
@@ -138,14 +124,8 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       <div className="sm:hidden flex items-center space-x-2">
-        <ThemeToggle
-          className={`${textColor} ${iconButtonClass}`}
-          style={textShadow}
-        />
-        <MobileMenu
-          className={`${textColor} ${iconButtonClass}`}
-          style={textShadow}
-        />
+        <ThemeToggle className={`${textColor} ${iconButtonClass}`} />
+        <MobileMenu className={`${textColor} ${iconButtonClass}`} />
       </div>
     </header>
   );

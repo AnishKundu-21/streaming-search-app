@@ -33,7 +33,7 @@ export default function ThemeToggle({ className, style }: ThemeToggleProps) {
   return (
     <button
       onClick={toggleTheme}
-      className={`p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+      className={`p-2 rounded-md hover:bg-card-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition-colors ${
         className || ""
       }`}
       style={style}

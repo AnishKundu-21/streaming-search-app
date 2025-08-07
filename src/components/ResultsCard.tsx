@@ -16,7 +16,7 @@ export default function ResultsCard({
   overview,
 }: ResultsCardProps) {
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+    <div className="bg-card rounded-lg overflow-hidden transition-transform duration-300 hover:scale-105 border border-border">
       {posterPath && (
         <div className="relative h-64">
           <Image
@@ -29,13 +29,13 @@ export default function ResultsCard({
         </div>
       )}
       <div className="p-4">
-        <h2 className="text-lg font-semibold mb-2 text-gray-800">
+        <h2 className="text-lg font-semibold mb-2 text-foreground">
           {title} in {country}
         </h2>
         {overview && (
-          <p className="text-sm text-gray-600 mb-3 line-clamp-3">{overview}</p>
+          <p className="text-sm text-muted-foreground mb-3 line-clamp-3">{overview}</p>
         )}
-        <div className="text-sm text-gray-700">
+        <div className="text-sm text-foreground">
           {availability.note ||
             (availability.flatrate ? (
               <div className="flex flex-wrap gap-2">
@@ -47,7 +47,7 @@ export default function ResultsCard({
                         alt={p.provider_name}
                         width={24}
                         height={24}
-                        className="mr-1 rounded"
+                        className="mr-1 rounded group-hover:scale-105 transition-transform duration-200"
                       />
                     )}
                     <span>{p.provider_name}</span>
