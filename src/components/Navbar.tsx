@@ -71,10 +71,18 @@ export default function Navbar() {
         <ThemeToggle className={`${textColor} ${iconButtonClass}`} />
 
         {status === "loading" ? (
-          <div className={`h-8 w-20 rounded-md animate-pulse ${isDetailPage ? 'bg-card/80' : 'bg-card/60'}`} />
+          <div
+            className={`h-8 w-20 rounded-md animate-pulse ${
+              isDetailPage ? "bg-card/80" : "bg-card/60"
+            }`}
+          />
         ) : session ? (
           <div className="flex items-center space-x-2 sm:space-x-3">
-            <div className={`w-8 h-8 rounded-full overflow-hidden flex items-center justify-center ${isDetailPage ? 'bg-card/80' : 'bg-card/60'}`}>
+            <div
+              className={`w-8 h-8 rounded-full overflow-hidden flex items-center justify-center ${
+                isDetailPage ? "bg-card/80" : "bg-card/60"
+              }`}
+            >
               {session.user?.image ? (
                 <Image
                   src={session.user.image}
@@ -104,9 +112,10 @@ export default function Navbar() {
             </span>
             <button
               onClick={() => signOut()}
-              className={`px-3 py-1 text-sm font-semibold rounded-md transition-all duration-200 text-foreground border ${isDetailPage 
-                ? 'bg-card/60 hover:bg-card/80 border-border' 
-                : 'bg-card/30 hover:bg-card/50 border-border/40 backdrop-blur-sm'
+              className={`px-3 py-1 text-sm font-semibold rounded-md transition-all duration-200 text-foreground border ${
+                isDetailPage
+                  ? "bg-card/60 hover:bg-card/80 border-border"
+                  : "bg-card/30 hover:bg-card/50 border-border/40 backdrop-blur-sm"
               }`}
             >
               Sign Out
@@ -115,7 +124,9 @@ export default function Navbar() {
         ) : (
           <Link
             href="/auth/signin"
-            className={`px-3 py-1 text-sm font-semibold rounded-md transition-all duration-200 bg-accent/90 hover:bg-accent text-white ${isDetailPage ? '' : 'backdrop-blur-sm'}`}
+            className={`px-3 py-1 text-sm font-semibold rounded-md transition-all duration-200 bg-accent/90 hover:bg-accent text-white ${
+              isDetailPage ? "" : "backdrop-blur-sm"
+            }`}
           >
             Sign In
           </Link>
