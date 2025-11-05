@@ -24,11 +24,11 @@ export default function RecommendedSection() {
           </h2>
           <span className="pill">Loading tailored picks…</span>
         </div>
-        <div className="mt-6 flex gap-4 overflow-hidden">
+        <div className="mt-6 flex gap-3 overflow-x-auto pb-2 pr-2 scrollbar-hide sm:gap-4">
           {[...Array(8)].map((_, i) => (
             <div
               key={i}
-              className="flex-shrink-0 w-[140px] animate-pulse rounded-2xl border border-white/5 bg-surface-muted p-3"
+              className="flex-shrink-0 w-[68vw] max-w-[220px] animate-pulse rounded-2xl border border-white/5 bg-surface-muted p-3 sm:w-[160px]"
             >
               <div className="aspect-[2/3] rounded-xl bg-white/10" />
               <div className="mt-3 h-3 rounded-full bg-white/10" />

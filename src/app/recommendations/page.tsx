@@ -58,7 +58,7 @@ export default function RecommendationsPage() {
 
   return (
     <div className="flex flex-col gap-10">
-      <section className="rounded-3xl border border-white/10 bg-card p-8 shadow-soft sm:p-12">
+      <section className="rounded-3xl border border-white/10 bg-card p-6 shadow-soft sm:p-10 lg:p-12">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h1 className="font-display text-3xl font-semibold uppercase tracking-[0.08em] text-white sm:text-4xl">
@@ -112,7 +112,7 @@ export default function RecommendationsPage() {
 
         <div className="mt-10 min-h-[200px]">
           {isLoading ? (
-            <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
               {[...Array(12)].map((_, index) => (
                 <div
                   key={index}
@@ -121,7 +121,7 @@ export default function RecommendationsPage() {
               ))}
             </div>
           ) : results.length > 0 ? (
-            <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
               {results.map((item, index) => (
                 <Link
                   href={`/${mediaType}/${item.id}`}

@@ -17,7 +17,7 @@ export default async function SearchPage({
   return (
     <div className="min-h-screen bg-background text-foreground">
       <section className="px-4 pb-16 pt-28 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-screen-xl rounded-3xl border border-border bg-card px-6 py-12 text-center shadow-soft sm:px-12 sm:py-16">
+        <div className="mx-auto max-w-screen-xl rounded-3xl border border-border bg-card px-6 py-10 text-center shadow-soft sm:px-10 sm:py-16">
           <p className="text-xs font-semibold uppercase tracking-[0.38em] text-muted-foreground">
             StreamFinder
           </p>
@@ -34,17 +34,17 @@ export default async function SearchPage({
             method="GET"
             role="search"
           >
-            <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
               <input
                 type="text"
                 name="q"
                 defaultValue={normalizedQuery}
                 placeholder="Search titles, genres, or people"
-                className="h-14 flex-1 rounded-full border border-white/10 bg-black/70 px-6 text-base text-white placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+                className="h-[3.75rem] w-full flex-1 rounded-full border border-white/15 bg-white/5 px-5 text-base text-white placeholder:text-white/60 shadow-[0_12px_30px_rgba(0,0,0,0.35)] transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/60 focus:ring-offset-2 focus:ring-offset-black sm:px-6"
               />
               <button
                 type="submit"
-                className="h-14 rounded-full bg-accent px-10 text-base font-semibold text-white transition hover:bg-accent-soft"
+                className="h-[3.75rem] w-full rounded-full bg-accent px-8 text-base font-semibold text-white transition hover:bg-accent-soft focus:outline-none focus:ring-2 focus:ring-accent/60 focus:ring-offset-2 focus:ring-offset-black sm:w-auto sm:px-10"
               >
                 Search
               </button>
@@ -61,7 +61,7 @@ export default async function SearchPage({
 
       <section className="px-4 pb-24 sm:px-6 lg:px-8">
         {hasQuery ? (
-          <div className="mx-auto max-w-screen-2xl rounded-3xl border border-white/10 bg-card p-8 shadow-soft sm:p-10">
+          <div className="mx-auto max-w-screen-2xl rounded-3xl border border-white/10 bg-card p-6 shadow-soft sm:p-8 lg:p-10">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <h2 className="font-display text-3xl font-semibold uppercase tracking-[0.08em] text-white">
@@ -75,7 +75,7 @@ export default async function SearchPage({
             </div>
 
             {results.length > 0 ? (
-              <div className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+              <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
                 {results.map((item, index) => (
                   <Link
                     href={`/${item.media_type}/${item.id}`}

@@ -83,7 +83,7 @@ export default function ScrollableSection({
 
       <div
         ref={rowRef}
-        className="mt-6 flex gap-6 overflow-x-auto scroll-smooth pb-2 pr-4 scrollbar-hide"
+        className="mt-6 flex gap-4 overflow-x-auto scroll-smooth pb-2 pl-1 pr-4 scrollbar-hide sm:gap-6 snap-x snap-mandatory"
       >
         {items.map((item, index) => {
           const mediaType = item.media_type ?? defaultMediaType ?? "movie";
@@ -95,7 +95,7 @@ export default function ScrollableSection({
             <Link
               key={`${mediaType}-${item.id}`}
               href={`/${mediaType}/${item.id}`}
-              className="group/item relative flex w-[150px] flex-shrink-0 flex-col animate-fade-up sm:w-[180px]"
+              className="group/item relative flex w-[68vw] max-w-[220px] flex-shrink-0 flex-col animate-fade-up snap-start sm:w-[180px] md:w-[200px]"
               style={{ animationDelay: `${index * 40}ms` }}
             >
               <div className="relative aspect-[2/3] overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-soft transition-transform duration-500 group-hover/item:-translate-y-1 group-hover/item:shadow-lg">

@@ -163,7 +163,7 @@ export default function WatchlistPage() {
             />
           ))}
         </div>
-        <div className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+        <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
           {[...Array(12)].map((_, i) => (
             <div
               key={i}
@@ -197,7 +197,7 @@ export default function WatchlistPage() {
   const isEmpty = currentItems.length === 0;
 
   return (
-    <section className="rounded-3xl border border-white/10 bg-card p-8 shadow-soft sm:p-12">
+    <section className="rounded-3xl border border-white/10 bg-card p-6 shadow-soft sm:p-10 lg:p-12">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="font-display text-3xl font-semibold uppercase tracking-[0.08em] text-white sm:text-4xl">
@@ -259,7 +259,7 @@ export default function WatchlistPage() {
           </div>
         </div>
       ) : (
-        <div className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+        <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
           {currentItems.map((item, index) => (
             <div
               key={item.id}
