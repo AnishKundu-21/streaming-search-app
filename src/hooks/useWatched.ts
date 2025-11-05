@@ -2,7 +2,7 @@
 "use client";
 
 import useSWR from "swr";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/components/AuthProvider";
 
 type WatchedItem = {
   id: string;
@@ -31,7 +31,7 @@ const fetcher = (url: string) =>
  */
 export function useWatched() {
   /* Only fetch when authenticated */
-  const { status } = useSession();
+  const { status } = useAuth();
   const enabled = status === "authenticated";
 
   const { data, error, isLoading, mutate } = useSWR<WatchedItem[]>(

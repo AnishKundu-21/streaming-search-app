@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
-import NextAuth from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getRouteUser } from "@/lib/supabase-route";
 import type { WatchedItem } from "@prisma/client";
-
-const { auth } = NextAuth(authOptions);
 
 const TMDB_API_KEY = process.env.TMDB_API_KEY!;
 const TMDB_BASE = "https://api.themoviedb.org/3";
@@ -37,14 +34,15 @@ async function tmdb(path: string) {
 /* ---------------------------  GET  --------------------------- */
 export async function GET() {
   /* ── auth ── */
-  const session = await auth();
-  if (!session?.user?.id) {
+  const { user, error } = await getRouteUser();
+  if (error || !user) {
+    console.error("Supabase auth error:", error);
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   /* ── fetch user's recently watched titles ── */
   const watched: WatchedItem[] = await prisma.watchedItem.findMany({
-    where: { userId: session.user.id },
+    where: { userId: user.id },
     orderBy: { watchedAt: "desc" },
     take: 20,
   });

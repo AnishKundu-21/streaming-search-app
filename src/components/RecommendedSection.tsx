@@ -1,11 +1,11 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useRecommendations } from "@/hooks/useRecommendations";
 import RecommendedRow from "./RecommendedRow"; // The component we just renamed
+import { useAuth } from "@/components/AuthProvider";
 
 export default function RecommendedSection() {
-  const { data: session } = useSession();
+  const { session } = useAuth();
   const { recommendedMovies, recommendedTvShows, isLoading, isError } =
     useRecommendations();
 

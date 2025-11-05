@@ -2,7 +2,7 @@
 "use client";
 
 import useSWR from "swr";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/components/AuthProvider";
 
 export type Recommendation = {
   id: number;
@@ -37,7 +37,7 @@ const fetcher = (url: string): Promise<RecommendationsResponse> =>
  */
 export function useRecommendations() {
   /* Only fetch when the user is authenticated */
-  const { status } = useSession();
+  const { status } = useAuth();
   const enabled = status === "authenticated";
 
   const {

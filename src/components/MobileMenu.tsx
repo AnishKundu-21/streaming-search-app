@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { useSession, signOut } from "next-auth/react";
+import { useAuth } from "@/components/AuthProvider";
 
 interface MobileMenuProps {
   links: { href: string; label: string }[];
@@ -10,7 +10,7 @@ interface MobileMenuProps {
 
 export default function MobileMenu({ links }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { data: session } = useSession();
+  const { session, signOut } = useAuth();
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Close menu if clicking outside of it

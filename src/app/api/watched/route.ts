@@ -1,22 +1,19 @@
 import { NextResponse } from "next/server";
-import NextAuth from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getRouteUser } from "@/lib/supabase-route";
 import type { WatchedItem } from "@prisma/client";
-
-/* Create per-route auth() helper (NextAuth v5) */
-const { auth } = NextAuth(authOptions);
 
 /* ─────────────── GET /api/watched ───────────────
    Return the signed-in user’s watched list */
 export async function GET() {
-  const session = await auth();
-  if (!session?.user?.id) {
+  const { user, error } = await getRouteUser();
+  if (error || !user) {
+    console.error("Supabase auth error:", error);
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const items: WatchedItem[] = await prisma.watchedItem.findMany({
-    where: { userId: session.user.id },
+    where: { userId: user.id },
     orderBy: { watchedAt: "desc" },
   });
 
@@ -26,8 +23,9 @@ export async function GET() {
 /* ─────────────── POST /api/watched ───────────────
    Add or update a watched entry */
 export async function POST(request: Request) {
-  const session = await auth();
-  if (!session?.user?.id) {
+  const { user, error } = await getRouteUser();
+  if (error || !user) {
+    console.error("Supabase auth error:", error);
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -51,7 +49,7 @@ export async function POST(request: Request) {
   await prisma.watchedItem.upsert({
     where: {
       userId_contentId_mediaType_seasonNumber: {
-        userId: session.user.id,
+        userId: user.id,
         contentId: Number(contentId),
         mediaType,
         seasonNumber: season,
@@ -64,7 +62,7 @@ export async function POST(request: Request) {
       posterPath,
     },
     create: {
-      userId: session.user.id,
+      userId: user.id,
       contentId: Number(contentId),
       mediaType,
       seasonNumber: season,
@@ -80,8 +78,9 @@ export async function POST(request: Request) {
 /* ────────────── DELETE /api/watched ──────────────
    Remove a watched entry */
 export async function DELETE(request: Request) {
-  const session = await auth();
-  if (!session?.user?.id) {
+  const { user, error } = await getRouteUser();
+  if (error || !user) {
+    console.error("Supabase auth error:", error);
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -100,7 +99,7 @@ export async function DELETE(request: Request) {
   await prisma.watchedItem.delete({
     where: {
       userId_contentId_mediaType_seasonNumber: {
-        userId: session.user.id,
+        userId: user.id,
         contentId: Number(contentId),
         mediaType,
         seasonNumber: season,

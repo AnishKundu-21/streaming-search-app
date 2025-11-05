@@ -1,18 +1,16 @@
 import { NextResponse } from "next/server";
-import NextAuth from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-
-const { auth } = NextAuth(authOptions);
+import { getRouteUser } from "@/lib/supabase-route";
 
 export async function GET() {
-  const session = await auth();
-  if (!session?.user?.id) {
+  const { user, error } = await getRouteUser();
+  if (error || !user) {
+    console.error("Supabase auth error:", error);
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const items = await prisma.watchlistItem.findMany({
-    where: { userId: session.user.id },
+    where: { userId: user.id },
     orderBy: { addedAt: "desc" },
   });
 
@@ -20,8 +18,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const session = await auth();
-  if (!session?.user?.id) {
+  const { user, error } = await getRouteUser();
+  if (error || !user) {
+    console.error("Supabase auth error:", error);
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -36,7 +35,7 @@ export async function POST(request: Request) {
   await prisma.watchlistItem.upsert({
     where: {
       userId_contentId_mediaType_seasonNumber: {
-        userId: session.user.id,
+        userId: user.id,
         contentId: Number(contentId),
         mediaType,
         seasonNumber: season,
@@ -44,7 +43,7 @@ export async function POST(request: Request) {
     },
     update: { title, posterPath },
     create: {
-      userId: session.user.id,
+      userId: user.id,
       contentId: Number(contentId),
       mediaType,
       seasonNumber: season,
@@ -57,8 +56,9 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const session = await auth();
-  if (!session?.user?.id) {
+  const { user, error } = await getRouteUser();
+  if (error || !user) {
+    console.error("Supabase auth error:", error);
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -72,7 +72,7 @@ export async function DELETE(request: Request) {
   // Use deleteMany to avoid errors if the record doesn't exist
   await prisma.watchlistItem.deleteMany({
     where: {
-      userId: session.user.id,
+      userId: user.id,
       contentId: Number(contentId),
       mediaType,
       seasonNumber: season,

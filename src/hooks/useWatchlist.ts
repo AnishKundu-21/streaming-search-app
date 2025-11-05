@@ -2,7 +2,7 @@
 "use client";
 
 import useSWR from "swr";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/components/AuthProvider";
 
 type WatchlistItem = {
   id: string;
@@ -30,7 +30,7 @@ const fetcher = (url: string) =>
  */
 export function useWatchlist() {
   /* Only fetch when the user is authenticated */
-  const { status } = useSession();
+  const { status } = useAuth();
   const enabled = status === "authenticated";
 
   const { data, error, isLoading, mutate } = useSWR<WatchlistItem[]>(

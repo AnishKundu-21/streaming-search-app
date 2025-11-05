@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useWatched } from "@/hooks/useWatched";
+import { useAuth } from "@/components/AuthProvider";
 
 interface WatchedButtonProps {
   contentId: number;
@@ -20,7 +20,7 @@ export default function WatchedButton({
   posterPath,
   seasonNumber,
 }: WatchedButtonProps) {
-  const { data: session } = useSession();
+  const { session } = useAuth();
   const router = useRouter();
   const { isWatched, addItem, removeItem } = useWatched();
   const [isLoading, setIsLoading] = useState(false);

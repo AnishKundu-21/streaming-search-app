@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { useAuth } from "@/components/AuthProvider";
 
 export default function SignInClient() {
   const [email, setEmail] = useState("");
@@ -11,6 +11,7 @@ export default function SignInClient() {
   const [error, setError] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { supabase } = useAuth();
 
   // Show banner if user just registered
   const [justRegistered, setJustRegistered] = useState(false);
@@ -25,17 +26,17 @@ export default function SignInClient() {
     e.preventDefault();
     setError("");
 
-    const res = await signIn("credentials", {
+    const { error: signInError } = await supabase.auth.signInWithPassword({
       email,
       password,
-      redirect: false,
     });
 
-    if (res?.error) {
-      setError("Invalid e-mail or password");
-    } else {
-      router.push("/");
+    if (signInError) {
+      setError(signInError.message || "Unable to sign in");
+      return;
     }
+
+    router.push("/");
   };
 
   return (
@@ -56,7 +57,15 @@ export default function SignInClient() {
           </p>
 
           <button
-            onClick={() => signIn("google", { callbackUrl: "/" })}
+            onClick={async () => {
+              const origin = window.location.origin;
+              await supabase.auth.signInWithOAuth({
+                provider: "google",
+                options: {
+                  redirectTo: `${origin}/auth/callback`,
+                },
+              });
+            }}
             className="mt-8 flex w-full items-center justify-center gap-3 rounded-full border border-white/10 bg-surface-muted px-4 py-3 text-sm font-semibold text-foreground transition hover:border-accent/40 hover:text-accent"
             type="button"
           >

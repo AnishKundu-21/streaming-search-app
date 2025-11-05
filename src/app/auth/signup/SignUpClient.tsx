@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAuth } from "@/components/AuthProvider";
 
 export default function SignUpClient() {
   const [email, setEmail] = useState("");
@@ -11,26 +12,31 @@ export default function SignUpClient() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { supabase } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    const res = await fetch("/api/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
+    const origin = window.location.origin;
+    const { error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name: name },
+        emailRedirectTo: `${origin}/auth/callback`,
+      },
     });
 
     setLoading(false);
 
-    if (res.ok) {
-      router.push("/auth/signin?registered=1");
-    } else {
-      const data = await res.json();
-      setError(data.error ?? "Registration failed");
+    if (signUpError) {
+      setError(signUpError.message || "Registration failed");
+      return;
     }
+
+    router.push("/auth/signin?registered=1");
   };
 
   return (

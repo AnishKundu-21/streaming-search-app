@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useWatchlist } from "@/hooks/useWatchlist";
+import { useAuth } from "@/components/AuthProvider";
 
 interface WatchlistButtonProps {
   contentId: number;
@@ -20,7 +20,7 @@ export default function WatchlistButton({
   posterPath,
   seasonNumber,
 }: WatchlistButtonProps) {
-  const { data: session } = useSession();
+  const { session } = useAuth();
   const router = useRouter();
   const { isInWatchlist, addItem, removeItem } = useWatchlist();
   const [isLoading, setIsLoading] = useState(false);

@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
 import BackButton from "./BackButton";
 import MobileMenu from "./MobileMenu";
+import { useAuth } from "@/components/AuthProvider";
 
 const baseLinks = [
   { href: "/recommendations", label: "Discover" },
@@ -14,7 +14,7 @@ const baseLinks = [
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { data: session, status } = useSession();
+  const { session, status, signOut } = useAuth();
 
   const isDetailPage =
     pathname.startsWith("/movie/") || pathname.startsWith("/tv/");
@@ -59,18 +59,30 @@ export default function Navbar() {
           ) : session ? (
             <div className="flex items-center gap-3">
               <div className="relative h-9 w-9 overflow-hidden rounded-full border border-border">
-                {session.user?.image ? (
+                {session.user?.user_metadata?.avatar_url ? (
                   <Image
-                    src={session.user.image}
-                    alt={session.user.name || "User avatar"}
+                    src={session.user.user_metadata.avatar_url}
+                    alt={
+                      (session.user.user_metadata.full_name as
+                        | string
+                        | undefined) ||
+                      session.user.email ||
+                      "User avatar"
+                    }
                     fill
                     className="object-cover"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-card text-sm font-semibold text-accent">
-                    {(session.user?.name || session.user?.email || "")
+                    {(
+                      (session.user?.user_metadata?.full_name as
+                        | string
+                        | undefined) ||
+                      session.user?.email ||
+                      "SF"
+                    )
                       .slice(0, 2)
-                      .toUpperCase() || "SF"}
+                      .toUpperCase()}
                   </div>
                 )}
               </div>

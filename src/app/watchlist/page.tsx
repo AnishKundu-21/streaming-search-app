@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { useWatched } from "@/hooks/useWatched";
+import { useAuth } from "@/components/AuthProvider";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -111,7 +111,7 @@ const groupItems = (items: ListItem[]): GroupedListItem[] => {
 };
 
 export default function WatchlistPage() {
-  const { data: session } = useSession();
+  const { session } = useAuth();
   const {
     watchlist,
     isLoading: watchlistLoading,

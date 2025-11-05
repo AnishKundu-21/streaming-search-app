@@ -26,9 +26,11 @@ type ContentSection = {
 export default async function Home({
   searchParams,
 }: {
-  searchParams?: SearchParams;
+  searchParams?: SearchParams | Promise<SearchParams>;
 }) {
-  const rawQuery = searchParams?.q;
+  const resolvedSearchParams =
+    (await Promise.resolve(searchParams)) ?? ({} as SearchParams);
+  const rawQuery = resolvedSearchParams?.q;
   const query = Array.isArray(rawQuery) ? rawQuery[0] ?? "" : rawQuery ?? "";
   const normalizedQuery = query.trim();
   const isSearching = normalizedQuery.length > 0;
