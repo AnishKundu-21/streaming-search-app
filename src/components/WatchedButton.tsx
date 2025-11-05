@@ -57,20 +57,17 @@ export default function WatchedButton({
     <button
       onClick={handleClick}
       disabled={isLoading}
-      className={`
-        px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-200
+      className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60
         ${
           watched
-            ? "bg-green-600 hover:bg-green-700 text-white"
-            : "bg-gray-600 hover:bg-gray-700 text-white"
+            ? "border border-accent/40 bg-accent/15 text-accent hover:bg-accent/25"
+            : "bg-accent text-white hover:bg-accent-soft"
         }
-        ${isLoading ? "opacity-60 cursor-not-allowed" : ""}
-        flex items-center gap-2
       `}
     >
       {isLoading ? (
         <>
-          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          <div className="h-4 w-4 rounded-full border-2 border-white/70 border-t-transparent animate-spin" />
           {watched ? "Removing..." : "Marking..."}
         </>
       ) : watched ? (

@@ -102,6 +102,27 @@ interface WatchProviders {
   [countryCode: string]: ProviderCountry;
 }
 
+interface EpisodeDetails {
+  id: number;
+  name: string;
+  overview: string;
+  still_path: string | null;
+  episode_number: number;
+  runtime?: number | null;
+  air_date?: string;
+}
+
+interface SeasonDetail {
+  id: number;
+  name: string;
+  overview: string;
+  air_date?: string;
+  poster_path: string | null;
+  season_number: number;
+  episodes: EpisodeDetails[];
+  videos?: { results: Video[] };
+}
+
 function tmdb<T = any>(
   path: string,
   qs: Record<string, string | number | string[] | boolean> = {} // Allow boolean
@@ -404,6 +425,22 @@ export async function getTVDetails(id: number) {
     return { details, providers: providers.results ?? {}, credits };
   } catch (err) {
     console.error("getTVDetails error:", err);
+    return null;
+  }
+}
+
+export async function getSeasonDetails(tvId: number, seasonNumber: number) {
+  try {
+    const season = await tmdb<SeasonDetail>(
+      `/tv/${tvId}/season/${seasonNumber}`,
+      {
+        append_to_response: "videos",
+      }
+    );
+
+    return season;
+  } catch (err) {
+    console.error("getSeasonDetails error:", err);
     return null;
   }
 }

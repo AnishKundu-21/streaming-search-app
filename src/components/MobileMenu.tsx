@@ -3,14 +3,12 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import ThemeToggle from "./ThemeToggle";
 
 interface MobileMenuProps {
-  className?: string;
-  style?: React.CSSProperties;
+  links: { href: string; label: string }[];
 }
 
-export default function MobileMenu({ className, style }: MobileMenuProps) {
+export default function MobileMenu({ links }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { data: session } = useSession();
   const menuRef = useRef<HTMLDivElement>(null);
@@ -32,8 +30,7 @@ export default function MobileMenu({ className, style }: MobileMenuProps) {
     <div className="sm:hidden" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`p-2 rounded-md ${className || ""}`}
-        style={style}
+        className="inline-flex items-center justify-center rounded-full border border-white/20 bg-surface-muted p-2 text-foreground shadow-soft transition hover:bg-accent hover:text-white"
         aria-label="Open menu"
       >
         <svg
@@ -53,45 +50,47 @@ export default function MobileMenu({ className, style }: MobileMenuProps) {
       </button>
 
       {isOpen && (
-        <div className="absolute top-16 right-4 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-          <div className="py-1">
-            <Link
-              href="/recommendations"
-              className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-              onClick={() => setIsOpen(false)}
-            >
-              Discover
-            </Link>
-            {session && (
+        <div className="absolute right-0 top-14 w-64 rounded-2xl border border-white/10 bg-card p-4 shadow-soft">
+          <div className="space-y-2">
+            {links.map((link) => (
               <Link
-                href="/watchlist"
-                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                key={link.href}
+                href={link.href}
                 onClick={() => setIsOpen(false)}
+                className="flex items-center justify-between rounded-xl border border-transparent px-4 py-3 text-sm font-semibold text-foreground/80 transition hover:border-accent/40 hover:bg-surface-muted hover:text-foreground"
               >
-                My Watchlist
+                {link.label}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="h-4 w-4"
+                >
+                  <path d="M7.293 4.293a1 1 0 011.414 0L14 9.586 8.707 14.88a1 1 0 11-1.414-1.414L11.172 10l-3.879-3.879a1 1 0 010-1.414z" />
+                </svg>
               </Link>
-            )}
-            <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
-            {session ? (
-              <button
-                onClick={() => {
-                  signOut();
-                  setIsOpen(false);
-                }}
-                className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                Sign Out
-              </button>
-            ) : (
-              <Link
-                href="/auth/signin"
-                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                onClick={() => setIsOpen(false)}
-              >
-                Sign In
-              </Link>
-            )}
+            ))}
           </div>
+          <div className="my-3 h-px bg-white/10" />
+          {session ? (
+            <button
+              onClick={() => {
+                signOut();
+                setIsOpen(false);
+              }}
+              className="flex w-full items-center justify-center rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-white shadow-soft transition hover:shadow-lg"
+            >
+              Sign Out
+            </button>
+          ) : (
+            <Link
+              href="/auth/signin"
+              onClick={() => setIsOpen(false)}
+              className="flex w-full items-center justify-center rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-white shadow-soft"
+            >
+              Sign In
+            </Link>
+          )}
         </div>
       )}
     </div>

@@ -1,233 +1,196 @@
-import Image from "next/image";
-import Link from "next/link";
-import RecommendedSection from "@/components/RecommendedSection";
+﻿import RecommendedSection from "@/components/RecommendedSection";
 import ScrollableSection from "@/components/ScrollableSection";
 import {
-  searchMoviesAndTV,
-  getTrending,
-  getTopRated,
   getDiscover,
+  getTopRated,
+  getTrending,
+  searchMoviesAndTV,
 } from "@/lib/tmdb";
 
-// TMDB Genre IDs
-const ACTION_ID = "28";
-const DRAMA_ID = "18";
-const ROMANCE_ID = "10749";
-const ANIMATION_ID = "16";
-const TV_ACTION_ADVENTURE_ID = "10759";
-const TV_SCI_FI_FANTASY_ID = "10765";
+const ADULT_KEYWORD_IDS = ["281741", "190370", "155477"];
+const ACTION_GENRES = ["28", "53"];
+const DRAMA_GENRES = ["18"];
+const COMEDY_GENRES = ["35"];
+const FAMILY_GENRES = ["10751"];
+const ANIME_GENRES = ["16"];
 
-// TMDB Keyword IDs to exclude (for filtering adult content)
-const ADULT_KEYWORD_IDS = [
-  "281741", // nudity
-  "190370", // erotic movie
-  "155477", // softcore
-];
+const take = <T,>(items: T[] = [], count = 18) => items.slice(0, count);
 
-interface TMDBItem {
-  id: number;
-  title?: string;
-  name?: string;
-  media_type?: "movie" | "tv";
-  poster_path: string | null;
-  release_date?: string;
-  first_air_date?: string;
-  popularity: number;
-  genre_ids?: number[];
-  origin_country?: string[];
-}
-
-// Helper to fetch, combine, and sort genre data
-const getCombinedGenreSection = async (
-  movieGenreIds: string[],
-  tvGenreIds: string[],
-  countryCode?: string
-) => {
-  const [movies, tvShows] = await Promise.all([
-    getDiscover("movie", movieGenreIds, countryCode, ADULT_KEYWORD_IDS),
-    getDiscover("tv", tvGenreIds, countryCode, ADULT_KEYWORD_IDS),
-  ]);
-
-  // Manually add the media_type to each item before combining
-  const typedMovies = movies.map((item) => ({
-    ...item,
-    media_type: "movie" as const,
-  }));
-  const typedTvShows = tvShows.map((item) => ({
-    ...item,
-    media_type: "tv" as const,
-  }));
-
-  const combined = [...typedMovies, ...typedTvShows].sort(
-    (a, b) => b.popularity - a.popularity
-  );
-
-  return combined.slice(0, 50);
+type SearchParams = Record<string, string | string[] | undefined>;
+type ContentSection = {
+  title: string;
+  items: any[];
+  defaultMediaType?: "movie" | "tv";
 };
 
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams?: SearchParams;
 }) {
-  const { q } = await searchParams;
-  const query = q?.trim() ?? "";
+  const rawQuery = searchParams?.q;
+  const query = Array.isArray(rawQuery) ? rawQuery[0] ?? "" : rawQuery ?? "";
+  const normalizedQuery = query.trim();
+  const isSearching = normalizedQuery.length > 0;
 
-  let searchResults: TMDBItem[] = [];
-  let trendingMovies: TMDBItem[] = [];
-  let trendingTV: TMDBItem[] = [];
-  let topRatedMovies: TMDBItem[] = [];
-  let topRatedTV: TMDBItem[] = [];
-  // Genre-specific fetches
-  let action: TMDBItem[] = [];
-  let drama: TMDBItem[] = [];
-  let romance: TMDBItem[] = [];
-  let kdramas: TMDBItem[] = [];
-  let anime: TMDBItem[] = [];
-  let animation: TMDBItem[] = [];
+  let sections: ContentSection[] = [];
+  let searchResults: any[] = [];
 
-  if (query) {
-    searchResults = await searchMoviesAndTV(query);
+  if (isSearching) {
+    searchResults = await searchMoviesAndTV(normalizedQuery);
+    if (searchResults.length > 0) {
+      sections.push({
+        title: `Results for "${normalizedQuery}"`,
+        items: take(searchResults, 30),
+      });
+    }
   } else {
-    [
+    const [
+      trendingAll,
       trendingMovies,
-      trendingTV,
+      trendingSeries,
       topRatedMovies,
-      topRatedTV,
-      action,
-      drama,
-      romance,
-      kdramas,
-      anime,
-      animation,
+      topRatedSeries,
+      actionThrillers,
+      prestigeDrama,
+      comedySeries,
+      familyFavorites,
+      animeSpotlight,
     ] = await Promise.all([
-      getTrending("movie"),
-      getTrending("tv"),
+      getTrending("all", "week"),
+      getTrending("movie", "week"),
+      getTrending("tv", "week"),
       getTopRated("movie"),
       getTopRated("tv"),
-      getCombinedGenreSection([ACTION_ID], [TV_ACTION_ADVENTURE_ID]),
-      getCombinedGenreSection([DRAMA_ID], [DRAMA_ID]),
-      getCombinedGenreSection([ROMANCE_ID], [TV_SCI_FI_FANTASY_ID]),
-      Promise.all([
-        getDiscover("tv", [DRAMA_ID], "KR", ADULT_KEYWORD_IDS),
-        getDiscover("tv", [DRAMA_ID], "CN", ADULT_KEYWORD_IDS),
-        getDiscover("tv", [DRAMA_ID], "JP", ADULT_KEYWORD_IDS),
-      ]).then((results) => {
-        const combined = results.flat();
-        // Filter out anime and animation from East Asian Dramas section
-        const filtered = combined.filter((item) => {
-          // Filter out if it has animation genre (ID 16)
-          if (item.genre_ids?.includes(16)) {
-            return false;
-          }
-
-          // Additional filtering for potential anime content by title keywords
-          const title = (item.name || item.title || "").toLowerCase();
-          const animeKeywords = [
-            "anime",
-            "dragon ball",
-            "naruto",
-            "one piece",
-            "attack on titan",
-            "demon slayer",
-            "my hero academia",
-            "jujutsu kaisen",
-            "bleach",
-            "hunter x hunter",
-            "death note",
-            "fullmetal alchemist",
-            "cowboy bebop",
-            "studio ghibli",
-            "spirited away",
-            "princess mononoke",
-          ];
-
-          const isLikelyAnime = animeKeywords.some((keyword) =>
-            title.includes(keyword)
-          );
-
-          return !isLikelyAnime;
-        });
-        return filtered
-          .sort((a, b) => b.popularity - a.popularity)
-          .slice(0, 50);
-      }),
-      getDiscover("tv", [ANIMATION_ID], "JP", ADULT_KEYWORD_IDS),
-      getCombinedGenreSection([ANIMATION_ID], [ANIMATION_ID]),
+      getDiscover("movie", ACTION_GENRES, undefined, ADULT_KEYWORD_IDS),
+      getDiscover("tv", DRAMA_GENRES, undefined, ADULT_KEYWORD_IDS),
+      getDiscover("tv", COMEDY_GENRES, undefined, ADULT_KEYWORD_IDS),
+      getDiscover("movie", FAMILY_GENRES, undefined, ADULT_KEYWORD_IDS),
+      getDiscover("tv", ANIME_GENRES, "JP", ADULT_KEYWORD_IDS),
     ]);
+
+    sections = [
+      { title: "Now Streaming Highlights", items: take(trendingAll) },
+      {
+        title: "Cinematic Premieres",
+        items: take(trendingMovies),
+        defaultMediaType: "movie",
+      },
+      {
+        title: "Binge-Worthy Series",
+        items: take(trendingSeries),
+        defaultMediaType: "tv",
+      },
+      {
+        title: "Top Rated Films",
+        items: take(topRatedMovies),
+        defaultMediaType: "movie",
+      },
+      {
+        title: "Top Rated Series",
+        items: take(topRatedSeries),
+        defaultMediaType: "tv",
+      },
+      {
+        title: "Thrills & Suspense",
+        items: take(actionThrillers),
+        defaultMediaType: "movie",
+      },
+      {
+        title: "Award-Worthy Drama",
+        items: take(prestigeDrama),
+        defaultMediaType: "tv",
+      },
+      {
+        title: "Comedy Comfort",
+        items: take(comedySeries),
+        defaultMediaType: "tv",
+      },
+      {
+        title: "Family Movie Night",
+        items: take(familyFavorites),
+        defaultMediaType: "movie",
+      },
+      {
+        title: "Anime Spotlight",
+        items: take(animeSpotlight),
+        defaultMediaType: "tv",
+      },
+    ];
   }
 
-  return (
-    <div className="min-h-screen bg-main text-foreground">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Hero / Search Section */}
-        <div className="text-center my-8 md:my-12">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4">
-            Find Your Next <span className="text-accent">Stream</span>
-          </h1>
-          <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-            Discover movies and TV shows with streaming availability across the
-            globe.
-          </p>
-          <form
-            action="/search"
-            method="GET"
-            className="max-w-2xl mx-auto flex flex-col sm:flex-row gap-2 mb-8 px-4 sm:px-0"
-          >
-            <input
-              type="text"
-              name="q"
-              defaultValue={query}
-              placeholder="Search for movies or TV shows..."
-              className="flex-1 w-full px-4 py-3 rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
-            />
-            <button
-              type="submit"
-              className="px-6 py-3 bg-accent hover:bg-accent-hover text-white rounded-lg font-semibold transition-colors"
-            >
-              Search
-            </button>
-          </form>
-        </div>
+  const heroTagline = isSearching
+    ? `Search results tailored to "${normalizedQuery}".`
+    : "Discover the standouts in film and television from every major service.";
 
-        {query ? (
-          // Search Results
-          <></>
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <section className="px-4 pb-16 pt-28 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-screen-xl rounded-3xl border border-border bg-card px-6 py-12 text-center shadow-soft sm:px-12 sm:py-16">
+          <p className="text-xs font-semibold uppercase tracking-[0.38em] text-muted-foreground">
+            StreamFinder
+          </p>
+          <h1 className="mt-4 font-display text-4xl font-bold text-white sm:text-5xl md:text-6xl">
+            All of streaming, one destination.
+          </h1>
+          <p className="mt-5 text-lg text-muted-foreground sm:text-xl">
+            {heroTagline}
+          </p>
+
+          <form
+            className="mx-auto mt-10 max-w-3xl"
+            action="/"
+            method="GET"
+            role="search"
+          >
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <input
+                type="text"
+                name="q"
+                defaultValue={normalizedQuery}
+                placeholder="Search for series, films, people, or collections"
+                className="h-14 flex-1 rounded-full border border-white/10 bg-black/70 px-6 text-base text-white placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+              />
+              <button
+                type="submit"
+                className="h-14 rounded-full bg-accent px-10 text-base font-semibold text-white transition hover:bg-accent-soft"
+              >
+                Search
+              </button>
+            </div>
+          </form>
+
+          {!isSearching && (
+            <div className="mt-9 flex flex-wrap items-center justify-center gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.32em] text-muted-foreground">
+              <span>Series</span>
+              <span className="h-4 w-px bg-white/20" />
+              <span>Movies</span>
+              <span className="h-4 w-px bg-white/20" />
+              <span>Originals</span>
+              <span className="h-4 w-px bg-white/20" />
+              <span>Just Added</span>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-12 px-4 pb-24 sm:px-6 lg:px-8">
+        {!isSearching && <RecommendedSection />}
+
+        {isSearching && sections.length === 0 ? (
+          <div className="rounded-3xl border border-white/10 bg-card p-12 text-center text-lg text-muted-foreground shadow-soft">
+            No matches for "{normalizedQuery}". Try another title, person, or
+            keyword.
+          </div>
         ) : (
-          // Homepage Content
-          <>
-            <RecommendedSection />
+          sections.map((section) => (
             <ScrollableSection
-              title="Trending Movies"
-              items={trendingMovies ?? []}
-              defaultMediaType="movie"
+              key={section.title}
+              title={section.title}
+              items={section.items}
+              defaultMediaType={section.defaultMediaType}
             />
-            <ScrollableSection
-              title="Trending TV Shows"
-              items={trendingTV ?? []}
-              defaultMediaType="tv"
-            />
-            <ScrollableSection title="Popular in Action" items={action ?? []} />
-            <ScrollableSection title="Popular in Drama" items={drama ?? []} />
-            <ScrollableSection
-              title="Popular in Romance"
-              items={romance ?? []}
-            />
-            <ScrollableSection
-              title="Popular in Animation"
-              items={animation ?? []}
-            />
-            <ScrollableSection
-              title="East Asian Dramas"
-              items={kdramas ?? []}
-              defaultMediaType="tv"
-            />
-            <ScrollableSection
-              title="Popular Anime"
-              items={anime ?? []}
-              defaultMediaType="tv"
-            />
-          </>
+          ))
         )}
       </div>
     </div>

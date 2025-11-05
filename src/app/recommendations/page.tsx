@@ -57,57 +57,52 @@ export default function RecommendationsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16">
-        <h1 className="text-3xl md:text-4xl font-bold mb-4">
-          Discover New Titles
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-8">
-          Select a media type and genre to get recommendations.
-        </p>
-
-        {/* Media Type Toggle */}
-        <div className="flex space-x-2 mb-8">
-          <button
-            onClick={() => setMediaType("movie")}
-            className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-              mediaType === "movie"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-            }`}
-          >
-            Movies
-          </button>
-          <button
-            onClick={() => setMediaType("tv")}
-            className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-              mediaType === "tv"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-            }`}
-          >
-            TV Shows
-          </button>
+    <div className="flex flex-col gap-10">
+      <section className="rounded-3xl border border-white/10 bg-card p-8 shadow-soft sm:p-12">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h1 className="font-display text-3xl font-semibold uppercase tracking-[0.08em] text-white sm:text-4xl">
+              Discover new titles
+            </h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Choose a media type and genre to explore curated picks, refreshed
+              every visit.
+            </p>
+          </div>
         </div>
 
-        {/* Genre List */}
-        <div className="flex flex-wrap gap-2 mb-8">
+        <div className="mt-8 flex flex-wrap gap-3">
+          {["movie", "tv"].map((type) => (
+            <button
+              key={type}
+              onClick={() => setMediaType(type as "movie" | "tv")}
+              className={`inline-flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-semibold uppercase tracking-wide transition ${
+                mediaType === type
+                  ? "border-transparent bg-accent text-white shadow-[0_18px_36px_rgba(181,98,255,0.45)]"
+                  : "border-white/20 bg-white/5 text-white/70 hover:text-white"
+              }`}
+            >
+              {type === "movie" ? "Movies" : "TV Shows"}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-8 flex flex-wrap gap-3">
           {isGenresLoading
-            ? // Genre loading skeleton
-              [...Array(10)].map((_, i) => (
+            ? [...Array(12)].map((_, index) => (
                 <div
-                  key={i}
-                  className="h-8 w-24 bg-gray-300 dark:bg-gray-700 rounded-full animate-pulse"
+                  key={index}
+                  className="h-9 w-28 animate-pulse rounded-full border border-white/20 bg-white/5"
                 />
               ))
             : genres.map((genre) => (
                 <button
                   key={genre.id}
                   onClick={() => handleGenreClick(genre)}
-                  className={`px-3 py-1.5 text-sm rounded-full transition-colors ${
+                  className={`rounded-full border px-4 py-2 text-sm font-semibold uppercase tracking-wide transition ${
                     selectedGenre?.id === genre.id
-                      ? "bg-green-600 text-white"
-                      : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                      ? "border-transparent bg-accent text-white shadow-[0_18px_36px_rgba(181,98,255,0.45)]"
+                      : "border-white/20 bg-white/5 text-white/70 hover:text-white"
                   }`}
                 >
                   {genre.name}
@@ -115,56 +110,66 @@ export default function RecommendationsPage() {
               ))}
         </div>
 
-        {/* Results Grid */}
-        <div>
+        <div className="mt-10 min-h-[200px]">
           {isLoading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
-              {[...Array(12)].map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="bg-gray-300 dark:bg-gray-700 aspect-[2/3] rounded-lg" />
-                </div>
+            <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+              {[...Array(12)].map((_, index) => (
+                <div
+                  key={index}
+                  className="aspect-[2/3] animate-pulse rounded-2xl border border-white/20 bg-white/5"
+                />
               ))}
             </div>
           ) : results.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
-              {results.map((item) => (
+            <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+              {results.map((item, index) => (
                 <Link
                   href={`/${mediaType}/${item.id}`}
                   key={item.id}
-                  className="block group"
+                  className="group/item relative flex flex-col animate-fade-up"
+                  style={{ animationDelay: `${index * 35}ms` }}
                 >
-                  <div className="relative aspect-[2/3] rounded-md overflow-hidden shadow-lg transform transition-transform duration-300 group-hover:scale-105">
+                  <div className="relative aspect-[2/3] overflow-hidden rounded-2xl border border-white/20 bg-white/5 shadow-soft transition-transform duration-500 group-hover/item:-translate-y-1 group-hover/item:shadow-lg">
                     {item.poster_path ? (
                       <Image
                         src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
                         alt={item.title || item.name || "Poster"}
                         fill
-                        className="object-cover"
+                        className="object-cover transition-transform duration-500 group-hover/item:scale-105"
                         sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
                       />
                     ) : (
-                      <div className="bg-gray-200 dark:bg-gray-700 h-full flex items-center justify-center">
-                        <span className="text-sm text-gray-500">No Image</span>
+                      <div className="flex h-full items-center justify-center bg-surface-muted text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        No Artwork
                       </div>
                     )}
+                    <div className="absolute inset-0 bg-black/60 opacity-0 transition duration-500 group-hover/item:opacity-100" />
+                    <span className="absolute bottom-3 left-3 inline-flex items-center rounded-full bg-white/20 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-wide text-white backdrop-blur-md">
+                      {mediaType === "movie" ? "Film" : "Series"}
+                    </span>
                   </div>
-                  <h3 className="mt-2 text-sm font-medium text-center text-gray-700 dark:text-gray-300 truncate group-hover:text-blue-500 dark:group-hover:text-blue-400">
+                  <h3 className="mt-3 line-clamp-2 text-sm font-semibold text-white transition-colors group-hover/item:text-accent-soft">
                     {item.title || item.name}
                   </h3>
                 </Link>
               ))}
             </div>
           ) : selectedGenre ? (
-            <p className="text-center mt-8 text-gray-500">
-              No results found for {selectedGenre.name}.
-            </p>
+            <div className="rounded-2xl border border-white/20 bg-white/5 p-10 text-center backdrop-blur">
+              <p className="text-sm text-muted-foreground">
+                No results found for {selectedGenre.name}. Try another genre or
+                switch media type.
+              </p>
+            </div>
           ) : (
-            <p className="text-center mt-8 text-gray-500">
-              Please select a genre to begin.
-            </p>
+            <div className="rounded-2xl border border-white/20 bg-white/5 p-10 text-center backdrop-blur">
+              <p className="text-sm text-muted-foreground">
+                Select a genre to generate curated recommendations.
+              </p>
+            </div>
           )}
         </div>
-      </div>
+      </section>
     </div>
   );
 }

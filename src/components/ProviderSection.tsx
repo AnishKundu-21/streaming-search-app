@@ -73,8 +73,8 @@ export default function ProviderSection({ providers }: ProviderSectionProps) {
     return (
       <section className="mt-12">
         <h2 className="text-2xl font-semibold mb-4">Where to Watch</h2>
-        <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg text-center">
-          <p>No streaming availability information found for this title.</p>
+        <div className="rounded-3xl border border-border bg-card p-6 text-center text-muted-foreground shadow-soft">
+          No streaming availability information found for this title.
         </div>
       </section>
     );
@@ -85,51 +85,72 @@ export default function ProviderSection({ providers }: ProviderSectionProps) {
 
   return (
     <section className="mt-12">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+      <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-2xl font-semibold mb-2 sm:mb-0">Where to Watch</h2>
-        <div className="flex items-center gap-2">
-          <label htmlFor="country-select" className="text-sm font-medium">
+        <div className="flex items-center gap-3">
+          <label
+            htmlFor="country-select"
+            className="text-sm font-medium text-muted-foreground"
+          >
             Country:
           </label>
-          <select
-            id="country-select"
-            value={selectedCountry}
-            onChange={(e) => setSelectedCountry(e.target.value)}
-            className="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-md px-3 py-2 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {countryList.map(({ code, name }) => (
-              <option key={code} value={code}>
-                {name}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              id="country-select"
+              value={selectedCountry}
+              onChange={(e) => setSelectedCountry(e.target.value)}
+              className="appearance-none rounded-full border border-border bg-black/70 py-2 pl-4 pr-10 text-sm font-semibold text-white focus:outline-none focus:ring-2 focus:ring-accent"
+            >
+              {countryList.map(({ code, name }) => (
+                <option key={code} value={code} className="bg-black text-white">
+                  {name}
+                </option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="h-4 w-4"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M5.23 7.21a.75.75 0 011.06.02L10 10.939l3.71-3.708a.75.75 0 111.06 1.062l-4.24 4.237a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.06z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </span>
+          </div>
         </div>
       </div>
 
-      <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg">
+      <div className="rounded-3xl border border-border bg-card p-6 shadow-soft">
         {bundled.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
             {bundled.map((p) => (
               <div
                 key={p.name}
-                className="flex flex-col items-center text-center"
+                className="flex flex-col items-center rounded-2xl border border-white/5 bg-surface-elevated/40 p-4 text-center backdrop-blur"
               >
                 <Image
                   src={`https://image.tmdb.org/t/p/w92${p.logo}`}
                   alt={p.name}
                   width={64}
                   height={64}
-                  className="rounded-lg mb-2"
+                  className="mb-2 rounded-xl"
                 />
-                <p className="font-semibold text-sm mb-1">{p.name}</p>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
+                <p className="mb-1 text-sm font-semibold text-foreground">
+                  {p.name}
+                </p>
+                <p className="text-xs text-muted-foreground">
                   {Array.from(p.types).join(", ")}
                 </p>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-center">
+          <p className="text-center text-muted-foreground">
             Not currently available in the selected country.
           </p>
         )}

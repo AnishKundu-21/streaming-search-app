@@ -128,23 +128,23 @@ export default function WatchlistPage() {
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-        <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-3xl font-bold mb-4">
-            Sign in to view your watchlist
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-8">
-            Keep track of movies and TV shows you want to watch and have already
-            watched.
-          </p>
+      <section className="rounded-3xl border border-white/10 bg-card p-12 text-center shadow-soft">
+        <h1 className="font-display text-3xl font-semibold uppercase tracking-[0.08em] text-white">
+          Sign in to view your lists
+        </h1>
+        <p className="mt-4 text-sm text-muted-foreground">
+          Keep track of what&apos;s next and record what you&apos;ve already
+          enjoyed.
+        </p>
+        <div className="mt-8 flex justify-center">
           <Link
             href="/auth/signin"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold"
+            className="rounded-full bg-accent px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow-[0_18px_36px_rgba(181,98,255,0.45)] transition hover:scale-[1.02] hover:shadow-[0_24px_50px_rgba(181,98,255,0.55)]"
           >
             Sign In
           </Link>
         </div>
-      </div>
+      </section>
     );
   }
 
@@ -153,44 +153,39 @@ export default function WatchlistPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16">
-          <div className="h-10 w-48 bg-gray-300 dark:bg-gray-700 rounded animate-pulse mb-8"></div>
-
-          <div className="flex space-x-1 mb-8">
-            {[...Array(2)].map((_, i) => (
-              <div
-                key={i}
-                className="h-12 w-32 bg-gray-300 dark:bg-gray-700 rounded-lg animate-pulse"
-              />
-            ))}
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {[...Array(12)].map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="bg-gray-300 dark:bg-gray-700 aspect-[2/3] rounded-lg mb-2" />
-                <div className="bg-gray-300 dark:bg-gray-700 h-4 rounded mb-1" />
-                <div className="bg-gray-300 dark:bg-gray-700 h-3 rounded w-2/3" />
-              </div>
-            ))}
-          </div>
+      <section className="rounded-3xl border border-white/10 bg-card p-10 shadow-soft">
+        <div className="h-10 w-48 animate-pulse rounded-full border border-white/20 bg-white/5" />
+        <div className="mt-8 flex gap-3">
+          {[...Array(2)].map((_, i) => (
+            <div
+              key={i}
+              className="h-12 w-36 animate-pulse rounded-full border border-white/20 bg-white/5"
+            />
+          ))}
         </div>
-      </div>
+        <div className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          {[...Array(12)].map((_, i) => (
+            <div
+              key={i}
+              className="aspect-[2/3] animate-pulse rounded-2xl border border-white/20 bg-white/5"
+            />
+          ))}
+        </div>
+      </section>
     );
   }
 
   if (hasError) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-        <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-3xl font-bold mb-4">Unable to load your lists</h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            There was an error loading your watchlist and watched items. Please
-            try again.
-          </p>
-        </div>
-      </div>
+      <section className="rounded-3xl border border-white/10 bg-card p-12 text-center shadow-soft">
+        <h1 className="font-display text-3xl font-semibold uppercase tracking-[0.08em] text-white">
+          Unable to load your lists
+        </h1>
+        <p className="mt-4 text-sm text-muted-foreground">
+          Something went wrong fetching your watchlist. Please refresh the page
+          and try again.
+        </p>
+      </section>
     );
   }
 
@@ -202,98 +197,116 @@ export default function WatchlistPage() {
   const isEmpty = currentItems.length === 0;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16">
-        <h1 className="text-3xl md:text-4xl font-bold mb-8">My Lists</h1>
-
-        <div className="flex space-x-1 mb-8">
-          <button
-            onClick={() => setActiveTab("watchlist")}
-            className={`px-4 sm:px-6 py-3 rounded-lg font-semibold transition-colors text-sm sm:text-base ${
-              activeTab === "watchlist"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-            }`}
-          >
-            To Watch ({groupedWatchlist.length})
-          </button>
-          <button
-            onClick={() => setActiveTab("watched")}
-            className={`px-4 sm:px-6 py-3 rounded-lg font-semibold transition-colors text-sm sm:text-base ${
-              activeTab === "watched"
-                ? "bg-green-600 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-            }`}
-          >
-            Already Watched ({groupedWatched.length})
-          </button>
+    <section className="rounded-3xl border border-white/10 bg-card p-8 shadow-soft sm:p-12">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="font-display text-3xl font-semibold uppercase tracking-[0.08em] text-white sm:text-4xl">
+            My lists
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Seamlessly manage what to watch next and remember what you have
+            already completed.
+          </p>
         </div>
+      </div>
 
-        {isEmpty ? (
-          <div className="text-center p-8 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-            <h2 className="text-2xl font-bold mb-4">
-              {activeTab === "watchlist"
-                ? "Your watchlist is empty"
-                : "No watched items yet"}
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-8">
-              {activeTab === "watchlist"
-                ? "Start adding movies and TV shows to keep track of what you want to watch."
-                : 'Mark some movies and TV shows as "Already Watched" to see them here.'}
-            </p>
+      <div className="mt-8 flex flex-wrap gap-3">
+        {(
+          [
+            {
+              key: "watchlist" as const,
+              label: `To Watch (${groupedWatchlist.length})`,
+            },
+            {
+              key: "watched" as const,
+              label: `Already Watched (${groupedWatched.length})`,
+            },
+          ] as const
+        ).map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`rounded-full border px-5 py-2 text-sm font-semibold uppercase tracking-wide transition ${
+              activeTab === tab.key
+                ? "border-transparent bg-accent text-white shadow-[0_18px_36px_rgba(181,98,255,0.45)]"
+                : "border-white/20 bg-white/5 text-white/70 hover:text-white"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {isEmpty ? (
+        <div className="mt-10 rounded-2xl border border-white/20 bg-white/5 p-12 text-center backdrop-blur">
+          <h2 className="font-display text-2xl font-semibold uppercase tracking-[0.08em] text-white">
+            {activeTab === "watchlist"
+              ? "Your watchlist is empty"
+              : "No watched items yet"}
+          </h2>
+          <p className="mt-4 text-sm text-muted-foreground">
+            {activeTab === "watchlist"
+              ? "Start adding movies and series to keep track of what you want to explore."
+              : 'Mark a movie or series as "Already Watched" to see it here.'}
+          </p>
+          <div className="mt-8 flex justify-center">
             <Link
               href="/"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold"
+              className="rounded-full bg-accent px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow-[0_18px_36px_rgba(181,98,255,0.45)] transition hover:scale-[1.02] hover:shadow-[0_24px_50px_rgba(181,98,255,0.55)]"
             >
-              Browse Content
+              Browse content
             </Link>
           </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
-            {currentItems.map((item) => (
-              <div key={item.id} className="group">
-                <Link href={`/${item.mediaType}/${item.contentId}`}>
-                  <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-2 bg-gray-200 dark:bg-gray-800">
-                    {item.posterPath ? (
-                      <Image
-                        src={`https://image.tmdb.org/t/p/w342${item.posterPath}`}
-                        alt={item.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-200"
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full text-gray-500">
-                        No Image
-                      </div>
-                    )}
-                    <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                      {item.mediaType === "movie" ? "Movie" : "TV"}
+        </div>
+      ) : (
+        <div className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          {currentItems.map((item, index) => (
+            <div
+              key={item.id}
+              className="group/item flex flex-col animate-fade-up"
+              style={{ animationDelay: `${index * 35}ms` }}
+            >
+              <Link href={`/${item.mediaType}/${item.contentId}`}>
+                <div className="relative aspect-[2/3] overflow-hidden rounded-2xl border border-white/20 bg-white/5 shadow-soft transition-transform duration-500 group-hover/item:-translate-y-1 group-hover/item:shadow-lg">
+                  {item.posterPath ? (
+                    <Image
+                      src={`https://image.tmdb.org/t/p/w342${item.posterPath}`}
+                      alt={item.title}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover/item:scale-105"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center bg-white/5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      No Artwork
                     </div>
-                  </div>
+                  )}
+                  <span className="absolute right-3 top-3 rounded-full bg-white/20 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-wide text-white backdrop-blur-md">
+                    {item.mediaType === "movie" ? "Film" : "Series"}
+                  </span>
+                </div>
+              </Link>
+
+              <h3 className="mt-3 line-clamp-2 text-sm font-semibold text-white transition-colors group-hover/item:text-accent-soft">
+                <Link href={`/${item.mediaType}/${item.contentId}`}>
+                  {item.title}
                 </Link>
+              </h3>
 
-                <h3 className="font-semibold text-sm mb-1 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                  <Link href={`/${item.mediaType}/${item.contentId}`}>
-                    {item.title}
-                  </Link>
-                </h3>
-
-                {item.seasonInfo && (
-                  <p className="text-xs font-bold text-blue-500 dark:text-blue-400">
-                    {item.seasonInfo}
-                  </p>
-                )}
-
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {activeTab === "watchlist"
-                    ? `Added ${new Date(item.date).toLocaleDateString()}`
-                    : `Watched ${new Date(item.date).toLocaleDateString()}`}
+              {item.seasonInfo && (
+                <p className="text-xs font-semibold uppercase tracking-wide text-accent">
+                  {item.seasonInfo}
                 </p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+              )}
+
+              <p className="text-xs text-muted-foreground">
+                {activeTab === "watchlist"
+                  ? `Added ${new Date(item.date).toLocaleDateString()}`
+                  : `Watched ${new Date(item.date).toLocaleDateString()}`}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
   );
 }

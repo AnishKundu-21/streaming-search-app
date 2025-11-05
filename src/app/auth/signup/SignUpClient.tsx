@@ -34,60 +34,83 @@ export default function SignUpClient() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg">
-        <h1 className="text-2xl font-bold mb-6 text-center">
-          Create your StreamFinder account
-        </h1>
+    <div className="flex min-h-[60vh] items-center justify-center">
+      <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-card p-8 shadow-soft sm:p-10">
+        <div className="relative">
+          <h1 className="text-2xl font-semibold text-foreground sm:text-3xl">
+            Create your account
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Join StreamFinder to track what you love and discover what&apos;s
+            next.
+          </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            className="w-full p-3 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full p-3 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-          />
-          <input
-            type="password"
-            placeholder="Password (min 6 chars)"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={6}
-            className="w-full p-3 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-          />
+          <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+            <div className="space-y-2">
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Name
+              </label>
+              <input
+                type="text"
+                placeholder="Alex Doe"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="w-full rounded-2xl border border-white/10 bg-surface-muted px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/70 focus:border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent/30"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Email
+              </label>
+              <input
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full rounded-2xl border border-white/10 bg-surface-muted px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/70 focus:border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent/30"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Password
+              </label>
+              <input
+                type="password"
+                placeholder="At least 6 characters"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6}
+                className="w-full rounded-2xl border border-white/10 bg-surface-muted px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/70 focus:border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent/30"
+              />
+            </div>
 
-          {error && <p className="text-red-600 text-sm">{error}</p>}
+            {error && (
+              <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm text-red-300">
+                {error}
+              </p>
+            )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white py-2 rounded-md"
-          >
-            {loading ? "Creating account…" : "Sign Up"}
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white shadow-soft transition hover:shadow-lg disabled:opacity-60"
+            >
+              {loading ? "Creating account…" : "Sign Up"}
+            </button>
+          </form>
 
-        <div className="mt-6 text-center">
-          <p className="text-gray-600 dark:text-gray-400">
+          <div className="mt-6 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
             <Link
               href="/auth/signin"
-              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-semibold"
+              className="font-semibold text-accent hover:text-accent-strong"
             >
               Sign in
             </Link>
-          </p>
+          </div>
         </div>
       </div>
     </div>

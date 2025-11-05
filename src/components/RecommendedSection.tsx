@@ -17,19 +17,22 @@ export default function RecommendedSection() {
   // Loading state
   if (isLoading) {
     return (
-      <section className="mb-12">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold">Recommended for You</h2>
+      <section className="rounded-3xl border border-white/10 bg-card p-8 shadow-soft">
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-2xl font-semibold uppercase tracking-[0.08em] text-white">
+            Recommended for You
+          </h2>
+          <span className="pill">Loading tailored picks…</span>
         </div>
-        <div className="flex gap-4 overflow-hidden">
+        <div className="mt-6 flex gap-4 overflow-hidden">
           {[...Array(8)].map((_, i) => (
             <div
               key={i}
-              className="flex-shrink-0 w-[120px] sm:w-[150px] md:w-[180px] animate-pulse"
+              className="flex-shrink-0 w-[140px] animate-pulse rounded-2xl border border-white/5 bg-surface-muted p-3"
             >
-              <div className="bg-card aspect-[2/3] rounded-lg mb-2" />
-              <div className="bg-muted-foreground h-4 rounded mb-1 opacity-70" />
-              <div className="bg-muted-foreground h-3 rounded w-2/3 opacity-50" />
+              <div className="aspect-[2/3] rounded-xl bg-white/10" />
+              <div className="mt-3 h-3 rounded-full bg-white/10" />
+              <div className="mt-2 h-3 w-2/3 rounded-full bg-white/5" />
             </div>
           ))}
         </div>
@@ -40,13 +43,14 @@ export default function RecommendedSection() {
   // Error state
   if (isError) {
     return (
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold mb-6">Recommended for You</h2>
-        <div className="text-center p-8 bg-card rounded-lg">
-          <p className="text-muted-foreground">
-            Unable to load recommendations. Please try again later.
-          </p>
-        </div>
+      <section className="rounded-3xl border border-white/10 bg-card p-10 text-center shadow-soft">
+        <h2 className="font-display text-2xl font-semibold uppercase tracking-[0.08em] text-white">
+          Recommended for You
+        </h2>
+        <p className="mt-4 text-sm text-muted-foreground">
+          Unable to load your personalized recommendations right now. Please try
+          again soon.
+        </p>
       </section>
     );
   }
@@ -54,17 +58,14 @@ export default function RecommendedSection() {
   // No recommendations available
   if (recommendedMovies.length === 0 && recommendedTvShows.length === 0) {
     return (
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold mb-6">Recommended for You</h2>
-        <div className="text-center p-8 bg-card rounded-lg">
-          <p className="text-muted-foreground mb-4">
-            No recommendations yet!
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Mark some movies or TV shows as &quot;Already Watched&quot; to get
-            personalized recommendations.
-          </p>
-        </div>
+      <section className="rounded-3xl border border-white/10 bg-card p-10 text-center shadow-soft">
+        <h2 className="font-display text-2xl font-semibold uppercase tracking-[0.08em] text-white">
+          Your queue is warming up
+        </h2>
+        <p className="mt-4 text-sm text-muted-foreground">
+          Mark a few movies or series as already watched to unlock bespoke
+          recommendations.
+        </p>
       </section>
     );
   }

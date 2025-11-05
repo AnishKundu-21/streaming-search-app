@@ -1,9 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import WatchedButton from "./WatchedButton";
-import WatchlistButton from "./WatchlistButton";
+import Link from "next/link";
 
 interface Season {
   id: number;
@@ -24,103 +22,68 @@ export default function SeasonTracker({
   tvTitle,
   seasons,
 }: SeasonTrackerProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
   const validSeasons = seasons.filter((s) => s.season_number > 0);
 
-  // Close the dropdown if the user clicks outside of it
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  if (validSeasons.length === 0) {
+    return null;
+  }
 
   return (
     <section className="mt-12">
-      <h2 className="text-2xl font-semibold mb-4">Track Seasons</h2>
-      <div className="relative w-full" ref={dropdownRef}>
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="w-full bg-gray-100 dark:bg-gray-800 p-3 rounded-lg flex justify-between items-center"
-        >
-          <span className="font-semibold">
-            Select a Season to Track or Update
-          </span>
-          <svg
-            className={`w-5 h-5 transition-transform ${
-              isOpen ? "rotate-180" : ""
-            }`}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </button>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-2xl font-semibold">Track Seasons</h2>
+          <p className="text-sm text-muted-foreground">
+            Tap a season card to open a dedicated view with trailers, synopsis,
+            and episode details.
+          </p>
+        </div>
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+          {tvTitle}
+        </p>
+      </div>
 
-        {isOpen && (
-          <div className="absolute top-full mt-2 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-10">
-            <div className="space-y-2 p-2 max-h-96 overflow-y-auto">
-              {validSeasons.map((season) => (
-                <div
-                  key={season.id}
-                  className="flex items-center gap-4 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  <div className="flex-shrink-0 w-12">
-                    {season.poster_path ? (
-                      <Image
-                        src={`https://image.tmdb.org/t/p/w185${season.poster_path}`}
-                        alt={season.name}
-                        width={100}
-                        height={150}
-                        className="rounded-md"
-                      />
-                    ) : (
-                      <div className="w-12 h-[72px] bg-gray-300 dark:bg-gray-700 rounded-md flex items-center justify-center text-xs">
-                        Art
-                      </div>
-                    )}
+      <div className="mt-6 overflow-x-auto pb-4 scrollbar-hide">
+        <div className="flex gap-6">
+          {validSeasons.map((season) => (
+            <Link
+              key={season.id}
+              href={`/tv/${tvId}/season/${season.season_number}`}
+              className="group/wrapper relative w-[170px] flex-shrink-0"
+            >
+              <div className="relative aspect-[2/3] overflow-hidden rounded-3xl border border-border bg-surface-elevated shadow-soft transition duration-500 group-hover/wrapper:-translate-y-1 group-hover/wrapper:border-accent/60">
+                {season.poster_path ? (
+                  <Image
+                    src={`https://image.tmdb.org/t/p/w342${season.poster_path}`}
+                    alt={season.name}
+                    fill
+                    className="object-cover transition duration-500 group-hover/wrapper:scale-105"
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center bg-surface-elevated text-xs uppercase tracking-widest text-muted-foreground">
+                    No Art
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-md font-bold">{season.name}</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {season.episode_count} episodes
-                    </p>
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <WatchlistButton
-                      contentId={tvId}
-                      mediaType="tv"
-                      title={`${tvTitle} - ${season.name}`}
-                      posterPath={season.poster_path}
-                      seasonNumber={season.season_number}
-                    />
-                    <WatchedButton
-                      contentId={tvId}
-                      mediaType="tv"
-                      title={`${tvTitle} - ${season.name}`}
-                      posterPath={season.poster_path}
-                      seasonNumber={season.season_number}
-                    />
-                  </div>
+                )}
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-4">
+                  <span className="text-xs font-semibold uppercase tracking-[0.38em] text-white/70">
+                    Season {season.season_number}
+                  </span>
+                  <p className="mt-1 text-sm font-semibold text-white line-clamp-2">
+                    {season.name}
+                  </p>
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
+              </div>
+              <div className="mt-3 space-y-1">
+                <p className="text-xs uppercase tracking-[0.28em] text-muted-foreground">
+                  {season.episode_count} Episodes
+                </p>
+                <p className="text-sm font-semibold text-foreground">
+                  View details
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
     </section>
   );

@@ -1,10 +1,23 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Space_Grotesk, Oxanium, Source_Code_Pro } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import AuthProvider from "@/components/AuthProvider"; // Import the new AuthProvider
 
-const inter = Inter({ subsets: ["latin"] });
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+const oxanium = Oxanium({
+  subsets: ["latin"],
+  variable: "--font-serif",
+});
+
+const sourceCodePro = Source_Code_Pro({
+  subsets: ["latin"],
+  variable: "--font-mono",
+});
 
 export const metadata: Metadata = {
   title: "StreamFinder - Your Streaming Guide",
@@ -17,13 +30,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${spaceGrotesk.variable} ${oxanium.variable} ${sourceCodePro.variable} font-sans bg-main text-foreground antialiased selection:bg-accent-soft/40 selection:text-accent-strong`}
+      >
         <AuthProvider>
-          {" "}
-          {/* Wrap the entire app in the AuthProvider */}
-          <Navbar />
-          <main>{children}</main>
+          <div className="relative isolate min-h-screen overflow-x-hidden">
+            <Navbar />
+            <main className="relative mx-auto w-full max-w-screen-2xl px-4 pb-20 pt-20 sm:px-6 lg:px-8">
+              {children}
+            </main>
+          </div>
         </AuthProvider>
       </body>
     </html>

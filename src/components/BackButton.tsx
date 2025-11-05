@@ -13,7 +13,7 @@ export default function BackButton({ className, style }: BackButtonProps) {
   return (
     <button
       onClick={() => router.back()}
-      className={`p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+      className={`inline-flex items-center justify-center rounded-full border border-transparent bg-surface-muted p-2 text-foreground transition hover:border-accent/50 hover:text-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 ${
         className || ""
       }`}
       style={style}
@@ -22,7 +22,7 @@ export default function BackButton({ className, style }: BackButtonProps) {
       {/* Back arrow icon */}
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        className="h-6 w-6"
+        className="h-5 w-5"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"

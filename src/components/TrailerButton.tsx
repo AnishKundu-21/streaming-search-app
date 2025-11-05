@@ -31,7 +31,7 @@ export default function TrailerButton({ videos }: TrailerButtonProps) {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="mt-4 px-6 py-3 bg-gray-800 text-white rounded-lg font-semibold flex items-center gap-2 hover:bg-gray-700 dark:bg-white dark:text-black dark:hover:bg-gray-200 transition-colors"
+        className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 font-semibold text-white transition hover:bg-accent-soft"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
