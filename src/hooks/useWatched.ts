@@ -39,6 +39,9 @@ export function useWatched() {
     fetcher
   );
 
+  const normalizeSeason = (value?: number | null) =>
+    typeof value === "number" && !Number.isNaN(value) ? value : 0;
+
   /* ---------- helpers ---------- */
   const addItem = async (item: {
     contentId: number;
@@ -78,7 +81,7 @@ export function useWatched() {
       (i) =>
         i.contentId === contentId &&
         i.mediaType === mediaType &&
-        i.seasonNumber === (seasonNumber ?? null)
+        normalizeSeason(i.seasonNumber) === normalizeSeason(seasonNumber)
     );
 
   return {
