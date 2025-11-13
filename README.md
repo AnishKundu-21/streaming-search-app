@@ -89,7 +89,7 @@ Follow the steps below to run StreamFinder locally or in a new environment. Comm
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/AnishKundu-21/streaming-search-app.git
+git clone https://github.com/"Your-Username"/streaming-search-app.git
 cd streaming-search-app
 ```
 
