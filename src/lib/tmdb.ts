@@ -13,7 +13,7 @@ interface TMDBResponse<T> {
 }
 
 interface TMDBItem {
-  genre_ids: any;
+  genre_ids?: number[];
   id: number;
   title?: string;
   name?: string;
@@ -123,7 +123,7 @@ interface SeasonDetail {
   videos?: { results: Video[] };
 }
 
-function tmdb<T = any>(
+function tmdb<T>(
   path: string,
   qs: Record<string, string | number | string[] | boolean> = {} // Allow boolean
 ): Promise<T> {
@@ -297,7 +297,7 @@ export async function searchMoviesAndTV(query: string): Promise<TMDBItem[]> {
     searchRelevance?: number;
   }
 
-  let allResults: SearchResult[] = [];
+  const allResults: SearchResult[] = [];
   const seenIds = new Set<string>();
 
   try {
@@ -380,7 +380,10 @@ export async function searchMoviesAndTV(query: string): Promise<TMDBItem[]> {
     console.log(`Found ${allResults.length} total results for "${query}"`);
 
     // Remove the searchRelevance property before returning
-    return allResults.map(({ searchRelevance, ...item }) => item as TMDBItem);
+    return allResults.map(({ searchRelevance, ...item }) => {
+      void searchRelevance;
+      return item;
+    });
   } catch (err) {
     console.error("Search error:", err);
     return [];

@@ -1,6 +1,20 @@
 import { NextResponse } from "next/server";
 import { searchContent, getWatchProviders } from "@/lib/tmdb"; // Adjust alias if needed
 
+interface ProviderEntry {
+  provider_id: number;
+  provider_name: string;
+  logo_path: string | null;
+}
+
+interface CountryAvailability {
+  note?: string;
+  link?: string;
+  flatrate?: ProviderEntry[];
+  buy?: ProviderEntry[];
+  rent?: ProviderEntry[];
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get("query");
@@ -27,7 +41,7 @@ export async function GET(request: Request) {
     const results = await Promise.all(
       contents.slice(0, 10).map(async (content) => {
         const providers = await getWatchProviders(content.id, type);
-        let availability = providers[country] || {
+        let availability: CountryAvailability = providers[country] || {
           note: "Not available in selected country",
         };
 
@@ -37,16 +51,14 @@ export async function GET(request: Request) {
             ...availability,
             flatrate:
               availability.flatrate?.filter(
-                (p: any) => p.provider_id === providerId
+                (p) => p.provider_id === providerId
               ) || [],
             buy:
-              availability.buy?.filter(
-                (p: any) => p.provider_id === providerId
-              ) || [],
+              availability.buy?.filter((p) => p.provider_id === providerId) ||
+              [],
             rent:
-              availability.rent?.filter(
-                (p: any) => p.provider_id === providerId
-              ) || [],
+              availability.rent?.filter((p) => p.provider_id === providerId) ||
+              [],
           };
           if (
             !availability.flatrate.length &&

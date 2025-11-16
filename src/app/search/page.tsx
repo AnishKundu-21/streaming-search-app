@@ -111,8 +111,9 @@ export default async function SearchPage({
             ) : (
               <div className="mt-10 rounded-2xl border border-white/20 bg-white/5 p-10 text-center backdrop-blur">
                 <p className="text-sm text-muted-foreground">
-                  No results matched "{normalizedQuery}". Try refining your
-                  keywords or explore the curated rows on the homepage.
+                  No results matched &ldquo;{normalizedQuery}&rdquo;. Try
+                  refining your keywords or explore the curated rows on the
+                  homepage.
                 </p>
               </div>
             )}

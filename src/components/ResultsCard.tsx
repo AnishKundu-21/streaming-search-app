@@ -1,9 +1,23 @@
 import Image from "next/image";
 
+interface ProviderEntry {
+  provider_id: number;
+  provider_name: string;
+  logo_path: string | null;
+}
+
+interface AvailabilityDetails {
+  note?: string;
+  link?: string;
+  flatrate?: ProviderEntry[];
+  buy?: ProviderEntry[];
+  rent?: ProviderEntry[];
+}
+
 interface ResultsCardProps {
   title: string;
   country: string;
-  availability: any;
+  availability: AvailabilityDetails;
   posterPath?: string;
   overview?: string;
 }
@@ -57,7 +71,7 @@ export default function ResultsCard({
             </p>
           ) : availability.flatrate ? (
             <div className="flex flex-wrap gap-3">
-              {availability.flatrate.map((p: any) => (
+              {availability.flatrate.map((p) => (
                 <div
                   key={p.provider_id}
                   className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5"
@@ -79,13 +93,12 @@ export default function ResultsCard({
             </div>
           ) : availability.buy ? (
             <p className="rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white/80">
-              Buy on:{" "}
-              {availability.buy.map((p: any) => p.provider_name).join(", ")}
+              Buy on: {availability.buy.map((p) => p.provider_name).join(", ")}
             </p>
           ) : availability.rent ? (
             <p className="rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white/80">
               Rent on:{" "}
-              {availability.rent.map((p: any) => p.provider_name).join(", ")}
+              {availability.rent.map((p) => p.provider_name).join(", ")}
             </p>
           ) : (
             <p className="rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white/60">

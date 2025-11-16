@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+
 interface VideoPlayerModalProps {
   videoKey: string;
   onClose: () => void;
@@ -9,12 +12,26 @@ export default function VideoPlayerModal({
   videoKey,
   onClose,
 }: VideoPlayerModalProps) {
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 animate-fade-in">
-      <div className="bg-black p-4 rounded-lg shadow-xl w-full max-w-4xl relative">
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || typeof document === "undefined") {
+    return null;
+  }
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div className="relative w-full max-w-4xl rounded-2xl bg-black p-4 shadow-2xl">
         <button
           onClick={onClose}
-          className="absolute -top-4 -right-4 bg-white text-black rounded-full h-10 w-10 flex items-center justify-center text-2xl font-bold z-10"
+          className="absolute -top-4 -right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white text-2xl font-bold text-black shadow-lg"
           aria-label="Close"
         >
           &times;
@@ -26,20 +43,21 @@ export default function VideoPlayerModal({
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
-            className="w-full h-full"
+            className="h-full w-full"
           ></iframe>
         </div>
         <div className="mt-4 flex justify-end">
           <a
-            href={`https://www.youtube.com/watch?v={videoKey}`}
+            href={`https://www.youtube.com/watch?v=${videoKey}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            className="rounded-lg bg-red-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-red-700"
           >
             Open in YouTube
           </a>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

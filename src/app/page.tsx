@@ -17,9 +17,11 @@ const ANIME_GENRES = ["16"];
 const take = <T,>(items: T[] = [], count = 18) => items.slice(0, count);
 
 type SearchParams = Record<string, string | string[] | undefined>;
+type ContentItem = Awaited<ReturnType<typeof searchMoviesAndTV>>[number];
+
 type ContentSection = {
   title: string;
-  items: any[];
+  items: ContentItem[];
   defaultMediaType?: "movie" | "tv";
 };
 
@@ -36,7 +38,7 @@ export default async function Home({
   const isSearching = normalizedQuery.length > 0;
 
   let sections: ContentSection[] = [];
-  let searchResults: any[] = [];
+  let searchResults: ContentItem[] = [];
 
   if (isSearching) {
     searchResults = await searchMoviesAndTV(normalizedQuery);
@@ -181,8 +183,8 @@ export default async function Home({
 
         {isSearching && sections.length === 0 ? (
           <div className="rounded-3xl border border-white/10 bg-card p-12 text-center text-lg text-muted-foreground shadow-soft">
-            No matches for "{normalizedQuery}". Try another title, person, or
-            keyword.
+            No matches for &ldquo;{normalizedQuery}&rdquo;. Try another title,
+            person, or keyword.
           </div>
         ) : (
           sections.map((section) => (

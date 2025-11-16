@@ -6,6 +6,7 @@ import SeasonTracker from "@/components/SeasonTracker";
 import TrailerButton from "@/components/TrailerButton";
 import WatchlistButton from "@/components/WatchlistButton";
 import WatchedButton from "@/components/WatchedButton";
+import CastCarousel from "@/components/CastCarousel";
 
 export default async function TVDetailPage({
   params,
@@ -44,7 +45,8 @@ export default async function TVDetailPage({
             className="object-cover object-top"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/70 to-black/90" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/70 to-black/90" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent via-black/70 to-[#050505]" />
         </div>
       )}
 
@@ -91,7 +93,7 @@ export default async function TVDetailPage({
 
                   <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                     <span>
-                      {details.genres.map((g: any) => g.name).join(", ")}
+                      {details.genres.map((genre) => genre.name).join(", ")}
                     </span>
                     <span className="h-3 w-[1px] bg-border" />
                     <span>
@@ -158,38 +160,17 @@ export default async function TVDetailPage({
             seasons={details.seasons}
           />
 
-          <ProviderSection providers={providers} />
+          <ProviderSection
+            providers={providers}
+            title={details.name ?? "This series"}
+            mediaType="tv"
+            tmdbId={tvId}
+          />
 
-          <section className="mt-12">
-            <h2 className="text-2xl font-semibold mb-4">Cast</h2>
-            <div className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
-              {credits.cast.slice(0, 15).map((person: any) => (
-                <div
-                  key={person.credit_id}
-                  className="text-center flex-shrink-0 w-32"
-                >
-                  <div className="relative w-24 h-24 mx-auto rounded-full overflow-hidden mb-2">
-                    {person.profile_path ? (
-                      <Image
-                        src={`https://image.tmdb.org/t/p/w185${person.profile_path}`}
-                        alt={person.name}
-                        fill
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="bg-card h-full flex items-center justify-center text-xs text-muted-foreground">
-                        No Image
-                      </div>
-                    )}
-                  </div>
-                  <p className="font-semibold text-sm">{person.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {person.character}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
+          <CastCarousel
+            cast={credits.cast.slice(0, 15)}
+            description="Meet the stars behind this series."
+          />
         </div>
       </div>
     </div>

@@ -16,8 +16,6 @@ export default function Navbar() {
   const pathname = usePathname();
   const { session, status, signOut } = useAuth();
 
-  const isDetailPage =
-    pathname.startsWith("/movie/") || pathname.startsWith("/tv/");
   const isHomePage = pathname === "/";
 
   const navLinks = session

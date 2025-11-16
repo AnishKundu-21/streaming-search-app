@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRef } from "react";
 
 interface Season {
   id: number;
@@ -23,14 +24,20 @@ export default function SeasonTracker({
   seasons,
 }: SeasonTrackerProps) {
   const validSeasons = seasons.filter((s) => s.season_number > 0);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
 
   if (validSeasons.length === 0) {
     return null;
   }
 
+  const scrollBy = (offset: number) => {
+    if (!scrollRef.current) return;
+    scrollRef.current.scrollBy({ left: offset, behavior: "smooth" });
+  };
+
   return (
     <section className="mt-12">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-2xl font-semibold">Track Seasons</h2>
           <p className="text-sm text-muted-foreground">
@@ -38,12 +45,54 @@ export default function SeasonTracker({
             and episode details.
           </p>
         </div>
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-          {tvTitle}
-        </p>
+        <div className="flex flex-col items-start gap-4 sm:items-end">
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+            {tvTitle}
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => scrollBy(-320)}
+              aria-label="Scroll seasons left"
+              className="rounded-full border border-border bg-surface-elevated/70 p-2 text-muted-foreground transition hover:border-accent hover:text-accent"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="h-5 w-5"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M12.78 4.22a.75.75 0 010 1.06L8.56 9.5l4.22 4.22a.75.75 0 11-1.06 1.06l-4.75-4.75a.75.75 0 010-1.06l4.75-4.75a.75.75 0 011.06 0z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollBy(320)}
+              aria-label="Scroll seasons right"
+              className="rounded-full border border-border bg-surface-elevated/70 p-2 text-muted-foreground transition hover:border-accent hover:text-accent"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="h-5 w-5"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M7.22 4.22a.75.75 0 000 1.06l4.22 4.22-4.22 4.22a.75.75 0 101.06 1.06l4.75-4.75a.75.75 0 000-1.06l-4.75-4.75a.75.75 0 00-1.06 0z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div className="mt-6 overflow-x-auto pb-4 scrollbar-hide">
+      <div className="mt-6 overflow-x-auto pb-4 scrollbar-hide" ref={scrollRef}>
         <div className="flex gap-6">
           {validSeasons.map((season) => (
             <Link

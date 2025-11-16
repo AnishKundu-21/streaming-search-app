@@ -7,7 +7,7 @@ import Image from "next/image";
 interface WatchProvider {
   provider_id: number;
   provider_name: string;
-  logo_path: string;
+  logo_path: string | null;
 }
 
 interface ProviderCountry {
@@ -24,7 +24,152 @@ interface WatchProviders {
 // Define the props for our component
 interface ProviderSectionProps {
   providers: WatchProviders;
+  title: string;
+  mediaType: "movie" | "tv";
+  tmdbId: number;
 }
+
+interface ProviderLinkContext {
+  title: string;
+  mediaType: "movie" | "tv";
+  countryCode: string;
+  fallbackLink: string | null;
+}
+
+interface BundledProvider {
+  name: string;
+  logo: string | null;
+  types: Set<string>;
+  url: string | null;
+}
+
+type ProviderLinkBuilder = (ctx: ProviderLinkContext) => string;
+
+const DEFAULT_COUNTRY = "IN";
+
+const normalizeProviderName = (value: string) =>
+  value.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+const encodeTitle = (title: string) => encodeURIComponent(title.trim());
+
+const providerLinkBuilders: Record<string, ProviderLinkBuilder> = {
+  netflix: ({ title }) =>
+    `https://www.netflix.com/search?q=${encodeTitle(title)}`,
+  netflixbasicwithads: ({ title }) =>
+    `https://www.netflix.com/search?q=${encodeTitle(title)}`,
+  primevideo: ({ title }) =>
+    `https://www.primevideo.com/search/ref=atv_nb_sr?phrase=${encodeTitle(
+      title
+    )}`,
+  amazonprimevideo: ({ title }) =>
+    `https://www.primevideo.com/search/ref=atv_nb_sr?phrase=${encodeTitle(
+      title
+    )}`,
+  amazonvideo: ({ title }) =>
+    `https://www.amazon.com/s?k=${encodeTitle(title)}&i=instant-video`,
+  disneyplus: ({ title }) =>
+    `https://www.disneyplus.com/search/${encodeTitle(title)}`,
+  disneyplushotstar: ({ title }) =>
+    `https://www.hotstar.com/in/search?q=${encodeTitle(title)}`,
+  hotstar: ({ title }) =>
+    `https://www.hotstar.com/in/search?q=${encodeTitle(title)}`,
+  jiocinema: ({ title }) =>
+    `https://www.jiocinema.com/search/${encodeTitle(title)}`,
+  hulu: ({ title }) => `https://www.hulu.com/search?q=${encodeTitle(title)}`,
+  max: ({ title }) => `https://play.max.com/search?q=${encodeTitle(title)}`,
+  hbomax: ({ title }) => `https://play.max.com/search?q=${encodeTitle(title)}`,
+  appltv: ({ title }) =>
+    `https://tv.apple.com/search?term=${encodeTitle(title)}`,
+  appletv: ({ title }) =>
+    `https://tv.apple.com/search?term=${encodeTitle(title)}`,
+  appletvplus: ({ title }) =>
+    `https://tv.apple.com/search?term=${encodeTitle(title)}`,
+  appleitunes: ({ title }) =>
+    `https://tv.apple.com/search?term=${encodeTitle(title)}`,
+  googleplaymovies: ({ title, mediaType }) =>
+    `https://play.google.com/store/search?q=${encodeTitle(title)}&c=${
+      mediaType === "movie" ? "movies" : "tv"
+    }`,
+  youtube: ({ title }) =>
+    `https://www.youtube.com/results?search_query=${encodeTitle(title)}`,
+  youtubepremium: ({ title }) =>
+    `https://www.youtube.com/results?search_query=${encodeTitle(title)}`,
+  youtubemovies: ({ title }) =>
+    `https://www.youtube.com/results?search_query=${encodeTitle(title)}`,
+  paramountplus: ({ title }) =>
+    `https://www.paramountplus.com/search/?q=${encodeTitle(title)}`,
+  peacock: ({ title }) =>
+    `https://www.peacocktv.com/search?q=${encodeTitle(title)}`,
+  peacockpremium: ({ title }) =>
+    `https://www.peacocktv.com/search?q=${encodeTitle(title)}`,
+  starz: ({ title }) =>
+    `https://www.starz.com/us/en/search?searchTerm=${encodeTitle(title)}`,
+  starzplay: ({ title }) =>
+    `https://www.starz.com/us/en/search?searchTerm=${encodeTitle(title)}`,
+  sonyliv: ({ title }) =>
+    `https://www.sonyliv.com/search?q=${encodeTitle(title)}`,
+  zee5: ({ title }) => `https://www.zee5.com/search?q=${encodeTitle(title)}`,
+  altbalaji: ({ title }) =>
+    `https://www.altbalaji.com/search?searchText=${encodeTitle(title)}`,
+  crunchyroll: ({ title }) =>
+    `https://www.crunchyroll.com/search?from=web&q=${encodeTitle(title)}`,
+  vudu: ({ title }) =>
+    `https://www.vudu.com/content/movies/search?kw=${encodeTitle(title)}`,
+  rakutentv: ({ title }) =>
+    `https://www.rakuten.tv/uk/search?query=${encodeTitle(title)}`,
+  now: ({ title }) => `https://www.nowtv.com/search?q=${encodeTitle(title)}`,
+  nowtv: ({ title }) => `https://www.nowtv.com/search?q=${encodeTitle(title)}`,
+  bbciplayer: ({ title }) =>
+    `https://www.bbc.co.uk/iplayer/search?q=${encodeTitle(title)}`,
+  all4: ({ title }) =>
+    `https://www.channel4.com/programmes/search?q=${encodeTitle(title)}`,
+  itvx: ({ title }) =>
+    `https://www.itv.com/watch/search?q=${encodeTitle(title)}`,
+  plex: ({ title }) => `https://watch.plex.tv/search?q=${encodeTitle(title)}`,
+  tubitv: ({ title }) => `https://tubitv.com/search/${encodeTitle(title)}`,
+  plutotv: ({ title }) => `https://pluto.tv/en/search?q=${encodeTitle(title)}`,
+  slingtv: ({ title }) =>
+    `https://www.sling.com/search?q=${encodeTitle(title)}`,
+  fubotv: ({ title }) => `https://www.fubo.tv/app/search/${encodeTitle(title)}`,
+  crave: ({ title }) => `https://www.crave.ca/search?q=${encodeTitle(title)}`,
+  showtime: ({ title }) => `https://www.sho.com/search?q=${encodeTitle(title)}`,
+  amcplus: ({ title }) =>
+    `https://www.amcplus.com/search?q=${encodeTitle(title)}`,
+  kanopy: ({ title }) =>
+    `https://www.kanopy.com/en/search/product?q=${encodeTitle(title)}`,
+  criterionchannel: ({ title }) =>
+    `https://www.criterionchannel.com/search?q=${encodeTitle(title)}`,
+};
+
+const resolveProviderUrl = (
+  providerName: string,
+  context: ProviderLinkContext
+) => {
+  const normalized = normalizeProviderName(providerName);
+  const builder = providerLinkBuilders[normalized];
+  if (builder) {
+    return builder(context);
+  }
+  return context.fallbackLink;
+};
+
+const buildFallbackLink = (
+  mediaType: "movie" | "tv",
+  tmdbId: number,
+  countryCode: string,
+  providerLink?: string
+) => {
+  if (providerLink) return providerLink;
+  const params = new URLSearchParams();
+  if (countryCode) {
+    params.set("watch_region", countryCode);
+    params.set("locale", countryCode);
+  }
+  const query = params.toString();
+  return `https://www.themoviedb.org/${mediaType}/${tmdbId}/watch${
+    query ? `?${query}` : ""
+  }`;
+};
 
 // Helper to get a sorted list of country names for the dropdown
 const getCountryNames = (providers: WatchProviders) => {
@@ -38,19 +183,23 @@ const getCountryNames = (providers: WatchProviders) => {
 };
 
 // Helper to bundle providers by their name (e.g., Netflix can have stream, buy, rent)
-const bundleProviders = (countryData: ProviderCountry) => {
-  const bundled = new Map<
-    number,
-    { name: string; logo: string; types: Set<string> }
-  >();
+const bundleProviders = (
+  countryData: ProviderCountry | undefined,
+  context: ProviderLinkContext
+) => {
+  if (!countryData) return [];
 
-  const process = (providers: WatchProvider[] = [], type: string) => {
+  const bundled = new Map<number, BundledProvider>();
+
+  const process = (providers: WatchProvider[] | undefined, type: string) => {
+    if (!providers) return;
     for (const p of providers) {
       if (!bundled.has(p.provider_id)) {
         bundled.set(p.provider_id, {
           name: p.provider_name,
           logo: p.logo_path,
           types: new Set(),
+          url: resolveProviderUrl(p.provider_name, context),
         });
       }
       bundled.get(p.provider_id)!.types.add(type);
@@ -64,9 +213,19 @@ const bundleProviders = (countryData: ProviderCountry) => {
   return Array.from(bundled.values());
 };
 
-export default function ProviderSection({ providers }: ProviderSectionProps) {
+export default function ProviderSection({
+  providers,
+  title,
+  mediaType,
+  tmdbId,
+}: ProviderSectionProps) {
   const countryList = getCountryNames(providers);
-  const [selectedCountry, setSelectedCountry] = useState<string>("IN");
+  const defaultCountryCode =
+    countryList.find((c) => c.code === DEFAULT_COUNTRY)?.code ??
+    countryList[0]?.code ??
+    DEFAULT_COUNTRY;
+  const [selectedCountry, setSelectedCountry] =
+    useState<string>(defaultCountryCode);
 
   // Handle cases where there's no data or the default country isn't available
   if (countryList.length === 0) {
@@ -79,9 +238,20 @@ export default function ProviderSection({ providers }: ProviderSectionProps) {
       </section>
     );
   }
-
   const currentCountryData = providers[selectedCountry];
-  const bundled = currentCountryData ? bundleProviders(currentCountryData) : [];
+  const fallbackLink = buildFallbackLink(
+    mediaType,
+    tmdbId,
+    selectedCountry,
+    currentCountryData?.link
+  );
+
+  const bundled = bundleProviders(currentCountryData, {
+    title,
+    mediaType,
+    countryCode: selectedCountry,
+    fallbackLink,
+  });
 
   return (
     <section className="mt-12">
@@ -128,26 +298,63 @@ export default function ProviderSection({ providers }: ProviderSectionProps) {
       <div className="rounded-3xl border border-border bg-card p-6 shadow-soft">
         {bundled.length > 0 ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {bundled.map((p) => (
-              <div
-                key={p.name}
-                className="flex flex-col items-center rounded-2xl border border-white/5 bg-surface-elevated/40 p-4 text-center backdrop-blur"
-              >
-                <Image
-                  src={`https://image.tmdb.org/t/p/w92${p.logo}`}
-                  alt={p.name}
-                  width={64}
-                  height={64}
-                  className="mb-2 rounded-xl"
-                />
-                <p className="mb-1 text-sm font-semibold text-foreground">
-                  {p.name}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {Array.from(p.types).join(", ")}
-                </p>
-              </div>
-            ))}
+            {bundled.map((p) => {
+              const cardContent = (
+                <>
+                  {p.logo ? (
+                    <Image
+                      src={`https://image.tmdb.org/t/p/w92${p.logo}`}
+                      alt={p.name}
+                      width={64}
+                      height={64}
+                      className="mb-2 rounded-xl"
+                    />
+                  ) : (
+                    <div className="mb-2 flex h-16 w-16 items-center justify-center rounded-xl border border-white/10 text-xs font-semibold uppercase text-muted-foreground">
+                      {p.name.slice(0, 2)}
+                    </div>
+                  )}
+                  <p className="mb-1 text-sm font-semibold text-foreground">
+                    {p.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {Array.from(p.types).join(", ")}
+                  </p>
+                </>
+              );
+
+              const baseClasses =
+                "flex flex-col items-center rounded-2xl border border-white/5 bg-surface-elevated/40 p-4 text-center backdrop-blur transition";
+
+              if (p.url) {
+                return (
+                  <a
+                    key={p.name}
+                    href={p.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={`Open ${title} on ${p.name}`}
+                    aria-label={`Open ${title} on ${p.name} (opens in new tab)`}
+                    className={`${baseClasses} cursor-pointer hover:border-accent/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40`}
+                  >
+                    {cardContent}
+                  </a>
+                );
+              }
+
+              return (
+                <div
+                  key={p.name}
+                  className={`${baseClasses} cursor-default opacity-70`}
+                  aria-disabled={true}
+                >
+                  {cardContent}
+                  <span className="mt-2 text-[11px] font-medium text-muted-foreground">
+                    Link unavailable
+                  </span>
+                </div>
+              );
+            })}
           </div>
         ) : (
           <p className="text-center text-muted-foreground">

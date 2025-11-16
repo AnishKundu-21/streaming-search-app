@@ -2,7 +2,14 @@
 
 import { createBrowserClient } from "@supabase/ssr";
 import type { SupabaseClient, Session } from "@supabase/supabase-js";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 type AuthStatus = "loading" | "authenticated" | "unauthenticated";
 
@@ -81,15 +88,15 @@ export default function AuthProvider({
     };
   }, [supabase]);
 
-  const handleSignOut = async () => {
+  const handleSignOut = useCallback(async () => {
     await supabase.auth.signOut();
     setSession(null);
     setStatus("unauthenticated");
-  };
+  }, [supabase, setSession, setStatus]);
 
   const value = useMemo<AuthContextValue>(
     () => ({ supabase, session, status, signOut: handleSignOut }),
-    [supabase, session, status]
+    [supabase, session, status, handleSignOut]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
