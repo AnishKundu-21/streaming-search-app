@@ -61,7 +61,7 @@ export default async function SeasonDetailPage({
   return (
     <div className="min-h-screen bg-black text-white selection:bg-accent selection:text-black">
       {/* Full Screen Backdrop */}
-      <div className="relative flex min-h-[85vh] w-full flex-col overflow-hidden">
+      <div className="relative flex min-h-screen sm:min-h-[85vh] w-full flex-col overflow-hidden">
         <div className="absolute inset-0 z-0">
           {heroBackdrop ? (
             <Image
@@ -81,31 +81,11 @@ export default async function SeasonDetailPage({
         </div>
 
         {/* Spacer to push content down but keep it anchored from top */}
-        <div className="h-[15vh] w-full flex-shrink-0" />
+        <div className="h-[10vh] sm:h-[12vh] md:h-[15vh] w-full flex-shrink-0" />
 
         {/* Content Overlay */}
-        <div className="relative z-10 w-full p-6 sm:p-12 md:p-16 lg:w-2/3">
-          {/* Breadcrumb / Back Link */}
-          <Link
-            href={`/tv/${tvId}`}
-            className="group mb-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-white/60 transition-colors hover:text-accent"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="h-4 w-4 transition-transform group-hover:-translate-x-1"
-            >
-              <path
-                fillRule="evenodd"
-                d="M13.78 4.22a.75.75 0 010 1.06L9.31 9.75l4.47 4.47a.75.75 0 11-1.06 1.06l-5-5a.75.75 0 010-1.06l5-5a.75.75 0 011.06 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Back to {showDetails.name}
-          </Link>
-
-          <div className="animate-fade-up space-y-6">
+        <div className="relative z-10 w-full p-4 pb-8 sm:p-8 md:p-12 lg:p-16 lg:w-2/3">
+          <div className="animate-fade-up space-y-4 sm:space-y-6">
             <div className="flex flex-wrap items-center gap-4">
               <span className="border border-accent/40 bg-accent/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-accent backdrop-blur-md">
                 Season {seasonData.season_number}
@@ -122,7 +102,7 @@ export default async function SeasonDetailPage({
               )}
             </div>
 
-            <h1 className="font-display text-5xl font-black uppercase italic tracking-tighter text-white sm:text-6xl md:text-7xl lg:text-8xl">
+            <h1 className="font-display text-4xl font-bold uppercase italic tracking-tighter text-white sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl">
               {seasonData.name || `Season ${seasonData.season_number}`}
             </h1>
 
@@ -163,7 +143,7 @@ export default async function SeasonDetailPage({
       </div>
 
       {/* Content Section */}
-      <div className="relative z-10 mx-auto max-w-screen-2xl space-y-24 px-4 py-16 sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto max-w-screen-2xl space-y-12 sm:space-y-16 md:space-y-24 px-4 py-12 sm:py-16 sm:px-6 lg:px-8">
         <section className="animate-fade-up animation-delay-200">
           <div className="mb-8 border-b border-white/10 pb-4">
             <h2 className="font-display text-3xl font-bold uppercase italic tracking-wider text-white">

@@ -21,7 +21,7 @@ export default function HeroSection({
     };
 
     return (
-        <section className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-black text-center pb-32">
+        <section className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-black text-center pb-16 sm:pb-24 md:pb-32">
             {/* Background Effects */}
             <div className="absolute inset-0 z-0">
                 <div className="absolute inset-0 bg-hero-gradient z-10" />
@@ -34,7 +34,7 @@ export default function HeroSection({
                     Your Streaming Guide
                 </p>
 
-                <h1 className="mt-4 animate-fade-up font-display text-4xl font-bold uppercase leading-none tracking-tighter text-white drop-shadow-2xl sm:text-8xl md:text-9xl">
+                <h1 className="mt-4 animate-fade-up font-display text-5xl font-bold uppercase leading-none tracking-tighter text-white drop-shadow-2xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl">
                     Stream<span className="text-transparent bg-clip-text bg-gradient-to-b from-accent to-accent-strong">Finder</span>
                 </h1>
 

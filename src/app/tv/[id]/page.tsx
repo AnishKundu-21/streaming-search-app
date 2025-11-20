@@ -35,7 +35,7 @@ export default async function TVDetailPage({
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Full Screen Backdrop */}
-      <div className="relative h-[85vh] w-full overflow-hidden">
+      <div className="relative min-h-screen sm:h-[85vh] w-full overflow-hidden">
         {details.backdrop_path ? (
           <Image
             src={`https://image.tmdb.org/t/p/original${details.backdrop_path}`}
@@ -53,8 +53,8 @@ export default async function TVDetailPage({
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
 
         {/* Content Overlay */}
-        <div className="absolute bottom-0 left-0 w-full p-6 sm:p-12 md:p-16 lg:w-2/3">
-          <div className="animate-fade-up space-y-6">
+        <div className="absolute bottom-0 left-0 w-full p-4 pb-8 sm:p-8 md:p-12 lg:p-16 lg:w-2/3">
+          <div className="animate-fade-up space-y-4 sm:space-y-6">
             {/* Meta Tags */}
             <div className="flex flex-wrap items-center gap-4 text-sm font-bold uppercase tracking-widest text-accent/80">
               {firstAirYear && <span>{firstAirYear}</span>}
@@ -73,7 +73,7 @@ export default async function TVDetailPage({
             </div>
 
             {/* Title */}
-            <h1 className="font-display text-5xl font-bold uppercase italic tracking-tighter text-white sm:text-6xl md:text-7xl lg:text-8xl">
+            <h1 className="font-display text-4xl font-bold uppercase italic tracking-tighter text-white sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl">
               {details.name}
             </h1>
 
@@ -125,7 +125,7 @@ export default async function TVDetailPage({
       </div>
 
       {/* Content Section */}
-      <div className="relative z-10 mx-auto max-w-screen-2xl space-y-16 px-4 py-16 sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto max-w-screen-2xl space-y-10 sm:space-y-12 md:space-y-16 px-4 py-12 sm:py-16 sm:px-6 lg:px-8">
         {/* Seasons */}
         <SeasonTracker
           tvId={tvId}

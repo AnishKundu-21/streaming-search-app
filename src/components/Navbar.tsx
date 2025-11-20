@@ -27,7 +27,7 @@ export default function Navbar() {
       <div className="absolute inset-0 bg-gradient-to-b from-black/80 to-transparent pointer-events-none" />
       <div className="relative mx-auto flex h-24 max-w-screen-2xl items-center justify-between px-6 sm:px-10 lg:px-12">
         <div className="flex items-center gap-6">
-          {!isHomePage && <BackButton />}
+          {!isHomePage && <div className="hidden sm:block"><BackButton /></div>}
           <Link href="/" className="group relative">
             <span className="font-display text-xl font-bold tracking-tighter text-white transition-transform duration-300 group-hover:scale-105 sm:text-3xl">
               STREAM<span className="text-accent">FINDER</span>

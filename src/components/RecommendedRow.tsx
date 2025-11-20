@@ -29,7 +29,7 @@ export default function RecommendedRow({ title, items }: RecommendedRowProps) {
   }
 
   return (
-    <section className="group relative overflow-hidden py-12">
+    <section className="group relative overflow-hidden py-8 sm:py-10 md:py-12">
       <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between px-2">
         <div>
           <h2 className="font-display text-4xl font-bold uppercase italic tracking-tighter text-white sm:text-5xl md:text-6xl">

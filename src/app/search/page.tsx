@@ -18,13 +18,13 @@ export default async function SearchPage({
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <div className="mx-auto max-w-screen-2xl px-4 pb-20 pt-20 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-screen-2xl px-4 pb-12 pt-16 sm:pb-20 sm:pt-20 sm:px-6 lg:px-8">
         <section className="px-4 pb-16 pt-12 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-screen-xl border border-white/10 bg-black p-8 text-center sm:p-16">
+          <div className="mx-auto max-w-screen-xl border border-white/10 bg-black p-4 sm:p-8 md:p-12 lg:p-16 text-center">
             <p className="text-sm font-bold uppercase tracking-[0.5em] text-accent animate-fade-in">
               StreamFinder
             </p>
-            <h1 className="mt-6 font-display text-4xl font-bold uppercase italic tracking-tighter text-white sm:text-7xl md:text-8xl animate-fade-up">
+            <h1 className="mt-6 font-display text-3xl font-bold uppercase italic tracking-tighter text-white sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl animate-fade-up">
               Search the <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40">Archive</span>
             </h1>
             <p className="mt-6 text-lg font-medium tracking-wide text-white/60 sm:text-xl animate-fade-up animation-delay-100">
@@ -43,11 +43,11 @@ export default async function SearchPage({
                   name="q"
                   defaultValue={normalizedQuery}
                   placeholder="SEARCH TITLES, GENRES, OR PEOPLE..."
-                  className="h-16 w-full bg-transparent px-6 pr-32 font-sans text-lg font-bold uppercase tracking-wider text-white placeholder:text-white/30 focus:outline-none"
+                  className="h-14 sm:h-16 w-full bg-transparent px-4 sm:px-6 pr-24 sm:pr-32 font-sans text-sm sm:text-lg font-bold uppercase tracking-wider text-white placeholder:text-white/30 focus:outline-none"
                 />
                 <button
                   type="submit"
-                  className="absolute right-0 top-0 h-full bg-white px-8 font-display text-xl font-bold uppercase italic tracking-widest text-black transition-transform duration-300 hover:bg-accent hover:text-white"
+                  className="absolute right-0 top-0 h-full bg-white px-4 sm:px-6 md:px-8 font-display text-base sm:text-lg md:text-xl font-bold uppercase italic tracking-widest text-black transition-transform duration-300 hover:bg-accent hover:text-white"
                 >
                   GO
                 </button>
@@ -67,7 +67,7 @@ export default async function SearchPage({
             <div className="mx-auto max-w-screen-2xl border-t border-white/10 pt-12">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-12">
                 <div>
-                  <h2 className="font-display text-4xl font-bold uppercase italic tracking-tighter text-white">
+                  <h2 className="font-display text-3xl font-bold uppercase italic tracking-tighter text-white sm:text-4xl md:text-5xl">
                     Results for <span className="text-accent">{normalizedQuery}</span>
                   </h2>
                   <div className="mt-2 h-1 w-24 bg-accent" />

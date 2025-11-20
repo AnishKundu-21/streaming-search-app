@@ -16,7 +16,7 @@ export default function RecommendedSection() {
   // Loading state
   if (isLoading) {
     return (
-      <section className="py-12">
+      <section className="py-8 sm:py-10 md:py-12">
         <div className="flex items-center justify-between px-2">
           <div>
             <h2 className="font-display text-4xl font-bold uppercase italic tracking-tighter text-white sm:text-5xl md:text-6xl">
@@ -47,7 +47,7 @@ export default function RecommendedSection() {
   // Error state
   if (isError) {
     return (
-      <section className="py-12">
+      <section className="py-8 sm:py-10 md:py-12">
         <div className="px-2">
           <h2 className="font-display text-4xl font-bold uppercase italic tracking-tighter text-white sm:text-5xl md:text-6xl">
             Recommended for You
@@ -65,7 +65,7 @@ export default function RecommendedSection() {
   // No recommendations available
   if (!recommendations || recommendations.length === 0) {
     return (
-      <section className="py-12">
+      <section className="py-8 sm:py-10 md:py-12">
         <div className="px-2">
           <h2 className="font-display text-4xl font-bold uppercase italic tracking-tighter text-white sm:text-5xl md:text-6xl">
             Recommended for You
@@ -82,7 +82,7 @@ export default function RecommendedSection() {
 
   return (
 
-    <section className="py-12">
+    <section className="py-8 sm:py-10 md:py-12">
       <div className="px-2">
         <RecommendedRow title="Recommended for You" items={recommendations} />
       </div>
