@@ -36,7 +36,7 @@ export default async function MovieDetailPage({
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Full Screen Backdrop */}
-      <div className="relative min-h-screen sm:h-[85vh] w-full overflow-hidden">
+      <div className="relative flex min-h-screen sm:min-h-[85vh] w-full flex-col overflow-hidden">
         {details.backdrop_path ? (
           <Image
             src={`https://image.tmdb.org/t/p/original${details.backdrop_path}`}
@@ -53,8 +53,12 @@ export default async function MovieDetailPage({
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
 
+
+        {/* Spacer to push content down but keep it anchored from top */}
+        <div className="h-[15vh] sm:h-[45vh] md:h-[50vh] w-full flex-shrink-0" />
+
         {/* Content Overlay */}
-        <div className="absolute bottom-0 left-0 w-full p-4 pb-8 sm:p-8 md:p-12 lg:p-16 lg:w-2/3">
+        <div className="relative z-10 w-full p-4 pb-8 sm:p-8 md:p-12 lg:p-16 lg:w-2/3">
           <div className="animate-fade-up space-y-4 sm:space-y-6">
             {/* Meta Tags */}
             <div className="flex flex-wrap items-center gap-4 text-sm font-bold uppercase tracking-widest text-accent/80">

@@ -81,7 +81,7 @@ export default async function SeasonDetailPage({
         </div>
 
         {/* Spacer to push content down but keep it anchored from top */}
-        <div className="h-[10vh] sm:h-[12vh] md:h-[15vh] w-full flex-shrink-0" />
+        <div className="h-[20vh] sm:h-[12vh] md:h-[15vh] w-full flex-shrink-0" />
 
         {/* Content Overlay */}
         <div className="relative z-10 w-full p-4 pb-8 sm:p-8 md:p-12 lg:p-16 lg:w-2/3">
