@@ -6,6 +6,7 @@ import WatchedButton from "@/components/WatchedButton";
 import ProviderSection from "@/components/ProviderSection";
 import TrailerButton from "@/components/TrailerButton";
 import CastCarousel from "@/components/CastCarousel";
+import ExpandableText from "@/components/ExpandableText";
 
 export default async function MovieDetailPage({
   params,
@@ -55,7 +56,7 @@ export default async function MovieDetailPage({
 
 
         {/* Spacer to push content down but keep it anchored from top */}
-        <div className="h-[15vh] sm:h-[45vh] md:h-[50vh] w-full flex-shrink-0" />
+        <div className="h-[15vh] sm:h-[30vh] md:h-[35vh] w-full flex-shrink-0" />
 
         {/* Content Overlay */}
         <div className="relative z-10 w-full p-4 pb-8 sm:p-8 md:p-12 lg:p-16 lg:w-2/3">
@@ -97,9 +98,10 @@ export default async function MovieDetailPage({
             </div>
 
             {/* Overview */}
-            <p className="max-w-2xl text-lg font-medium leading-relaxed text-white/80 md:text-xl">
-              {details.overview || "Synopsis not provided."}
-            </p>
+            <ExpandableText
+              text={details.overview || "Synopsis not provided."}
+              className="max-w-2xl text-lg font-medium leading-relaxed text-white/80 md:text-xl"
+            />
 
             {/* Actions */}
             <div className="flex flex-wrap gap-4 pt-4">
