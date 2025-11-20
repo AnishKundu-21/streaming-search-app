@@ -80,15 +80,15 @@ export default function SeasonEpisodesList({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {episodes.map((episode) => {
         const isExpanded = expandedEpisodes[episode.id] ?? false;
         const airDate = episode.air_date
           ? new Date(episode.air_date).toLocaleDateString(undefined, {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            })
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })
           : null;
         const runtime = formatRuntime(episode.runtime);
         const overview = episode.overview?.trim() ?? "";
@@ -99,36 +99,38 @@ export default function SeasonEpisodesList({
         return (
           <article
             key={episode.id}
-            className="rounded-3xl border border-border bg-card p-5 shadow-soft transition duration-300 hover:border-accent/40 hover:shadow-lg"
+            className="group border border-white/10 bg-white/5 p-6 transition-all duration-300 hover:border-accent hover:bg-black/60 hover:shadow-[0_0_30px_rgba(255,0,128,0.15)]"
           >
-            <div className="flex flex-col gap-5 md:flex-row">
-              <div className="relative h-40 w-full overflow-hidden rounded-2xl border border-border bg-surface-elevated md:h-32 md:w-56">
+            <div className="flex flex-col gap-6 md:flex-row">
+              <div className="relative h-48 w-full flex-shrink-0 overflow-hidden border border-white/10 bg-black md:h-36 md:w-64">
                 {episode.still_path ? (
                   <Image
                     src={`https://image.tmdb.org/t/p/w500${episode.still_path}`}
                     alt={episode.name}
                     fill
-                    className="object-cover"
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center text-xs uppercase tracking-[0.3em] text-muted-foreground">
+                  <div className="flex h-full w-full items-center justify-center text-xs font-bold uppercase tracking-[0.3em] text-white/20">
                     No Still
                   </div>
                 )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-60" />
+                <div className="absolute bottom-2 left-3">
+                  <span className="text-xs font-black uppercase text-white">
+                    Ep {episode.episode_number}
+                  </span>
+                </div>
               </div>
 
               <div className="flex-1 space-y-3">
-                <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.34em] text-accent">
-                      Episode{" "}
-                      {episode.episode_number.toString().padStart(2, "0")}
-                    </p>
-                    <h3 className="text-lg font-semibold text-foreground">
+                    <h3 className="font-display text-xl font-bold uppercase italic tracking-wide text-white group-hover:text-accent transition-colors">
                       {episode.name || "Untitled Episode"}
                     </h3>
                   </div>
-                  <div className="flex gap-3 text-xs text-muted-foreground">
+                  <div className="flex gap-4 text-xs font-bold uppercase tracking-wider text-white/50">
                     {airDate && <span>{airDate}</span>}
                     {runtime && (
                       <span className="flex items-center gap-1">
@@ -151,16 +153,15 @@ export default function SeasonEpisodesList({
                     ref={(el) => {
                       textRefs.current[episode.id] = el;
                     }}
-                    className={`text-sm text-muted-foreground transition-all ${
-                      !isExpanded ? "line-clamp-3" : ""
-                    }`}
+                    className={`text-sm leading-relaxed text-white/70 transition-all ${!isExpanded ? "line-clamp-2" : ""
+                      }`}
                   >
                     {displayText}
                   </p>
                   {shouldShowToggle && (
                     <button
                       onClick={() => toggleEpisode(episode.id)}
-                      className="mt-2 text-sm font-semibold text-accent transition hover:text-accent-soft"
+                      className="mt-2 text-xs font-bold uppercase tracking-widest text-accent transition hover:text-white"
                     >
                       {isExpanded ? "Read less" : "Read more"}
                     </button>

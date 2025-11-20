@@ -128,23 +128,25 @@ export default function WatchlistPage() {
 
   if (!session) {
     return (
-      <section className="rounded-3xl border border-white/10 bg-card p-12 text-center shadow-soft">
-        <h1 className="font-display text-3xl font-semibold uppercase tracking-[0.08em] text-white">
-          Sign in to view your lists
-        </h1>
-        <p className="mt-4 text-sm text-muted-foreground">
-          Keep track of what&apos;s next and record what you&apos;ve already
-          enjoyed.
-        </p>
-        <div className="mt-8 flex justify-center">
-          <Link
-            href="/auth/signin"
-            className="rounded-full bg-accent px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow-[0_18px_36px_rgba(181,98,255,0.45)] transition hover:scale-[1.02] hover:shadow-[0_24px_50px_rgba(181,98,255,0.55)]"
-          >
-            Sign In
-          </Link>
-        </div>
-      </section>
+      <div className="mx-auto max-w-screen-2xl px-4 pb-20 pt-32 sm:px-6 lg:px-8">
+        <section className="rounded-3xl border border-white/10 bg-card p-12 text-center shadow-soft">
+          <h1 className="font-display text-3xl font-semibold uppercase tracking-[0.08em] text-white">
+            Sign in to view your lists
+          </h1>
+          <p className="mt-4 text-sm text-muted-foreground">
+            Keep track of what&apos;s next and record what you&apos;s already
+            enjoyed.
+          </p>
+          <div className="mt-8 flex justify-center">
+            <Link
+              href="/auth/signin"
+              className="rounded-full bg-accent px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow-[0_18px_36px_rgba(181,98,255,0.45)] transition hover:scale-[1.02] hover:shadow-[0_24px_50px_rgba(181,98,255,0.55)]"
+            >
+              Sign In
+            </Link>
+          </div>
+        </section>
+      </div>
     );
   }
 
@@ -153,39 +155,43 @@ export default function WatchlistPage() {
 
   if (isLoading) {
     return (
-      <section className="rounded-3xl border border-white/10 bg-card p-10 shadow-soft">
-        <div className="h-10 w-48 animate-pulse rounded-full border border-white/20 bg-white/5" />
-        <div className="mt-8 flex gap-3">
-          {[...Array(2)].map((_, i) => (
-            <div
-              key={i}
-              className="h-12 w-36 animate-pulse rounded-full border border-white/20 bg-white/5"
-            />
-          ))}
-        </div>
-        <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-          {[...Array(12)].map((_, i) => (
-            <div
-              key={i}
-              className="aspect-[2/3] animate-pulse rounded-2xl border border-white/20 bg-white/5"
-            />
-          ))}
-        </div>
-      </section>
+      <div className="mx-auto max-w-screen-2xl px-4 pb-20 pt-32 sm:px-6 lg:px-8">
+        <section className="rounded-3xl border border-white/10 bg-card p-10 shadow-soft">
+          <div className="h-10 w-48 animate-pulse rounded-full border border-white/20 bg-white/5" />
+          <div className="mt-8 flex gap-3">
+            {[...Array(2)].map((_, i) => (
+              <div
+                key={i}
+                className="h-12 w-36 animate-pulse rounded-full border border-white/20 bg-white/5"
+              />
+            ))}
+          </div>
+          <div className="mt-10 grid grid-cols-2 gap-4 sm:gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+            {[...Array(12)].map((_, i) => (
+              <div
+                key={i}
+                className="aspect-[2/3] animate-pulse rounded-2xl border border-white/20 bg-white/5"
+              />
+            ))}
+          </div>
+        </section>
+      </div>
     );
   }
 
   if (hasError) {
     return (
-      <section className="rounded-3xl border border-white/10 bg-card p-12 text-center shadow-soft">
-        <h1 className="font-display text-3xl font-semibold uppercase tracking-[0.08em] text-white">
-          Unable to load your lists
-        </h1>
-        <p className="mt-4 text-sm text-muted-foreground">
-          Something went wrong fetching your watchlist. Please refresh the page
-          and try again.
-        </p>
-      </section>
+      <div className="mx-auto max-w-screen-2xl px-4 pb-20 pt-32 sm:px-6 lg:px-8">
+        <section className="rounded-3xl border border-white/10 bg-card p-12 text-center shadow-soft">
+          <h1 className="font-display text-3xl font-semibold uppercase tracking-[0.08em] text-white">
+            Unable to load your lists
+          </h1>
+          <p className="mt-4 text-sm text-muted-foreground">
+            Something went wrong fetching your watchlist. Please refresh the page
+            and try again.
+          </p>
+        </section>
+      </div>
     );
   }
 
@@ -197,116 +203,117 @@ export default function WatchlistPage() {
   const isEmpty = currentItems.length === 0;
 
   return (
-    <section className="rounded-3xl border border-white/10 bg-card p-6 shadow-soft sm:p-10 lg:p-12">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="font-display text-3xl font-semibold uppercase tracking-[0.08em] text-white sm:text-4xl">
-            My lists
-          </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Seamlessly manage what to watch next and remember what you have
-            already completed.
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-8 flex flex-wrap gap-3">
-        {(
-          [
-            {
-              key: "watchlist" as const,
-              label: `To Watch (${groupedWatchlist.length})`,
-            },
-            {
-              key: "watched" as const,
-              label: `Already Watched (${groupedWatched.length})`,
-            },
-          ] as const
-        ).map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
-            className={`rounded-full border px-5 py-2 text-sm font-semibold uppercase tracking-wide transition ${
-              activeTab === tab.key
-                ? "border-transparent bg-accent text-white shadow-[0_18px_36px_rgba(181,98,255,0.45)]"
-                : "border-white/20 bg-white/5 text-white/70 hover:text-white"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {isEmpty ? (
-        <div className="mt-10 rounded-2xl border border-white/20 bg-white/5 p-12 text-center backdrop-blur">
-          <h2 className="font-display text-2xl font-semibold uppercase tracking-[0.08em] text-white">
-            {activeTab === "watchlist"
-              ? "Your watchlist is empty"
-              : "No watched items yet"}
-          </h2>
-          <p className="mt-4 text-sm text-muted-foreground">
-            {activeTab === "watchlist"
-              ? "Start adding movies and series to keep track of what you want to explore."
-              : 'Mark a movie or series as "Already Watched" to see it here.'}
-          </p>
-          <div className="mt-8 flex justify-center">
-            <Link
-              href="/"
-              className="rounded-full bg-accent px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow-[0_18px_36px_rgba(181,98,255,0.45)] transition hover:scale-[1.02] hover:shadow-[0_24px_50px_rgba(181,98,255,0.55)]"
-            >
-              Browse content
-            </Link>
+    <div className="mx-auto max-w-screen-2xl px-4 pb-20 pt-32 sm:px-6 lg:px-8">
+      <section className="rounded-3xl border border-white/10 bg-card p-6 shadow-soft sm:p-10 lg:p-12">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h1 className="font-display text-3xl font-semibold uppercase tracking-[0.08em] text-white sm:text-4xl">
+              My lists
+            </h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Seamlessly manage what to watch next and remember what you have
+              already completed.
+            </p>
           </div>
         </div>
-      ) : (
-        <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-          {currentItems.map((item, index) => (
-            <div
-              key={item.id}
-              className="group/item flex flex-col animate-fade-up"
-              style={{ animationDelay: `${index * 35}ms` }}
+
+        <div className="mt-8 flex flex-wrap gap-3">
+          {(
+            [
+              {
+                key: "watchlist" as const,
+                label: `To Watch (${groupedWatchlist.length})`,
+              },
+              {
+                key: "watched" as const,
+                label: `Already Watched (${groupedWatched.length})`,
+              },
+            ] as const
+          ).map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`rounded-full border px-5 py-2 text-sm font-semibold uppercase tracking-wide transition ${activeTab === tab.key
+                ? "border-transparent bg-accent text-white shadow-[0_18px_36px_rgba(181,98,255,0.45)]"
+                : "border-white/20 bg-white/5 text-white/70 hover:text-white"
+                }`}
             >
-              <Link href={`/${item.mediaType}/${item.contentId}`}>
-                <div className="relative aspect-[2/3] overflow-hidden rounded-2xl border border-white/20 bg-white/5 shadow-soft transition-transform duration-500 group-hover/item:-translate-y-1 group-hover/item:shadow-lg">
-                  {item.posterPath ? (
-                    <Image
-                      src={`https://image.tmdb.org/t/p/w342${item.posterPath}`}
-                      alt={item.title}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover/item:scale-105"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center bg-white/5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      No Artwork
-                    </div>
-                  )}
-                  <span className="absolute right-3 top-3 rounded-full bg-white/20 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-wide text-white backdrop-blur-md">
-                    {item.mediaType === "movie" ? "Film" : "Series"}
-                  </span>
-                </div>
-              </Link>
-
-              <h3 className="mt-3 line-clamp-2 text-sm font-semibold text-white transition-colors group-hover/item:text-accent-soft">
-                <Link href={`/${item.mediaType}/${item.contentId}`}>
-                  {item.title}
-                </Link>
-              </h3>
-
-              {item.seasonInfo && (
-                <p className="text-xs font-semibold uppercase tracking-wide text-accent">
-                  {item.seasonInfo}
-                </p>
-              )}
-
-              <p className="text-xs text-muted-foreground">
-                {activeTab === "watchlist"
-                  ? `Added ${new Date(item.date).toLocaleDateString()}`
-                  : `Watched ${new Date(item.date).toLocaleDateString()}`}
-              </p>
-            </div>
+              {tab.label}
+            </button>
           ))}
         </div>
-      )}
-    </section>
+
+        {isEmpty ? (
+          <div className="mt-10 rounded-2xl border border-white/20 bg-white/5 p-12 text-center backdrop-blur">
+            <h2 className="font-display text-2xl font-semibold uppercase tracking-[0.08em] text-white">
+              {activeTab === "watchlist"
+                ? "Your watchlist is empty"
+                : "No watched items yet"}
+            </h2>
+            <p className="mt-4 text-sm text-muted-foreground">
+              {activeTab === "watchlist"
+                ? "Start adding movies and series to keep track of what you want to explore."
+                : 'Mark a movie or series as "Already Watched" to see it here.'}
+            </p>
+            <div className="mt-8 flex justify-center">
+              <Link
+                href="/"
+                className="rounded-full bg-accent px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow-[0_18px_36px_rgba(181,98,255,0.45)] transition hover:scale-[1.02] hover:shadow-[0_24px_50px_rgba(181,98,255,0.55)]"
+              >
+                Browse content
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-10 grid grid-cols-2 gap-4 sm:gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+            {currentItems.map((item, index) => (
+              <div
+                key={item.id}
+                className="group/item flex flex-col animate-fade-up"
+                style={{ animationDelay: `${index * 35}ms` }}
+              >
+                <Link href={`/${item.mediaType}/${item.contentId}`}>
+                  <div className="relative aspect-[2/3] overflow-hidden rounded-2xl border border-white/20 bg-white/5 shadow-soft transition-transform duration-500 group-hover/item:-translate-y-1 group-hover/item:shadow-lg">
+                    {item.posterPath ? (
+                      <Image
+                        src={`https://image.tmdb.org/t/p/w342${item.posterPath}`}
+                        alt={item.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover/item:scale-105"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center bg-white/5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        No Artwork
+                      </div>
+                    )}
+                    <span className="absolute right-3 top-3 rounded-full bg-white/20 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-wide text-white backdrop-blur-md">
+                      {item.mediaType === "movie" ? "Film" : "Series"}
+                    </span>
+                  </div>
+                </Link>
+
+                <h3 className="mt-3 line-clamp-2 text-sm font-semibold text-white transition-colors group-hover/item:text-accent-soft">
+                  <Link href={`/${item.mediaType}/${item.contentId}`}>
+                    {item.title}
+                  </Link>
+                </h3>
+
+                {item.seasonInfo && (
+                  <p className="text-xs font-semibold uppercase tracking-wide text-accent">
+                    {item.seasonInfo}
+                  </p>
+                )}
+
+                <p className="text-xs text-muted-foreground">
+                  {activeTab === "watchlist"
+                    ? `Added ${new Date(item.date).toLocaleDateString()}`
+                    : `Watched ${new Date(item.date).toLocaleDateString()}`}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
   );
 }

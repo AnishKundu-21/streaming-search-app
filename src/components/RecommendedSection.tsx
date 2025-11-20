@@ -6,8 +6,7 @@ import { useAuth } from "@/components/AuthProvider";
 
 export default function RecommendedSection() {
   const { session } = useAuth();
-  const { recommendedMovies, recommendedTvShows, isLoading, isError } =
-    useRecommendations();
+  const { recommendations, isLoading, isError } = useRecommendations();
 
   // Don't show recommendations if user is not signed in
   if (!session) {
@@ -17,22 +16,27 @@ export default function RecommendedSection() {
   // Loading state
   if (isLoading) {
     return (
-      <section className="rounded-3xl border border-white/10 bg-card p-8 shadow-soft">
-        <div className="flex items-center justify-between">
-          <h2 className="font-display text-2xl font-semibold uppercase tracking-[0.08em] text-white">
-            Recommended for You
-          </h2>
-          <span className="pill">Loading tailored picks…</span>
+      <section className="py-12">
+        <div className="flex items-center justify-between px-2">
+          <div>
+            <h2 className="font-display text-4xl font-bold uppercase italic tracking-tighter text-white sm:text-5xl md:text-6xl">
+              Recommended for You
+            </h2>
+            <div className="mt-2 h-1 w-24 bg-accent animate-pulse" />
+          </div>
+          <span className="hidden sm:inline-block border border-accent bg-accent/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-accent animate-pulse">
+            Loading...
+          </span>
         </div>
-        <div className="mt-6 flex gap-3 overflow-x-auto pb-2 pr-2 scrollbar-hide sm:gap-4">
-          {[...Array(8)].map((_, i) => (
+        <div className="mt-10 flex gap-6 overflow-x-auto pb-8 pl-2 pr-4 scrollbar-hide">
+          {[...Array(5)].map((_, i) => (
             <div
               key={i}
-              className="flex-shrink-0 w-[68vw] max-w-[220px] animate-pulse rounded-2xl border border-white/5 bg-surface-muted p-3 sm:w-[160px]"
+              className="flex-shrink-0 w-[200px] sm:w-[240px] animate-pulse"
             >
-              <div className="aspect-[2/3] rounded-xl bg-white/10" />
-              <div className="mt-3 h-3 rounded-full bg-white/10" />
-              <div className="mt-2 h-3 w-2/3 rounded-full bg-white/5" />
+              <div className="aspect-[2/3] bg-white/5 border border-white/10" />
+              <div className="mt-4 h-6 w-3/4 bg-white/10" />
+              <div className="mt-2 h-3 w-1/2 bg-white/5" />
             </div>
           ))}
         </div>
@@ -43,37 +47,45 @@ export default function RecommendedSection() {
   // Error state
   if (isError) {
     return (
-      <section className="rounded-3xl border border-white/10 bg-card p-10 text-center shadow-soft">
-        <h2 className="font-display text-2xl font-semibold uppercase tracking-[0.08em] text-white">
-          Recommended for You
-        </h2>
-        <p className="mt-4 text-sm text-muted-foreground">
-          Unable to load your personalized recommendations right now. Please try
-          again soon.
-        </p>
+      <section className="py-12">
+        <div className="px-2">
+          <h2 className="font-display text-4xl font-bold uppercase italic tracking-tighter text-white sm:text-5xl md:text-6xl">
+            Recommended for You
+          </h2>
+          <div className="mt-10 text-center">
+            <p className="text-sm font-bold uppercase tracking-widest text-white/40">
+              Unable to load your personalized recommendations right now.
+            </p>
+          </div>
+        </div>
       </section>
     );
   }
 
   // No recommendations available
-  if (recommendedMovies.length === 0 && recommendedTvShows.length === 0) {
+  if (!recommendations || recommendations.length === 0) {
     return (
-      <section className="rounded-3xl border border-white/10 bg-card p-10 text-center shadow-soft">
-        <h2 className="font-display text-2xl font-semibold uppercase tracking-[0.08em] text-white">
-          Your queue is warming up
-        </h2>
-        <p className="mt-4 text-sm text-muted-foreground">
-          Mark a few movies or series as already watched to unlock bespoke
-          recommendations.
-        </p>
+      <section className="py-12">
+        <div className="px-2">
+          <h2 className="font-display text-4xl font-bold uppercase italic tracking-tighter text-white sm:text-5xl md:text-6xl">
+            Recommended for You
+          </h2>
+          <div className="mt-10 text-center">
+            <p className="text-sm font-bold uppercase tracking-widest text-white/40">
+              No recommendations found
+            </p>
+          </div>
+        </div>
       </section>
     );
   }
 
   return (
-    <>
-      <RecommendedRow title="Recommended Movies" items={recommendedMovies} />
-      <RecommendedRow title="Recommended TV Shows" items={recommendedTvShows} />
-    </>
+
+    <section className="py-12">
+      <div className="px-2">
+        <RecommendedRow title="Recommended for You" items={recommendations} />
+      </div>
+    </section>
   );
 }

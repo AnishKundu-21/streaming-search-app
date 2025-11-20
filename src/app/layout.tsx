@@ -37,7 +37,7 @@ export default function RootLayout({
         <AuthProvider>
           <div className="relative isolate min-h-screen overflow-x-hidden">
             <Navbar />
-            <main className="relative mx-auto w-full max-w-screen-2xl px-4 pb-20 pt-20 sm:px-6 lg:px-8">
+            <main className="relative w-full">
               {children}
             </main>
           </div>

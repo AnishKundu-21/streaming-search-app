@@ -57,22 +57,21 @@ export default function WatchedButton({
     <button
       onClick={handleClick}
       disabled={isLoading}
-      className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60
-        ${
-          watched
-            ? "border border-accent/40 bg-accent/15 text-accent hover:bg-accent/25"
-            : "bg-accent text-white hover:bg-accent-soft"
+      className={`group inline-flex h-12 items-center justify-center gap-2 border px-6 text-sm font-bold uppercase tracking-widest transition-all disabled:cursor-not-allowed disabled:opacity-60
+        ${watched
+          ? "border-accent bg-accent text-black hover:bg-accent/90"
+          : "border-white/20 bg-black/50 text-white backdrop-blur-sm hover:border-accent hover:bg-accent hover:text-black"
         }
       `}
     >
       {isLoading ? (
         <>
-          <div className="h-4 w-4 rounded-full border-2 border-white/70 border-t-transparent animate-spin" />
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
           {watched ? "Removing..." : "Marking..."}
         </>
       ) : watched ? (
         <>
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"
               d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
@@ -84,7 +83,7 @@ export default function WatchedButton({
       ) : (
         <>
           <svg
-            className="w-4 h-4"
+            className="h-4 w-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -96,7 +95,7 @@ export default function WatchedButton({
               d="M5 13l4 4L19 7"
             />
           </svg>
-          Mark as Watched
+          Mark Watched
         </>
       )}
     </button>

@@ -8,6 +8,7 @@ import SeasonTracker from "@/components/SeasonTracker";
 import ProviderSection from "@/components/ProviderSection";
 import { getSeasonDetails, getTVDetails } from "@/lib/tmdb";
 import CastCarousel from "@/components/CastCarousel";
+import ExpandableText from "@/components/ExpandableText";
 
 export default async function SeasonDetailPage({
   params,
@@ -20,8 +21,8 @@ export default async function SeasonDetailPage({
 
   if (!Number.isFinite(tvId) || !Number.isFinite(seasonIndex)) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-main text-foreground">
-        <p className="text-sm text-muted-foreground">Invalid season request.</p>
+      <div className="flex min-h-screen items-center justify-center bg-black text-white">
+        <p className="text-sm font-bold uppercase tracking-widest text-white/60">Invalid season request.</p>
       </div>
     );
   }
@@ -33,8 +34,8 @@ export default async function SeasonDetailPage({
 
   if (!showData || !seasonData) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-main text-foreground">
-        <p className="text-sm text-muted-foreground">
+      <div className="flex min-h-screen items-center justify-center bg-black text-white">
+        <p className="text-sm font-bold uppercase tracking-widest text-white/60">
           We couldn&apos;t load that season right now. Please try again later.
         </p>
       </div>
@@ -43,167 +44,152 @@ export default async function SeasonDetailPage({
 
   const { details: showDetails, providers, credits } = showData;
   const heroBackdrop =
-    seasonData.poster_path ||
     showDetails.backdrop_path ||
-    showDetails.poster_path;
+    showDetails.poster_path ||
+    seasonData.poster_path;
   const premiereDate = seasonData.air_date
     ? new Date(seasonData.air_date).toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
     : null;
   const totalEpisodes = seasonData.episodes?.length ?? 0;
   const synopsis =
     seasonData.overview?.trim() || "Synopsis not provided for this season.";
 
   return (
-    <div className="min-h-screen bg-main text-foreground">
-      {heroBackdrop && (
-        <div className="relative h-72 w-full md:h-[420px]">
-          <Image
-            src={`https://image.tmdb.org/t/p/original${heroBackdrop}`}
-            alt={`${showDetails.name} season art`}
-            fill
-            className="object-cover object-center"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/70 to-black/90" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent via-black/70 to-[#050505]" />
+    <div className="min-h-screen bg-black text-white selection:bg-accent selection:text-black">
+      {/* Full Screen Backdrop */}
+      <div className="relative flex min-h-[85vh] w-full flex-col overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          {heroBackdrop ? (
+            <Image
+              src={`https://image.tmdb.org/t/p/original${heroBackdrop}`}
+              alt={`${showDetails.name} season art`}
+              fill
+              className="object-cover object-top opacity-60"
+              priority
+            />
+          ) : (
+            <div className="h-full w-full bg-zinc-900" />
+          )}
+
+          {/* Gradient Overlays */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
         </div>
-      )}
 
-      <div className="relative -mt-24 md:-mt-36">
-        <div className="mx-auto max-w-screen-xl px-4 pb-24 sm:px-6 lg:px-8">
-          <div className="rounded-3xl border border-border bg-card/95 p-6 shadow-soft backdrop-blur sm:p-8">
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-2">
-                <Link
-                  href={`/tv/${tvId}`}
-                  className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.34em] text-muted-foreground transition hover:text-foreground"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    className="h-3.5 w-3.5"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M13.78 4.22a.75.75 0 010 1.06L9.31 9.75l4.47 4.47a.75.75 0 11-1.06 1.06l-5-5a.75.75 0 010-1.06l5-5a.75.75 0 011.06 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  Back to {showDetails.name}
-                </Link>
-                <div className="flex flex-wrap items-center justify-between gap-4 text-xs font-semibold uppercase tracking-[0.34em] text-muted-foreground">
-                  <span>Season {seasonData.season_number} Overview</span>
-                  {premiereDate && <span>Premiered {premiereDate}</span>}
-                </div>
-              </div>
+        {/* Spacer to push content down but keep it anchored from top */}
+        <div className="h-[15vh] w-full flex-shrink-0" />
 
-              <div className="grid gap-8 md:grid-cols-[220px,1fr]">
-                <div className="relative mx-auto w-48 overflow-hidden rounded-3xl border border-border bg-surface-elevated shadow-soft md:mx-0">
-                  {seasonData.poster_path ? (
-                    <Image
-                      src={`https://image.tmdb.org/t/p/w500${seasonData.poster_path}`}
-                      alt={`${seasonData.name} poster`}
-                      width={500}
-                      height={750}
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-xs uppercase tracking-[0.3em] text-muted-foreground">
-                      No Poster
-                    </div>
-                  )}
-                </div>
+        {/* Content Overlay */}
+        <div className="relative z-10 w-full p-6 sm:p-12 md:p-16 lg:w-2/3">
+          {/* Breadcrumb / Back Link */}
+          <Link
+            href={`/tv/${tvId}`}
+            className="group mb-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-white/60 transition-colors hover:text-accent"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="h-4 w-4 transition-transform group-hover:-translate-x-1"
+            >
+              <path
+                fillRule="evenodd"
+                d="M13.78 4.22a.75.75 0 010 1.06L9.31 9.75l4.47 4.47a.75.75 0 11-1.06 1.06l-5-5a.75.75 0 010-1.06l5-5a.75.75 0 011.06 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Back to {showDetails.name}
+          </Link>
 
-                <div className="flex flex-col gap-5">
-                  <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.34em] text-accent">
-                      {showDetails.name}
-                    </p>
-                    <h1 className="mt-2 text-3xl font-bold leading-tight sm:text-4xl">
-                      {seasonData.name || `Season ${seasonData.season_number}`}
-                    </h1>
-                  </div>
+          <div className="animate-fade-up space-y-6">
+            <div className="flex flex-wrap items-center gap-4">
+              <span className="border border-accent/40 bg-accent/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-accent backdrop-blur-md">
+                Season {seasonData.season_number}
+              </span>
+              {premiereDate && (
+                <span className="text-xs font-bold uppercase tracking-widest text-white/60">
+                  {premiereDate}
+                </span>
+              )}
+              {totalEpisodes > 0 && (
+                <span className="text-xs font-bold uppercase tracking-widest text-white/60">
+                  {totalEpisodes} Episode{totalEpisodes === 1 ? "" : "s"}
+                </span>
+              )}
+            </div>
 
-                  <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                    {premiereDate && <span>Premieres {premiereDate}</span>}
-                    {totalEpisodes > 0 && (
-                      <span>
-                        {totalEpisodes} Episode{totalEpisodes === 1 ? "" : "s"}
-                      </span>
-                    )}
-                  </div>
+            <h1 className="font-display text-5xl font-black uppercase italic tracking-tighter text-white sm:text-6xl md:text-7xl lg:text-8xl">
+              {seasonData.name || `Season ${seasonData.season_number}`}
+            </h1>
 
-                  <p className="text-sm text-muted-foreground sm:text-base">
-                    {synopsis}
-                  </p>
+            <p className="text-lg font-bold uppercase tracking-widest text-accent sm:text-xl">
+              {showDetails.name}
+            </p>
 
-                  <div className="flex flex-wrap gap-3">
-                    <TrailerButton
-                      videos={seasonData.videos ?? { results: [] }}
-                    />
-                    <WatchlistButton
-                      contentId={tvId}
-                      mediaType="tv"
-                      title={`${showDetails.name} - ${seasonData.name}`}
-                      posterPath={
-                        seasonData.poster_path ?? showDetails.poster_path
-                      }
-                      seasonNumber={seasonData.season_number}
-                    />
-                    <WatchedButton
-                      contentId={tvId}
-                      mediaType="tv"
-                      title={`${showDetails.name} - ${seasonData.name}`}
-                      posterPath={
-                        seasonData.poster_path ?? showDetails.poster_path
-                      }
-                      seasonNumber={seasonData.season_number}
-                    />
-                  </div>
-                </div>
-              </div>
+            <ExpandableText
+              text={synopsis}
+              className="max-w-2xl text-lg font-medium leading-relaxed text-white/80 md:text-xl"
+            />
+
+            <div className="flex flex-wrap gap-4 pt-4">
+              <TrailerButton
+                videos={seasonData.videos ?? { results: [] }}
+              />
+              <WatchlistButton
+                contentId={tvId}
+                mediaType="tv"
+                title={`${showDetails.name} - ${seasonData.name}`}
+                posterPath={
+                  seasonData.poster_path ?? showDetails.poster_path
+                }
+                seasonNumber={seasonData.season_number}
+              />
+              <WatchedButton
+                contentId={tvId}
+                mediaType="tv"
+                title={`${showDetails.name} - ${seasonData.name}`}
+                posterPath={
+                  seasonData.poster_path ?? showDetails.poster_path
+                }
+                seasonNumber={seasonData.season_number}
+              />
             </div>
           </div>
-
-          <SeasonTracker
-            tvId={tvId}
-            tvTitle={showDetails.name ?? "TV Show"}
-            seasons={showDetails.seasons}
-          />
-
-          <ProviderSection
-            providers={providers}
-            title={showDetails.name ?? "This series"}
-            mediaType="tv"
-            tmdbId={tvId}
-          />
-
-          <section className="mt-12">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <h2 className="text-2xl font-semibold">Episodes</h2>
-                <p className="text-sm text-muted-foreground">
-                  Dive into individual episode synopses for{" "}
-                  {seasonData.name || `Season ${seasonData.season_number}`}.
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <SeasonEpisodesList episodes={seasonData.episodes ?? []} />
-            </div>
-          </section>
-
-          <CastCarousel
-            cast={credits.cast.slice(0, 15)}
-            description="Series regulars appearing this season."
-          />
         </div>
+      </div>
+
+      {/* Content Section */}
+      <div className="relative z-10 mx-auto max-w-screen-2xl space-y-24 px-4 py-16 sm:px-6 lg:px-8">
+        <section className="animate-fade-up animation-delay-200">
+          <div className="mb-8 border-b border-white/10 pb-4">
+            <h2 className="font-display text-3xl font-bold uppercase italic tracking-wider text-white">
+              Episodes
+            </h2>
+          </div>
+          <SeasonEpisodesList episodes={seasonData.episodes ?? []} />
+        </section>
+
+        <SeasonTracker
+          tvId={tvId}
+          tvTitle={showDetails.name ?? "TV Show"}
+          seasons={showDetails.seasons}
+        />
+
+        <ProviderSection
+          providers={providers}
+          title={showDetails.name ?? "This series"}
+          mediaType="tv"
+          tmdbId={tvId}
+        />
+
+        <CastCarousel
+          cast={credits.cast.slice(0, 15)}
+          description="Series regulars appearing this season."
+        />
       </div>
     </div>
   );

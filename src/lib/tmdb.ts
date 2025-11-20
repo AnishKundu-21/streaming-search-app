@@ -123,7 +123,7 @@ interface SeasonDetail {
   videos?: { results: Video[] };
 }
 
-function tmdb<T>(
+export async function tmdb<T>(
   path: string,
   qs: Record<string, string | number | string[] | boolean> = {} // Allow boolean
 ): Promise<T> {
@@ -512,4 +512,56 @@ export async function getGenres(
   media: "movie" | "tv"
 ): Promise<{ genres: Genre[] }> {
   return tmdb<{ genres: Genre[] }>(`/genre/${media}/list`);
+}
+/* ----------------------------------------------------------
+   New Fetch Functions for Home Page Restructuring
+   ---------------------------------------------------------- */
+
+// Get movies currently in theaters (Trending)
+export async function getMoviesInTheaters(page = 1) {
+  const res = await fetch(
+    `${BASE}/trending/movie/week?api_key=${API_KEY}&language=en-US&page=${page}&region=IN`,
+    defaultFetchOpts
+  );
+  const data = (await res.json()) as TMDBResponse<TMDBItem>;
+  return data.results.map((item) => ({ ...item, media_type: "movie" as const }));
+}
+
+// Get content from specific streaming providers
+export async function getStreamingContent(
+  providerIds: string, // Comma-separated provider IDs (e.g., "8,119")
+  mediaType: "movie" | "tv" = "tv",
+  page = 1
+) {
+  const res = await fetch(
+    `${BASE}/discover/${mediaType}?api_key=${API_KEY}&language=en-US&sort_by=popularity.desc&page=${page}&with_watch_providers=${providerIds}&watch_region=IN`,
+    defaultFetchOpts
+  );
+  const data = (await res.json()) as TMDBResponse<TMDBItem>;
+  return data.results.map((item) => ({ ...item, media_type: mediaType }));
+}
+
+// Get Asian Dramas (KR, JP, CN)
+export async function getAsianDramas(page = 1) {
+  // 18 = Drama
+  // with_original_language = ko (Korean), ja (Japanese), zh (Chinese)
+  // without_genres = 16 (Animation)
+  const res = await fetch(
+    `${BASE}/discover/tv?api_key=${API_KEY}&language=en-US&sort_by=popularity.desc&page=${page}&with_genres=18&without_genres=16&with_original_language=ko|ja|zh`,
+    defaultFetchOpts
+  );
+  const data = (await res.json()) as TMDBResponse<TMDBItem>;
+  return data.results.map((item) => ({ ...item, media_type: "tv" as const }));
+}
+
+// Get Anime
+export async function getAnime(page = 1) {
+  // 16 = Animation
+  // with_original_language = ja (Japanese)
+  const res = await fetch(
+    `${BASE}/discover/tv?api_key=${API_KEY}&language=en-US&sort_by=popularity.desc&page=${page}&with_genres=16&with_original_language=ja`,
+    defaultFetchOpts
+  );
+  const data = (await res.json()) as TMDBResponse<TMDBItem>;
+  return data.results.map((item) => ({ ...item, media_type: "tv" as const }));
 }

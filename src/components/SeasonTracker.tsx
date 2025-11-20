@@ -36,17 +36,19 @@ export default function SeasonTracker({
   };
 
   return (
-    <section className="mt-12">
+    <section className="mt-12 animate-fade-up animation-delay-400">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-2xl font-semibold">Track Seasons</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="font-display text-2xl font-bold uppercase italic tracking-wider text-white sm:text-3xl">
+            Track Seasons
+          </h2>
+          <p className="text-sm font-bold uppercase tracking-widest text-white/60">
             Tap a season card to open a dedicated view with trailers, synopsis,
             and episode details.
           </p>
         </div>
         <div className="flex flex-col items-start gap-4 sm:items-end">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+          <p className="text-xs font-bold uppercase tracking-[0.28em] text-accent">
             {tvTitle}
           </p>
           <div className="flex items-center gap-2">
@@ -54,7 +56,7 @@ export default function SeasonTracker({
               type="button"
               onClick={() => scrollBy(-320)}
               aria-label="Scroll seasons left"
-              className="rounded-full border border-border bg-surface-elevated/70 p-2 text-muted-foreground transition hover:border-accent hover:text-accent"
+              className="group border border-white/20 bg-black/50 p-3 text-white transition-all hover:border-accent hover:bg-accent hover:text-black"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -73,7 +75,7 @@ export default function SeasonTracker({
               type="button"
               onClick={() => scrollBy(320)}
               aria-label="Scroll seasons right"
-              className="rounded-full border border-border bg-surface-elevated/70 p-2 text-muted-foreground transition hover:border-accent hover:text-accent"
+              className="group border border-white/20 bg-black/50 p-3 text-white transition-all hover:border-accent hover:bg-accent hover:text-black"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -92,41 +94,42 @@ export default function SeasonTracker({
         </div>
       </div>
 
-      <div className="mt-6 overflow-x-auto pb-4 scrollbar-hide" ref={scrollRef}>
+      <div className="mt-8 overflow-x-auto pb-8 scrollbar-hide" ref={scrollRef}>
         <div className="flex gap-6">
           {validSeasons.map((season) => (
             <Link
               key={season.id}
               href={`/tv/${tvId}/season/${season.season_number}`}
-              className="group/wrapper relative w-[170px] flex-shrink-0"
+              className="group relative w-[200px] flex-shrink-0"
             >
-              <div className="relative aspect-[2/3] overflow-hidden rounded-3xl border border-border bg-surface-elevated shadow-soft transition duration-500 group-hover/wrapper:-translate-y-1 group-hover/wrapper:border-accent/60">
+              <div className="relative aspect-[2/3] overflow-hidden border border-white/10 bg-white/5 transition-all duration-300 group-hover:border-accent group-hover:shadow-[0_0_30px_rgba(255,0,128,0.3)] group-hover:-translate-y-2">
                 {season.poster_path ? (
                   <Image
                     src={`https://image.tmdb.org/t/p/w342${season.poster_path}`}
                     alt={season.name}
                     fill
-                    className="object-cover transition duration-500 group-hover/wrapper:scale-105"
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center bg-surface-elevated text-xs uppercase tracking-widest text-muted-foreground">
+                  <div className="flex h-full items-center justify-center bg-white/5 text-xs font-bold uppercase tracking-widest text-white/40">
                     No Art
                   </div>
                 )}
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-4">
-                  <span className="text-xs font-semibold uppercase tracking-[0.38em] text-white/70">
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
+                <div className="absolute inset-x-0 bottom-0 p-4">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-accent">
                     Season {season.season_number}
                   </span>
-                  <p className="mt-1 text-sm font-semibold text-white line-clamp-2">
+                  <p className="mt-1 text-lg font-bold uppercase italic leading-none text-white">
                     {season.name}
                   </p>
                 </div>
               </div>
-              <div className="mt-3 space-y-1">
-                <p className="text-xs uppercase tracking-[0.28em] text-muted-foreground">
+              <div className="mt-4 space-y-1 px-1">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/60">
                   {season.episode_count} Episodes
                 </p>
-                <p className="text-sm font-semibold text-foreground">
+                <p className="text-xs font-bold uppercase tracking-wider text-white group-hover:text-accent transition-colors">
                   View details
                 </p>
               </div>

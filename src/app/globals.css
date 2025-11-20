@@ -4,36 +4,39 @@
 
 :root {
   --background: #000000;
-  --foreground: #f4f4f8;
-  --card-bg: #131318;
-  --card-hover: #1c1c25;
-  --accent: #7b61ff;
-  --accent-soft: #9986ff;
-  --accent-strong: #533cff;
-  --muted: #7c7c90;
-  --muted-foreground: #a3a3b5;
-  --border: #26263a;
-  --ring: rgba(91, 42, 181, 0.45);
-  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.65);
-  --surface-elevated: #181820;
-  --surface-muted: rgba(91, 42, 181, 0.12);
+  --foreground: #ffffff;
+
+  /* Vice City / Rockstar VI Palette */
+  --card-bg: #0a0a0a;
+  --card-hover: #141414;
+
+  --accent: #ff0055;
+  /* Neon Pink */
+  --accent-soft: #ff4d88;
+  --accent-strong: #cc0044;
+
+  --muted: #666666;
+  --muted-foreground: #999999;
+
+  --border: #333333;
+  --ring: rgba(255, 0, 85, 0.5);
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Oswald', system-ui, sans-serif;
 }
 
 .dark {
   --background: #000000;
-  --foreground: #f4f4f8;
-  --card-bg: #131318;
-  --card-hover: #1c1c25;
-  --accent: #7b61ff;
-  --accent-soft: #9986ff;
-  --accent-strong: #533cff;
-  --muted: #7c7c90;
-  --muted-foreground: #a3a3b5;
-  --border: #26263a;
-  --ring: rgba(91, 42, 181, 0.45);
-  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.65);
-  --surface-elevated: #181820;
-  --surface-muted: rgba(91, 42, 181, 0.12);
+  --foreground: #ffffff;
+  --card-bg: #0a0a0a;
+  --card-hover: #141414;
+  --accent: #ff0055;
+  --accent-soft: #ff4d88;
+  --accent-strong: #cc0044;
+  --muted: #666666;
+  --muted-foreground: #999999;
+  --border: #333333;
+  --ring: rgba(255, 0, 85, 0.5);
 }
 
 @layer base {
@@ -191,6 +194,7 @@
     opacity: 0;
     transform: translateY(18px) scale(0.98);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -201,6 +205,7 @@
   0% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }
@@ -211,6 +216,7 @@
     opacity: 0;
     transform: scale(0.96);
   }
+
   100% {
     opacity: 1;
     transform: scale(1);

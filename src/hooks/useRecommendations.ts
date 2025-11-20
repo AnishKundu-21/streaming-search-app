@@ -1,3 +1,4 @@
+
 // src/hooks/useRecommendations.ts
 "use client";
 
@@ -10,12 +11,13 @@ export type Recommendation = {
   title: string;
   posterPath: string | null;
   popularity: number;
+  releaseDate?: string;
+  firstAirDate?: string;
 };
 
 // Define the shape of the data returned by the API
 type RecommendationsResponse = {
-  movies: Recommendation[];
-  tvShows: Recommendation[];
+  results: Recommendation[];
 };
 
 const fetcher = (url: string): Promise<RecommendationsResponse> =>
@@ -29,8 +31,7 @@ const fetcher = (url: string): Promise<RecommendationsResponse> =>
  * currently-signed-in user.
  *
  * Returns:
- * - recommendedMovies: Recommendation[]
- * - recommendedTvShows: Recommendation[]
+ * - recommendations: Recommendation[]
  * - isLoading: boolean
  * - isError: Error | undefined
  * - refresh: () => void
@@ -47,14 +48,12 @@ export function useRecommendations() {
     mutate: refresh,
   } = useSWR<RecommendationsResponse>(
     enabled ? "/api/recommendations" : null,
-    fetcher,
-    { keepPreviousData: true }
+    fetcher
   );
 
   return {
-    recommendedMovies: data?.movies ?? [],
-    recommendedTvShows: data?.tvShows ?? [],
-    isLoading: isLoading && enabled,
+    recommendations: data?.results || [],
+    isLoading,
     isError: error,
     refresh,
   };

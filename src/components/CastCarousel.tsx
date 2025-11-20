@@ -32,18 +32,22 @@ export default function CastCarousel({
   };
 
   return (
-    <section className="mt-12">
+    <section className="mt-12 animate-fade-up animation-delay-400">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-2xl font-semibold">{title}</h2>
-          <p className="text-sm text-muted-foreground">{description}</p>
+          <h2 className="font-display text-2xl font-bold uppercase italic tracking-wider text-white sm:text-3xl">
+            {title}
+          </h2>
+          <p className="text-sm font-bold uppercase tracking-widest text-white/60">
+            {description}
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => scrollBy(-320)}
             aria-label="Scroll cast left"
-            className="rounded-full border border-border bg-surface-elevated/70 p-2 text-muted-foreground transition hover:border-accent hover:text-accent"
+            className="group border border-white/20 bg-black/50 p-3 text-white transition-all hover:border-accent hover:bg-accent hover:text-black"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -62,7 +66,7 @@ export default function CastCarousel({
             type="button"
             onClick={() => scrollBy(320)}
             aria-label="Scroll cast right"
-            className="rounded-full border border-border bg-surface-elevated/70 p-2 text-muted-foreground transition hover:border-accent hover:text-accent"
+            className="group border border-white/20 bg-black/50 p-3 text-white transition-all hover:border-accent hover:bg-accent hover:text-black"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -81,33 +85,35 @@ export default function CastCarousel({
       </div>
 
       <div
-        className="mt-6 flex gap-4 overflow-x-auto pb-4 scrollbar-hide"
+        className="mt-8 flex gap-6 overflow-x-auto pb-8 scrollbar-hide"
         ref={scrollRef}
       >
         {cast.map((person) => (
           <div
             key={person.credit_id}
-            className="flex-shrink-0 w-32 text-center"
+            className="group flex-shrink-0 w-40 text-center"
           >
-            <div className="relative mx-auto mb-2 h-24 w-24 overflow-hidden rounded-full border border-border bg-surface-elevated">
+            <div className="relative mx-auto mb-4 h-40 w-40 overflow-hidden border border-white/10 bg-white/5 transition-all duration-300 group-hover:border-accent group-hover:shadow-[0_0_20px_rgba(255,0,128,0.3)]">
               {person.profile_path ? (
                 <Image
                   src={`https://image.tmdb.org/t/p/w185${person.profile_path}`}
                   alt={person.name}
                   fill
-                  sizes="96px"
-                  className="object-cover"
+                  sizes="160px"
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />
               ) : (
-                <div className="flex h-full items-center justify-center text-xs text-muted-foreground">
+                <div className="flex h-full items-center justify-center text-xs font-bold uppercase text-white/40">
                   No Image
                 </div>
               )}
             </div>
-            <p className="text-sm font-semibold text-foreground">
+            <p className="truncate text-sm font-bold uppercase tracking-wider text-white group-hover:text-accent">
               {person.name}
             </p>
-            <p className="text-xs text-muted-foreground">{person.character}</p>
+            <p className="truncate text-xs font-bold uppercase tracking-widest text-white/60">
+              {person.character}
+            </p>
           </div>
         ))}
       </div>

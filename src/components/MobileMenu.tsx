@@ -50,7 +50,7 @@ export default function MobileMenu({ links }: MobileMenuProps) {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-14 w-64 rounded-2xl border border-white/10 bg-card p-4 shadow-soft">
+        <div className="absolute right-0 top-24 w-64 rounded-2xl border border-white/10 bg-card p-4 shadow-soft">
           <div className="space-y-2">
             {links.map((link) => (
               <Link

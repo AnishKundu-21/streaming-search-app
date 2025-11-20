@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getRouteUser } from "@/lib/supabase-route";
+import { tmdb } from "@/lib/tmdb";
 import type { WatchedItem } from "@prisma/client";
-
-const TMDB_API_KEY = process.env.TMDB_API_KEY!;
-const TMDB_BASE = "https://api.themoviedb.org/3";
 
 type TMDBItem = {
   id: number;
@@ -13,6 +11,8 @@ type TMDBItem = {
   poster_path: string | null;
   media_type?: "movie" | "tv";
   popularity: number;
+  release_date?: string;
+  first_air_date?: string;
 };
 
 type RecommendationItem = {
@@ -21,17 +21,10 @@ type RecommendationItem = {
   mediaType: "movie" | "tv";
   posterPath: string | null;
   popularity: number;
+  releaseDate?: string;
+  firstAirDate?: string;
 };
 
-/* ------- helper to call TMDB and return JSON ------- */
-async function tmdb(path: string) {
-  const url = `${TMDB_BASE}${path}?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
-  const res = await fetch(url, { next: { revalidate: 60 * 60 } }); // cache 1 hour
-  if (!res.ok) throw new Error("TMDB request failed");
-  return res.json();
-}
-
-/* ---------------------------  GET  --------------------------- */
 export async function GET() {
   /* ── auth ── */
   const { user, error } = await getRouteUser();
@@ -48,7 +41,7 @@ export async function GET() {
   });
 
   if (watched.length === 0) {
-    return NextResponse.json({ movies: [], tvShows: [] });
+    return NextResponse.json({ results: [] });
   }
 
   /* ── make TMDB calls in parallel ── */
@@ -59,7 +52,7 @@ export async function GET() {
         : `/tv/${item.contentId}/similar`;
 
     try {
-      const data = (await tmdb(endpoint)) as { results: TMDBItem[] };
+      const data = (await tmdb<{ results: TMDBItem[] }>(endpoint));
       return data.results.slice(0, 5).map(
         (r): RecommendationItem => ({
           id: r.id,
@@ -67,6 +60,8 @@ export async function GET() {
           mediaType: item.mediaType as "movie" | "tv",
           posterPath: r.poster_path,
           popularity: r.popularity,
+          releaseDate: r.release_date,
+          firstAirDate: r.first_air_date,
         })
       );
     } catch {
@@ -90,20 +85,23 @@ export async function GET() {
     }
   }
 
-  /* ── sort by TMDB popularity & separate by media type ── */
+  /* ── sort by TMDB popularity ── */
   const final = Array.from(uniqueMap.values()).sort(
     (a, b) => b.popularity - a.popularity
   );
 
-  const movies = final.filter((r) => r.mediaType === "movie").slice(0, 20);
-  const tvShows = final.filter((r) => r.mediaType === "tv").slice(0, 20);
+  // Take top 15 movies and top 15 TV shows if possible, or just mix top results
+  const movies = final.filter((r) => r.mediaType === "movie").slice(0, 15);
+  const tvShows = final.filter((r) => r.mediaType === "tv").slice(0, 15);
 
-  return NextResponse.json({ movies, tvShows });
+  // Combine and shuffle
+  const combined = [...movies, ...tvShows].sort(() => Math.random() - 0.5);
+
+  return NextResponse.json({ results: combined });
 }
 
 /* reject other verbs */
 export const POST = () =>
   NextResponse.json({ error: "Method not allowed" }, { status: 405 });
-export const DELETE = POST;
 export const PUT = POST;
 export const PATCH = POST;

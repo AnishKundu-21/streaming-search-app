@@ -1,9 +1,12 @@
 ﻿import RecommendedSection from "@/components/RecommendedSection";
 import ScrollableSection from "@/components/ScrollableSection";
+import HeroSection from "@/components/HeroSection";
 import {
-  getDiscover,
+  getMoviesInTheaters,
+  getStreamingContent,
+  getAsianDramas,
+  getAnime,
   getTopRated,
-  getTrending,
   searchMoviesAndTV,
 } from "@/lib/tmdb";
 
@@ -50,74 +53,71 @@ export default async function Home({
     }
   } else {
     const [
-      trendingAll,
-      trendingMovies,
-      trendingSeries,
+      theaterReleases,
       topRatedMovies,
-      topRatedSeries,
-      actionThrillers,
-      prestigeDrama,
-      comedySeries,
-      familyFavorites,
-      animeSpotlight,
+      topRatedTV,
+      netflixShows,
+      primeVideo,
+      jioHotstar,
+      crunchyroll,
+      asianDramas,
+      anime,
     ] = await Promise.all([
-      getTrending("all", "week"),
-      getTrending("movie", "week"),
-      getTrending("tv", "week"),
+      getMoviesInTheaters(),
       getTopRated("movie"),
       getTopRated("tv"),
-      getDiscover("movie", ACTION_GENRES, undefined, ADULT_KEYWORD_IDS),
-      getDiscover("tv", DRAMA_GENRES, undefined, ADULT_KEYWORD_IDS),
-      getDiscover("tv", COMEDY_GENRES, undefined, ADULT_KEYWORD_IDS),
-      getDiscover("movie", FAMILY_GENRES, undefined, ADULT_KEYWORD_IDS),
-      getDiscover("tv", ANIME_GENRES, "JP", ADULT_KEYWORD_IDS),
+      getStreamingContent("8"), // Netflix
+      getStreamingContent("119"), // Prime Video
+      getStreamingContent("122,337,220"), // Hotstar, Disney+, JioCinema
+      getStreamingContent("283"), // Crunchyroll
+      getAsianDramas(),
+      getAnime(),
     ]);
 
     sections = [
-      { title: "Now Streaming Highlights", items: take(trendingAll) },
       {
-        title: "Cinematic Premieres",
-        items: take(trendingMovies),
+        title: "Trending Right Now",
+        items: take(theaterReleases),
         defaultMediaType: "movie",
       },
       {
-        title: "Binge-Worthy Series",
-        items: take(trendingSeries),
-        defaultMediaType: "tv",
-      },
-      {
-        title: "Top Rated Films",
+        title: "Top Rated Movies",
         items: take(topRatedMovies),
         defaultMediaType: "movie",
       },
       {
-        title: "Top Rated Series",
-        items: take(topRatedSeries),
+        title: "Top Rated TV Shows",
+        items: take(topRatedTV),
         defaultMediaType: "tv",
       },
       {
-        title: "Thrills & Suspense",
-        items: take(actionThrillers),
-        defaultMediaType: "movie",
-      },
-      {
-        title: "Award-Worthy Drama",
-        items: take(prestigeDrama),
+        title: "Netflix Shows",
+        items: take(netflixShows),
         defaultMediaType: "tv",
       },
       {
-        title: "Comedy Comfort",
-        items: take(comedySeries),
+        title: "Prime Video",
+        items: take(primeVideo),
         defaultMediaType: "tv",
       },
       {
-        title: "Family Movie Night",
-        items: take(familyFavorites),
-        defaultMediaType: "movie",
+        title: "JioHotstar",
+        items: take(jioHotstar),
+        defaultMediaType: "tv",
       },
       {
-        title: "Anime Spotlight",
-        items: take(animeSpotlight),
+        title: "Crunchyroll",
+        items: take(crunchyroll),
+        defaultMediaType: "tv",
+      },
+      {
+        title: "Asian Dramas",
+        items: take(asianDramas),
+        defaultMediaType: "tv",
+      },
+      {
+        title: "Anime",
+        items: take(anime),
         defaultMediaType: "tv",
       },
     ];
@@ -129,62 +129,19 @@ export default async function Home({
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <section className="px-4 pb-16 pt-28 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-screen-xl rounded-3xl border border-border bg-card px-6 py-10 text-center shadow-soft sm:px-10 sm:py-16">
-          <p className="text-xs font-semibold uppercase tracking-[0.38em] text-muted-foreground">
-            StreamFinder
-          </p>
-          <h1 className="mt-4 font-display text-4xl font-bold text-white sm:text-5xl md:text-6xl">
-            All of streaming, one destination.
-          </h1>
-          <p className="mt-5 text-lg text-muted-foreground sm:text-xl">
-            {heroTagline}
-          </p>
+      {!isSearching && <HeroSection tagline={heroTagline} />}
 
-          <form
-            className="mx-auto mt-10 max-w-3xl"
-            action="/"
-            method="GET"
-            role="search"
-          >
-            <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-              <input
-                type="text"
-                name="q"
-                defaultValue={normalizedQuery}
-                placeholder="Search for series, films, people, or collections"
-                className="h-[3.75rem] w-full flex-1 rounded-full border border-white/15 bg-white/5 px-5 text-base text-white placeholder:text-white/60 shadow-[0_12px_30px_rgba(0,0,0,0.35)] transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/60 focus:ring-offset-2 focus:ring-offset-black sm:px-6"
-              />
-              <button
-                type="submit"
-                className="h-[3.75rem] w-full rounded-full bg-accent px-8 text-base font-semibold text-white transition hover:bg-accent-soft focus:outline-none focus:ring-2 focus:ring-accent/60 focus:ring-offset-2 focus:ring-offset-black sm:w-auto sm:px-10"
-              >
-                Search
-              </button>
-            </div>
-          </form>
-
-          {!isSearching && (
-            <div className="mt-9 flex flex-wrap items-center justify-center gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.32em] text-muted-foreground">
-              <span>Series</span>
-              <span className="h-4 w-px bg-white/20" />
-              <span>Movies</span>
-              <span className="h-4 w-px bg-white/20" />
-              <span>Originals</span>
-              <span className="h-4 w-px bg-white/20" />
-              <span>Just Added</span>
-            </div>
-          )}
-        </div>
-      </section>
-
-      <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-12 px-4 pb-24 sm:px-6 lg:px-8">
+      <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-12 px-4 pb-24 pt-12 sm:px-6 lg:px-8">
         {!isSearching && <RecommendedSection />}
 
         {isSearching && sections.length === 0 ? (
-          <div className="rounded-3xl border border-white/10 bg-card p-12 text-center text-lg text-muted-foreground shadow-soft">
-            No matches for &ldquo;{normalizedQuery}&rdquo;. Try another title,
-            person, or keyword.
+          <div className="mt-32 border border-white/10 bg-black p-12 text-center">
+            <p className="text-lg font-bold uppercase tracking-widest text-white/60">
+              No matches for &ldquo;{normalizedQuery}&rdquo;.
+            </p>
+            <p className="mt-2 text-sm font-medium text-white/40">
+              Try another title, person, or keyword.
+            </p>
           </div>
         ) : (
           sections.map((section) => (

@@ -57,7 +57,7 @@ export default function RecommendationsPage() {
   };
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="mx-auto max-w-screen-2xl px-4 pb-20 pt-32 sm:px-6 lg:px-8 flex flex-col gap-10">
       <section className="rounded-3xl border border-white/10 bg-card p-6 shadow-soft sm:p-10 lg:p-12">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -76,11 +76,10 @@ export default function RecommendationsPage() {
             <button
               key={type}
               onClick={() => setMediaType(type as "movie" | "tv")}
-              className={`inline-flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-semibold uppercase tracking-wide transition ${
-                mediaType === type
-                  ? "border-transparent bg-accent text-white shadow-[0_18px_36px_rgba(181,98,255,0.45)]"
-                  : "border-white/20 bg-white/5 text-white/70 hover:text-white"
-              }`}
+              className={`inline-flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-semibold uppercase tracking-wide transition ${mediaType === type
+                ? "border-transparent bg-accent text-white shadow-[0_18px_36px_rgba(181,98,255,0.45)]"
+                : "border-white/20 bg-white/5 text-white/70 hover:text-white"
+                }`}
             >
               {type === "movie" ? "Movies" : "TV Shows"}
             </button>
@@ -90,24 +89,23 @@ export default function RecommendationsPage() {
         <div className="mt-8 flex flex-wrap gap-3">
           {isGenresLoading
             ? [...Array(12)].map((_, index) => (
-                <div
-                  key={index}
-                  className="h-9 w-28 animate-pulse rounded-full border border-white/20 bg-white/5"
-                />
-              ))
+              <div
+                key={index}
+                className="h-9 w-28 animate-pulse rounded-full border border-white/20 bg-white/5"
+              />
+            ))
             : genres.map((genre) => (
-                <button
-                  key={genre.id}
-                  onClick={() => handleGenreClick(genre)}
-                  className={`rounded-full border px-4 py-2 text-sm font-semibold uppercase tracking-wide transition ${
-                    selectedGenre?.id === genre.id
-                      ? "border-transparent bg-accent text-white shadow-[0_18px_36px_rgba(181,98,255,0.45)]"
-                      : "border-white/20 bg-white/5 text-white/70 hover:text-white"
+              <button
+                key={genre.id}
+                onClick={() => handleGenreClick(genre)}
+                className={`rounded-full border px-4 py-2 text-sm font-semibold uppercase tracking-wide transition ${selectedGenre?.id === genre.id
+                  ? "border-transparent bg-accent text-white shadow-[0_18px_36px_rgba(181,98,255,0.45)]"
+                  : "border-white/20 bg-white/5 text-white/70 hover:text-white"
                   }`}
-                >
-                  {genre.name}
-                </button>
-              ))}
+              >
+                {genre.name}
+              </button>
+            ))}
         </div>
 
         <div className="mt-10 min-h-[200px]">

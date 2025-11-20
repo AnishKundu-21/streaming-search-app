@@ -40,19 +40,19 @@ export default function SignInClient() {
   };
 
   return (
-    <div className="flex min-h-[60vh] items-center justify-center">
-      <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-card p-8 shadow-soft sm:p-10">
+    <div className="flex min-h-screen items-center justify-center px-4 py-20">
+      <div className="relative w-full max-w-md overflow-hidden border-2 border-white/10 bg-black p-8 shadow-[0_0_50px_rgba(0,0,0,0.5)] sm:p-12 animate-fade-up">
         <div className="relative">
           {justRegistered && (
-            <div className="mb-4 rounded-full border border-white/10 bg-surface-muted px-4 py-2 text-center text-xs font-semibold uppercase tracking-wide text-accent">
+            <div className="mb-8 border border-accent/20 bg-accent/10 px-4 py-3 text-center text-xs font-bold uppercase tracking-widest text-accent">
               Account created! Sign in to continue
             </div>
           )}
 
-          <h1 className="text-2xl font-semibold text-foreground sm:text-3xl">
-            Welcome back
+          <h1 className="font-display text-4xl font-bold uppercase italic tracking-tighter text-white sm:text-5xl">
+            Welcome <span className="text-accent">Back</span>
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-4 text-sm font-medium uppercase tracking-wide text-white/60">
             Sign in with your credentials or continue with Google.
           </p>
 
@@ -66,10 +66,10 @@ export default function SignInClient() {
                 },
               });
             }}
-            className="mt-8 flex w-full items-center justify-center gap-3 rounded-full border border-white/10 bg-surface-muted px-4 py-3 text-sm font-semibold text-foreground transition hover:border-accent/40 hover:text-accent"
+            className="mt-10 flex w-full items-center justify-center gap-3 border-2 border-white/20 bg-white/5 px-6 py-4 text-sm font-bold uppercase tracking-widest text-white transition-all hover:border-accent hover:bg-accent hover:text-white group"
             type="button"
           >
-            <svg className="h-5 w-5" viewBox="0 0 48 48">
+            <svg className="h-5 w-5 transition-transform group-hover:scale-110" viewBox="0 0 48 48">
               <path
                 fill="#FFC107"
                 d="M43.6 20.364h-18.2v7.273h10.491c-1.11 4.182-4.546 7.273-10.491 7.273-6.364 0-11.545-5.182-11.545-11.545S19.036 11.82 25.4 11.82c3.273 0 6.182 1.273 8.364 3.273l5.455-5.455C35.782 6.318 30.782 4 25.4 4 14.327 4 5.6 12.727 5.6 23.8s8.727 19.8 19.8 19.8c11.273 0 19.8-7.727 19.8-19.8 0-1.273-.127-2.545-.327-3.636z"
@@ -78,30 +78,30 @@ export default function SignInClient() {
             Continue with Google
           </button>
 
-          <div className="mt-8 flex items-center gap-3">
+          <div className="mt-10 flex items-center gap-4">
             <span className="flex-1 border-t border-white/10" />
-            <span className="text-xs uppercase tracking-wide text-muted-foreground">
+            <span className="text-xs font-bold uppercase tracking-widest text-white/40">
               or use email
             </span>
             <span className="flex-1 border-t border-white/10" />
           </div>
 
-          <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+          <form onSubmit={handleSubmit} className="mt-10 space-y-6">
             <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <label className="text-xs font-bold uppercase tracking-widest text-accent">
                 Email
               </label>
               <input
                 type="email"
-                placeholder="you@example.com"
+                placeholder="YOU@EXAMPLE.COM"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full rounded-2xl border border-white/10 bg-surface-muted px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/70 focus:border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent/30"
+                className="w-full border-2 border-white/20 bg-white/5 px-4 py-4 text-sm font-bold uppercase tracking-wider text-white placeholder:text-white/20 focus:border-accent focus:outline-none transition-colors"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <label className="text-xs font-bold uppercase tracking-widest text-accent">
                 Password
               </label>
               <input
@@ -110,29 +110,29 @@ export default function SignInClient() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full rounded-2xl border border-white/10 bg-surface-muted px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/70 focus:border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent/30"
+                className="w-full border-2 border-white/20 bg-white/5 px-4 py-4 text-sm font-bold uppercase tracking-wider text-white placeholder:text-white/20 focus:border-accent focus:outline-none transition-colors"
               />
             </div>
 
             {error && (
-              <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm text-red-300">
+              <p className="border border-red-500/50 bg-red-500/10 px-4 py-3 text-center text-xs font-bold uppercase tracking-wide text-red-500">
                 {error}
               </p>
             )}
 
             <button
               type="submit"
-              className="w-full rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white shadow-soft transition hover:shadow-lg"
+              className="w-full bg-white px-6 py-4 text-sm font-bold uppercase tracking-widest text-black transition-transform hover:scale-[1.02] hover:bg-accent hover:text-white"
             >
               Sign In
             </button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-muted-foreground">
+          <div className="mt-8 text-center text-xs font-bold uppercase tracking-widest text-white/60">
             Don’t have an account?{" "}
             <Link
               href="/auth/signup"
-              className="font-semibold text-accent hover:text-accent-strong"
+              className="text-white hover:text-accent transition-colors border-b border-transparent hover:border-accent"
             >
               Sign up
             </Link>

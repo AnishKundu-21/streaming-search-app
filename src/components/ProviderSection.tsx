@@ -87,8 +87,7 @@ const providerLinkBuilders: Record<string, ProviderLinkBuilder> = {
   appleitunes: ({ title }) =>
     `https://tv.apple.com/search?term=${encodeTitle(title)}`,
   googleplaymovies: ({ title, mediaType }) =>
-    `https://play.google.com/store/search?q=${encodeTitle(title)}&c=${
-      mediaType === "movie" ? "movies" : "tv"
+    `https://play.google.com/store/search?q=${encodeTitle(title)}&c=${mediaType === "movie" ? "movies" : "tv"
     }`,
   youtube: ({ title }) =>
     `https://www.youtube.com/results?search_query=${encodeTitle(title)}`,
@@ -166,9 +165,8 @@ const buildFallbackLink = (
     params.set("locale", countryCode);
   }
   const query = params.toString();
-  return `https://www.themoviedb.org/${mediaType}/${tmdbId}/watch${
-    query ? `?${query}` : ""
-  }`;
+  return `https://www.themoviedb.org/${mediaType}/${tmdbId}/watch${query ? `?${query}` : ""
+    }`;
 };
 
 // Helper to get a sorted list of country names for the dropdown
@@ -254,22 +252,24 @@ export default function ProviderSection({
   });
 
   return (
-    <section className="mt-12">
-      <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-2xl font-semibold mb-2 sm:mb-0">Where to Watch</h2>
-        <div className="flex items-center gap-3">
+    <section className="mt-12 animate-fade-up animation-delay-200">
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="font-display text-2xl font-bold uppercase italic tracking-wider text-white sm:mb-0 sm:text-3xl">
+          Where to Watch
+        </h2>
+        <div className="flex items-center gap-4">
           <label
             htmlFor="country-select"
-            className="text-sm font-medium text-muted-foreground"
+            className="text-sm font-bold uppercase tracking-widest text-white/60"
           >
             Country:
           </label>
-          <div className="relative">
+          <div className="relative group">
             <select
               id="country-select"
               value={selectedCountry}
               onChange={(e) => setSelectedCountry(e.target.value)}
-              className="appearance-none rounded-full border border-border bg-black/70 py-2 pl-4 pr-10 text-sm font-semibold text-white focus:outline-none focus:ring-2 focus:ring-accent"
+              className="appearance-none border border-white/20 bg-black/50 py-2 pl-4 pr-10 text-sm font-bold uppercase tracking-wider text-white backdrop-blur-sm transition-all focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent group-hover:border-white/40"
             >
               {countryList.map(({ code, name }) => (
                 <option key={code} value={code} className="bg-black text-white">
@@ -277,7 +277,7 @@ export default function ProviderSection({
                 </option>
               ))}
             </select>
-            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/60 transition-colors group-hover:text-white">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
@@ -295,9 +295,9 @@ export default function ProviderSection({
         </div>
       </div>
 
-      <div className="rounded-3xl border border-border bg-card p-6 shadow-soft">
+      <div className="border border-white/10 bg-black/40 p-6 backdrop-blur-sm sm:p-8">
         {bundled.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {bundled.map((p) => {
               const cardContent = (
                 <>
@@ -307,24 +307,24 @@ export default function ProviderSection({
                       alt={p.name}
                       width={64}
                       height={64}
-                      className="mb-2 rounded-xl"
+                      className="mb-4 rounded-none shadow-lg"
                     />
                   ) : (
-                    <div className="mb-2 flex h-16 w-16 items-center justify-center rounded-xl border border-white/10 text-xs font-semibold uppercase text-muted-foreground">
+                    <div className="mb-4 flex h-16 w-16 items-center justify-center border border-white/10 bg-white/5 text-xs font-bold uppercase text-white/40">
                       {p.name.slice(0, 2)}
                     </div>
                   )}
-                  <p className="mb-1 text-sm font-semibold text-foreground">
+                  <p className="mb-1 text-sm font-bold uppercase tracking-wider text-white">
                     {p.name}
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    {Array.from(p.types).join(", ")}
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-accent">
+                    {Array.from(p.types).join(" / ")}
                   </p>
                 </>
               );
 
               const baseClasses =
-                "flex flex-col items-center rounded-2xl border border-white/5 bg-surface-elevated/40 p-4 text-center backdrop-blur transition";
+                "flex flex-col items-center border border-white/5 bg-white/5 p-6 text-center transition-all duration-300 hover:border-accent hover:bg-accent/10 hover:-translate-y-1";
 
               if (p.url) {
                 return (
@@ -335,7 +335,7 @@ export default function ProviderSection({
                     rel="noopener noreferrer"
                     title={`Open ${title} on ${p.name}`}
                     aria-label={`Open ${title} on ${p.name} (opens in new tab)`}
-                    className={`${baseClasses} cursor-pointer hover:border-accent/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40`}
+                    className={`${baseClasses} cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent`}
                   >
                     {cardContent}
                   </a>
@@ -345,21 +345,23 @@ export default function ProviderSection({
               return (
                 <div
                   key={p.name}
-                  className={`${baseClasses} cursor-default opacity-70`}
+                  className={`${baseClasses} cursor-default opacity-50 grayscale`}
                   aria-disabled={true}
                 >
                   {cardContent}
-                  <span className="mt-2 text-[11px] font-medium text-muted-foreground">
-                    Link unavailable
+                  <span className="mt-2 text-[10px] font-bold uppercase tracking-widest text-white/40">
+                    Unavailable
                   </span>
                 </div>
               );
             })}
           </div>
         ) : (
-          <p className="text-center text-muted-foreground">
-            Not currently available in the selected country.
-          </p>
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <p className="text-lg font-bold uppercase tracking-widest text-white/40">
+              No streaming options available in {countryList.find(c => c.code === selectedCountry)?.name}
+            </p>
+          </div>
         )}
       </div>
     </section>
